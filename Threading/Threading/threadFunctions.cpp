@@ -79,15 +79,26 @@ void normalizeVectors(glm::vec4 * a_vectors, int a_size, std::vector<std::thread
 		{
 			threads.push_back(std::thread(
 				[&](int low, int high) {
-				for (int j = low; j < high; j++)
-				{
-					a_vectors[j] = glm::normalize(a_vectors[j]);
-					printf("normalise -" + j + '\n');
-0				}
-			}, i * chunk, (i+1) * chunk
-			));
+						for (int j = low; j < high; j++)
+						{
+							a_vectors[j] = glm::normalize(a_vectors[j]);
+							std::cout << "count - " << j << std::endl;
+						}
+					}, i * chunk, (i+1) * chunk
+				));
 			printf("Batch PUSH - %i\n", i);
 		}
 	}
 
+}
+
+void normalizeVectors(glm::vec4 * a_vectors, int a_size, int low, int high)
+{
+	int total = 0;
+	for (int j = low; j < high; j++)
+	{
+		a_vectors[j] = glm::normalize(a_vectors[j]);
+		total++;
+		std::cout << total << " - " << j << std::endl;
+	}
 }
