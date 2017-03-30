@@ -17,6 +17,7 @@ void SystemThread::Tick()
 	m_systemThread = std::thread([&] {
 		if (!m_paused) {
 			// do something
+			m_systemThread = std::thread(&SystemThread::Tick, this);
 		}
 	});
 }
