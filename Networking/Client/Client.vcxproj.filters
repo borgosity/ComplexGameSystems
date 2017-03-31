@@ -24,7 +24,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMessages.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

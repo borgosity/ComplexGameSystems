@@ -71,10 +71,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\raknet;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)dependencies/raknet/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies/raknet/libs;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -151,6 +151,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameMessages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

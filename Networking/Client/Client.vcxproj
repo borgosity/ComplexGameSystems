@@ -44,10 +44,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)bootstrap;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)include</IncludePath>
-    <LibraryPath>$(SolutionDir)bin\bootstrap\$(Configuration);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)lib\raknet</LibraryPath>
+    <OutDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)bootstrap;$(SolutionDir)dependencies/imgui;$(SolutionDir)dependencies/glm;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)dependencies/raknet/include</IncludePath>
+    <LibraryPath>$(SolutionDir)temp\bootstrap\$(Configuration);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)dependencies/raknet/libs</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="GameMessages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
