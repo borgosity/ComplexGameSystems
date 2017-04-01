@@ -88,7 +88,7 @@ void Client::initialiseClientConnection()
 
 	// call startup with max of 1 connection to the server
 	m_pPeerInterface->Startup(1, &sd, 1);
-	std::cout << " Connecting to server at:" << IP << std::endl;
+	std::cout << " Connecting to server at: " << IP << std::endl;
 	// attempt connection to server
 	RakNet::ConnectionAttemptResult conResult = m_pPeerInterface->Connect(IP, PORT, nullptr, 0);
 	// check if connection was successful
@@ -103,7 +103,8 @@ void Client::handleNetworkMessages()
 
 	for ( pPacket = m_pPeerInterface->Receive(); 
 		 pPacket;
-		m_pPeerInterface->DeallocatePacket(pPacket),	pPacket = m_pPeerInterface->Receive()) {
+		m_pPeerInterface->DeallocatePacket(pPacket),	pPacket = m_pPeerInterface->Receive()) 
+	{
 		switch (pPacket->data[0]) {
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			std::cout << "Another client has disconnected.\n";
