@@ -1,42 +1,18 @@
-// standard library includes
-#include <iostream>
-#include <thread>
-
 // source includes
-#include "threadFunctions.h"
+#include "Tute_1.h"
+#include "Tute_3.h"
 
 int main()
 {
-	std::vector<std::thread> threads;
-	std::vector<std::thread> lamdaThreads;
-	std::mutex myMutex;
-	std::vector<std::thread> vectorThreads;
-	// normalizing
-	const int vecSize = 100;
-	glm::vec4 myVectors[vecSize] = {};
+	// tute 1
+	//exercise_1();
+	//exercise_2();
+	//exercise_3();
 
-	// set parent threads to call child thread functions
-	//std::thread parent(threadFiller, std::ref(threads));
-	//std::thread lamdaParent(threadLamda, std::ref(lamdaThreads), std::ref(myMutex));
-	//std::thread normalParent(normalizeVectors, myVectors, vecSize, std::ref(vectorThreads));
-	// join parent threads
-	//parent.join();
-	//lamdaParent.join();
-	//normalParent.join();
-	// join child threads
-	//joinThreads(threads);
-	//joinThreads(lamdaThreads);
+	// tute 3
+	//tute3_ex1();
+	tute3_ex2();
 
-	int chunk = vecSize / 10;
-	
-	for (int i = 0; i < 10; i++)
-	{
-		threads.push_back(std::thread(normalizeVectors, myVectors, vecSize, i*chunk, (i + 1) * chunk));
-		std::cout << "Batch PUSH - "<< i << std::endl;
-	}
-	//std::cout << "Total - " << total << std::endl;
-
-	//joinThreads(vectorThreads);
 
 	return 0;
 }

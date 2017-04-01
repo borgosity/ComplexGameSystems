@@ -146,11 +146,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CircularFIFO.cpp" />
+    <ClCompile Include="IntCircularFIFO10.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="threadFunctions.cpp" />
+    <ClCompile Include="Tute_1.cpp" />
+    <ClCompile Include="Tute_3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CircularFIFO.h" />
+    <ClInclude Include="IntCircularFIFO10.h" />
     <ClInclude Include="threadFunctions.h" />
+    <ClInclude Include="Tute_1.h" />
+    <ClInclude Include="Tute_3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

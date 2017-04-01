@@ -60,7 +60,7 @@ void joinThreads(std::vector<std::thread>& threads)
 	}
 }
 
-void normalizeVectors(glm::vec4 * a_vectors, int a_size, std::vector<std::thread>& threads)
+void normalizeVectorsLambda(glm::vec4 * a_vectors, int a_size, std::vector<std::thread>& threads)
 {
 	if (a_size <= 100) {
 		for (int i = 0; i < a_size; i++)
@@ -100,5 +100,13 @@ void normalizeVectors(glm::vec4 * a_vectors, int a_size, int low, int high)
 		a_vectors[j] = glm::normalize(a_vectors[j]);
 		total++;
 		std::cout << total << " - " << j << std::endl;
+	}
+}
+
+void initVectors(glm::vec4 * a_vectors, int a_size)
+{
+	for (int i = 0; i < a_size; i++)
+	{
+		a_vectors[i] = glm::vec4(glm::gaussRand(5, 5), glm::gaussRand(5, 5), glm::gaussRand(5, 5), 1.0f);
 	}
 }

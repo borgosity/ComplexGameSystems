@@ -13,18 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\tutes">
+      <UniqueIdentifier>{6bc5a4dc-e98a-4e9a-87b5-d7c2bb74ea3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\classes">
+      <UniqueIdentifier>{1e5272ab-afba-40c0-bd4c-bd95ad184ce6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tute_1.cpp">
+      <Filter>Source Files\tutes</Filter>
+    </ClCompile>
+    <ClCompile Include="Tute_3.cpp">
+      <Filter>Source Files\tutes</Filter>
+    </ClCompile>
     <ClCompile Include="threadFunctions.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="IntCircularFIFO10.cpp">
+      <Filter>Source Files\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="CircularFIFO.cpp">
+      <Filter>Source Files\classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tute_1.h">
+      <Filter>Source Files\tutes</Filter>
+    </ClInclude>
+    <ClInclude Include="Tute_3.h">
+      <Filter>Source Files\tutes</Filter>
+    </ClInclude>
     <ClInclude Include="threadFunctions.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\classes</Filter>
+    </ClInclude>
+    <ClInclude Include="IntCircularFIFO10.h">
+      <Filter>Source Files\classes</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularFIFO.h">
+      <Filter>Source Files\classes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
