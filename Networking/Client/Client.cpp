@@ -17,7 +17,7 @@ Client::Client() {
 
 Client::~Client() {
 }
-
+/***************************************************************************************************/
 bool Client::startup() {
 	
 	setBackgroundColour(0.25f, 0.25f, 0.25f);
@@ -35,12 +35,14 @@ bool Client::startup() {
 
 	return true;
 }
-
+/***************************************************************************************************/
 void Client::shutdown() {
 
 	Gizmos::destroy();
 }
-
+/*******************************************************************************************
+                                         UPDATE
+********************************************************************************************/
 void Client::update(float deltaTime) {
 
 	// query time since application started
@@ -56,11 +58,19 @@ void Client::update(float deltaTime) {
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
+	// start thread and send message to other clients
+	std::thread messageThread(sendServerMessage, m_pPeerInterface,"-!! Hello Clients !!-\n ");
+
 	// update network messages
 	handleNetworkMessages();
 
-}
+	// join thread
+	messageThread.join();
 
+}
+/*******************************************************************************************
+                                        DRAW
+********************************************************************************************/
 void Client::draw() {
 
 	// wipe the screen to the background colour
@@ -73,14 +83,14 @@ void Client::draw() {
 
 	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
 }
-
+/***************************************************************************************************/
 void Client::handleNetworkConnection()
 {
 	// initialise raknet peer interface
 	m_pPeerInterface = RakNet::RakPeerInterface::GetInstance();
 	initialiseClientConnection();
 }
-
+/***************************************************************************************************/
 void Client::initialiseClientConnection()
 {
 	// create socket descriptor for connection, no data required for server connection
@@ -96,7 +106,7 @@ void Client::initialiseClientConnection()
 		std::cout << "  >> ERROR - Client unable to start connection, Error number : " << conResult << std::endl;
 	}
 }
-
+/***************************************************************************************************/
 void Client::handleNetworkMessages()
 {
 	RakNet::Packet* pPacket;

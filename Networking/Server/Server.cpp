@@ -66,17 +66,17 @@ void Server::handleNetworkMessages()
 		case ID_CONNECTION_LOST:
 			std::cout << "A client lost the connection!!\n";
 			break;
-		case ID_SERVER_TEXT_MESSAGE:
-		{
-			// convert message to stream
-			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
-			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-			// read stream and print
-			RakNet::RakString str;
-			bsIn.Read(str);
-			std::cout << str.C_String() << std::endl;
-			break;
-		}
+		//case ID_SERVER_TEXT_MESSAGE:
+		//{
+		//	// convert message to stream
+		//	RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
+		//	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+		//	// read stream and print
+		//	RakNet::RakString str;
+		//	bsIn.Read(str);
+		//	std::cout << str.C_String() << std::endl;
+		//	break;
+		//}
 		case ID_CLIENT_TEXT_MESSAGE:
 		{
 			// convert message to stream
@@ -85,7 +85,10 @@ void Server::handleNetworkMessages()
 			// read stream and print
 			RakNet::RakString str;
 			bsIn.Read(str);
+			std::cout << "++ Message Recieved from Client..." << std::endl;
 			std::cout << str.C_String() << std::endl;
+			std::cout << "-- Broadcasting message to clients..." << std::endl;
+			broadcastClientMessage(m_pPeerInterface, str.C_String());
 			break;
 		}
 		default:

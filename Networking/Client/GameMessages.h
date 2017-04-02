@@ -1,5 +1,6 @@
 #pragma once
 #include <thread>
+#include <string>
 
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
@@ -25,22 +26,22 @@ void sendClientPing(RakNet::RakPeerInterface * a_pPeerInterface)
 	}
 }
 
-void broadcastClientMessage(RakNet::RakPeerInterface * a_pPeerInterface)
+void broadcastClientMessage(RakNet::RakPeerInterface * a_pPeerInterface, std::string a_message)
 {
 	// construct message
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_TEXT_MESSAGE);
-	bs.Write("Ping!");
+	bs.Write(a_message);
 	// send message
 	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void sendServerMessage(RakNet::RakPeerInterface * a_pPeerInterface)
+void sendServerMessage(RakNet::RakPeerInterface * a_pPeerInterface, std::string a_message)
 {
 	// construct message
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_TEXT_MESSAGE);
-	bs.Write("Here is a message sent from a client");
+	bs.Write(a_message);
 	// send message
 	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
