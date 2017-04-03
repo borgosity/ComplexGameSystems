@@ -59,7 +59,7 @@ void Client::update(float deltaTime) {
 		quit();
 
 	// start thread and send message to other clients
-	std::thread messageThread(sendServerMessage, m_pPeerInterface,"-!! Hello Clients !!-\n ");
+	std::thread messageThread(sendServerMessage, m_pPeerInterface, *m_serverAddress, "-!! Hello Clients !!-\n ");
 
 	// update network messages
 	handleNetworkMessages();
@@ -88,6 +88,7 @@ void Client::handleNetworkConnection()
 {
 	// initialise raknet peer interface
 	m_pPeerInterface = RakNet::RakPeerInterface::GetInstance();
+	m_serverAddress = new RakNet::SystemAddress(SERVERIP, PORT);
 	initialiseClientConnection();
 }
 /***************************************************************************************************/
@@ -98,9 +99,14 @@ void Client::initialiseClientConnection()
 
 	// call startup with max of 1 connection to the server
 	m_pPeerInterface->Startup(1, &sd, 1);
-	std::cout << " Connecting to server at: " << IP << std::endl;
+	std::cout << " Connecting to server at: " << SERVERIP << std::endl;
 	// attempt connection to server
-	RakNet::ConnectionAttemptResult conResult = m_pPeerInterface->Connect(IP, PORT, nullptr, 0);
+	RakNet::ConnectionAttemptResult conResult = m_pPeerInterface->Connect(SERVERIP, PORT, nullptr, 0);
+	// get server ID
+	std::cout << "> MYGUID : " << m_pPeerInterface->GetMyGUID().ToString() << std::endl;
+	std::cout << "> System Address : " << m_pPeerInterface->GetSystemAddressFromGuid(m_pPeerInterface->GetMyGUID()).ToString() << std::endl;
+
+
 	// check if connection was successful
 	if (conResult != RakNet::CONNECTION_ATTEMPT_STARTED) {
 		std::cout << "  >> ERROR - Client unable to start connection, Error number : " << conResult << std::endl;
@@ -136,8 +142,20 @@ void Client::handleNetworkMessages()
 			break;
 		case ID_CONNECTION_LOST:
 			std::cout << "Connection lost.\n";
+			initialiseClientConnection();
 			break;
 		case ID_SERVER_TEXT_MESSAGE:
+		{
+			// convert message to stream
+			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			// read stream and print
+			RakNet::RakString str;
+			bsIn.Read(str);
+			std::cout << str.C_String() << std::endl;
+			break;
+		}
+		case ID_CLIENT_TEXT_MESSAGE:
 		{
 			// convert message to stream
 			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);

@@ -15,16 +15,13 @@ enum GameMessages
 
 void sendClientPing(RakNet::RakPeerInterface * a_pPeerInterface)
 {
-	while (true)
-	{
-		// construct message
-		RakNet::BitStream bs;
-		bs.Write((RakNet::MessageID)GameMessages::ID_SERVER_TEXT_MESSAGE);
-		bs.Write("Ping!");
-		// send message
-		a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	// construct message
+	RakNet::BitStream bs;
+	bs.Write((RakNet::MessageID)GameMessages::ID_SERVER_TEXT_MESSAGE);
+	bs.Write("Ping!");
+	// send message
+	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+	std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 void broadcastClientMessage(RakNet::RakPeerInterface * a_pPeerInterface, std::string a_message)
@@ -32,17 +29,20 @@ void broadcastClientMessage(RakNet::RakPeerInterface * a_pPeerInterface, std::st
 	// construct message
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_TEXT_MESSAGE);
-	bs.Write(a_message);
+	bs.Write(a_message.c_str());
+	std::cout << "-- Broadcasting message to clients: " << a_message << std::endl;
 	// send message
 	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void sendServerMessage(RakNet::RakPeerInterface * a_pPeerInterface, std::string a_message)
+void sendServerMessage(RakNet::RakPeerInterface * a_pPeerInterface, RakNet::SystemAddress &a_server, std::string a_message)
 {
 	// construct message
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_TEXT_MESSAGE);
-	bs.Write(a_message);
+	bs.Write(a_message.c_str());
+	std::cout << "> Send message to server: " << a_message << std::endl;
 	// send message
-	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+	a_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, a_server, false);
+	std::this_thread::sleep_for(std::chrono::seconds(2));
 }

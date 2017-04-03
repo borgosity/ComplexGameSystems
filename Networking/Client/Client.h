@@ -32,6 +32,7 @@ protected:
 	glm::mat4	m_projectionMatrix;
 	// network variables
 	RakNet::RakPeerInterface * m_pPeerInterface = nullptr;
-	const char * IP = "127.0.0.1";
+	const char * SERVERIP = "127.0.0.1";
 	const unsigned short PORT = 5456;
+	RakNet::SystemAddress * m_serverAddress = nullptr;
 };

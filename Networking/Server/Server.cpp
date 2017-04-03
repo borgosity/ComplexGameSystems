@@ -25,6 +25,8 @@ void Server::run()
 	m_pPeerInterface->SetMaximumIncomingConnections(MAXCON);
 	// server startup successful
 	std::cout << "...server running:" << std::endl;
+	std::cout << "> GUID : " << m_pPeerInterface->GetMyGUID().ToString() << std::endl;
+	std::cout << "> System Address : " << m_pPeerInterface->GetSystemAddressFromGuid(m_pPeerInterface->GetMyGUID()).ToString() << std::endl;
 
 	// server run loop
 	while (true)
@@ -36,8 +38,12 @@ void Server::run()
 
 void Server::update()
 {
+	// start thread and ping clients
+	//std::thread pingThread(sendClientPing, m_pPeerInterface);
 	// check any network messages
 	handleNetworkMessages();
+	// join ping thread
+	//pingThread.join();
 }
 
 void Server::handleNetworkConnection()
@@ -48,14 +54,13 @@ void Server::handleNetworkMessages()
 {
 	RakNet::Packet* pPacket;
 
-	// start thread and ping clients
-	std::thread pingThread(sendClientPing, m_pPeerInterface);
 
 	// loop for receiving messages
 	for (pPacket = m_pPeerInterface->Receive();
 		pPacket;
 		m_pPeerInterface->DeallocatePacket(pPacket), pPacket = m_pPeerInterface->Receive()) 
 	{
+		// action depending on message ID
 		switch (pPacket->data[0]) {
 		case ID_NEW_INCOMING_CONNECTION:
 			std::cout << "A connection is incoming...\n";
@@ -66,17 +71,17 @@ void Server::handleNetworkMessages()
 		case ID_CONNECTION_LOST:
 			std::cout << "A client lost the connection!!\n";
 			break;
-		//case ID_SERVER_TEXT_MESSAGE:
-		//{
-		//	// convert message to stream
-		//	RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
-		//	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-		//	// read stream and print
-		//	RakNet::RakString str;
-		//	bsIn.Read(str);
-		//	std::cout << str.C_String() << std::endl;
-		//	break;
-		//}
+		case ID_SERVER_TEXT_MESSAGE:
+		{
+			// convert message to stream
+			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			// read stream and print
+			RakNet::RakString str;
+			bsIn.Read(str);
+			std::cout << str.C_String() << std::endl;
+			break;
+		}
 		case ID_CLIENT_TEXT_MESSAGE:
 		{
 			// convert message to stream
@@ -85,17 +90,14 @@ void Server::handleNetworkMessages()
 			// read stream and print
 			RakNet::RakString str;
 			bsIn.Read(str);
-			std::cout << "++ Message Recieved from Client..." << std::endl;
-			std::cout << str.C_String() << std::endl;
-			std::cout << "-- Broadcasting message to clients..." << std::endl;
+			std::cout << "++ Message Recieved from Client:" << str.C_String() << std::endl;
+			// broadcast message to all clients
 			broadcastClientMessage(m_pPeerInterface, str.C_String());
 			break;
 		}
 		default:
-			std::cout << "recieved a message with an unknown ID: " << pPacket->data[0];
+			std::cout << "Received a message with an unknown ID: " << pPacket->data[0] << std::endl;
 			break;
 		}
 	}
-	// join ping thread
-	pingThread.join();
 }
