@@ -1,4 +1,7 @@
 #pragma once
+// std lib includes
+#include <iostream>
+#include <list>
 // source includes
 #include "Application.h"
 // opengl includes
@@ -36,5 +39,17 @@ protected:
 	RakNet::RakPeerInterface * m_pPeerInterface = nullptr;
 	const char * SERVERIP = "127.0.0.1";
 	const unsigned short PORT = 5456;
+
 	RakNet::SystemAddress * m_serverAddress = nullptr;
+	// message variables
+	std::string m_currentMessage;
+	unsigned int m_maxMsg;
+	unsigned int m_bufferSize;
+
+	std::list<std::string> m_messages;
+	bool m_newMsg;
+	bool m_readOnly;
+	// message functions
+	void addMessage(std::string a_msg);
+	void sendMessage();
 };

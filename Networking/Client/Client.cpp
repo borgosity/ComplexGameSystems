@@ -3,7 +3,7 @@
 #include "Input.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-#include <iostream>
+//#include <iostream>
 #include "GameMessages.h"
 
 #include "imgui_glfw3.h"
@@ -32,6 +32,11 @@ bool Client::startup() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 										  getWindowWidth() / (float)getWindowHeight(),
 										  0.1f, 1000.f);
+	// set msg input to false until server connection
+	m_readOnly = true;
+	m_newMsg = false;
+	m_maxMsg = 10;
+	m_bufferSize = 0;
 	// connect to server
 	handleNetworkConnection();
 
@@ -60,14 +65,20 @@ void Client::update(float deltaTime) {
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.WantCaptureKeyboard)
+	{
+
+	}
+
 	// start thread and send message to other clients
-	std::thread messageThread(sendServerMessage, m_pPeerInterface, *m_serverAddress, "-!! Hello Clients !!-\n ");
+	//std::thread messageThread(sendServerMessage, m_pPeerInterface, *m_serverAddress, "-!! Hello Clients !!-\n ");
 
 	// update network messages
 	handleNetworkMessages();
 
 	// join thread
-	messageThread.join();
+	//messageThread.join();
 
 }
 /*******************************************************************************************
@@ -103,17 +114,21 @@ void Client::initialiseClientConnection()
 
 	// call startup with max of 1 connection to the server
 	m_pPeerInterface->Startup(1, &sd, 1);
-	std::cout << " Connecting to server at: " << SERVERIP << std::endl;
+	addMessage("> Connecting to server at: " + std::string(SERVERIP) );
+	std::cout << "> Connecting to server at: " << SERVERIP << std::endl;
 	// attempt connection to server
 	RakNet::ConnectionAttemptResult conResult = m_pPeerInterface->Connect(SERVERIP, PORT, nullptr, 0);
 	// get server ID
 	std::cout << "> MYGUID : " << m_pPeerInterface->GetMyGUID().ToString() << std::endl;
 	std::cout << "> System Address : " << m_pPeerInterface->GetSystemAddressFromGuid(m_pPeerInterface->GetMyGUID()).ToString() << std::endl;
-
+	
+	addMessage("> MYGUID : " + std::string(m_pPeerInterface->GetMyGUID().ToString()));
+	addMessage("> System Address : " + std::string(m_pPeerInterface->GetSystemAddressFromGuid(m_pPeerInterface->GetMyGUID()).ToString()));
 
 	// check if connection was successful
 	if (conResult != RakNet::CONNECTION_ATTEMPT_STARTED) {
 		std::cout << "  >> ERROR - Client unable to start connection, Error number : " << conResult << std::endl;
+		addMessage(">> ERROR - Client unable to start connection, Error number : " + std::string((char*)conResult));
 	}
 }
 /***************************************************************************************************/
@@ -137,15 +152,19 @@ void Client::handleNetworkMessages()
 			break;
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 			std::cout << "Our connection request has been accepted.\n";
+			addMessage("> Connection request has been accepted.");
 			break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
 			std::cout << "The server is full.\n";
+			addMessage("> The server is full.");
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
 			std::cout << "We have been disconnected.\n";
+			addMessage("> We have been disconnected.");
 			break;
 		case ID_CONNECTION_LOST:
 			std::cout << "Connection lost.\n";
+			addMessage("> Connection has been lost.");
 			initialiseClientConnection();
 			break;
 		case ID_SERVER_TEXT_MESSAGE:
@@ -157,6 +176,7 @@ void Client::handleNetworkMessages()
 			RakNet::RakString str;
 			bsIn.Read(str);
 			std::cout << str.C_String() << std::endl;
+			addMessage(std::string(str));
 			break;
 		}
 		case ID_CLIENT_TEXT_MESSAGE:
@@ -168,10 +188,17 @@ void Client::handleNetworkMessages()
 			RakNet::RakString str;
 			bsIn.Read(str);
 			std::cout << str.C_String() << std::endl;
+			addMessage(std::string(str));
 			break;
 		}
 		default:
-			std::cout << "Received a message with a unknown ID: " << pPacket->data[0];
+			// convert message to stream
+			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			// read stream and print
+			RakNet::RakString str;
+			bsIn.Read(str);
+			std::cout << "Received a message with a unknown ID: " << str.C_String() << pPacket->data[0];
 			break;
 		}
 	}
@@ -180,22 +207,52 @@ void Client::handleNetworkMessages()
 void Client::chatGUI()
 {
 	static bool read_only = true;
-	static char text[1024 * 16] =
-		"/*\n"
-		" The Pentium F00F bug, shorthand for F0 0F C7 C8,\n"
-		" the hexadecimal encoding of one offending instruction,\n"
-		" more formally, the invalid operand with locked CMPXCHG8B\n"
-		" instruction bug, is a design flaw in the majority of\n"
-		" Intel Pentium, Pentium MMX, and Pentium OverDrive\n"
-		" processors (all in the P5 microarchitecture).\n"
-		"*/\n\n"
-		"label:\n"
-		"\tlock cmpxchg8b eax\n";
+	static char text[1024 * 16] = "";
+
+	if (m_newMsg) {
+		for (auto msgit : m_messages)
+		{
+			std::string msg = msgit;
+			if (m_newMsg &&  m_bufferSize < (1024 * 16 - msg.length())) {
+				strcat_s(text, msg.c_str());
+			}
+		}
+		m_newMsg = false;
+	}
+
 	ImGui::Begin("Chat");
 	ImGui::InputTextMultiline("##source", text, 1024 * 16, ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16), 
 							  ImGuiInputTextFlags_AllowTabInput | (read_only ? ImGuiInputTextFlags_ReadOnly : 0));
 
+	static char msgBuffer[512] = "";
+	ImGui::InputText("##msg",msgBuffer, 512, ImGuiInputTextFlags_AllowTabInput | 
+		                                    ImGuiInputTextFlags_EnterReturnsTrue |
+											(m_readOnly ? ImGuiInputTextFlags_ReadOnly : 0),
+											NULL, NULL);
+	ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+	ImGui::SameLine(0.0f, -1.0f);
+	if (ImGui::Button("Send", ImVec2(40, 20)) ){
+		addMessage(" - Button was clicked...");
+	}
+
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
+}
+
+void Client::addMessage(std::string a_msg)
+{
+	if (m_messages.size() < m_maxMsg) {
+		m_messages.push_back(a_msg + "\n");
+	}
+	else {
+		m_messages.pop_front();
+		m_messages.push_back(a_msg + "\n");
+	}
+	m_bufferSize += a_msg.length();
+	m_newMsg = true;
+}
+
+void Client::sendMessage()
+{
 }
 
