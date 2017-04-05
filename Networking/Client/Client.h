@@ -27,6 +27,8 @@ public:
 	// handle incoming packets
 	void handleNetworkMessages();
 
+	void chatGUI();
+
 protected:
 	glm::mat4	m_viewMatrix;
 	glm::mat4	m_projectionMatrix;

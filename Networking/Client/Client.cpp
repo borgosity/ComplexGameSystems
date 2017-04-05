@@ -6,6 +6,8 @@
 #include <iostream>
 #include "GameMessages.h"
 
+#include "imgui_glfw3.h"
+
 using glm::vec3;
 using glm::vec4;
 using glm::mat4;
@@ -82,6 +84,8 @@ void Client::draw() {
 										  0.1f, 1000.f);
 
 	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
+	// draw chat window
+	chatGUI();
 }
 /***************************************************************************************************/
 void Client::handleNetworkConnection()
@@ -171,5 +175,27 @@ void Client::handleNetworkMessages()
 			break;
 		}
 	}
+}
+
+void Client::chatGUI()
+{
+	static bool read_only = true;
+	static char text[1024 * 16] =
+		"/*\n"
+		" The Pentium F00F bug, shorthand for F0 0F C7 C8,\n"
+		" the hexadecimal encoding of one offending instruction,\n"
+		" more formally, the invalid operand with locked CMPXCHG8B\n"
+		" instruction bug, is a design flaw in the majority of\n"
+		" Intel Pentium, Pentium MMX, and Pentium OverDrive\n"
+		" processors (all in the P5 microarchitecture).\n"
+		"*/\n\n"
+		"label:\n"
+		"\tlock cmpxchg8b eax\n";
+	ImGui::Begin("Chat");
+	ImGui::InputTextMultiline("##source", text, 1024 * 16, ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16), 
+							  ImGuiInputTextFlags_AllowTabInput | (read_only ? ImGuiInputTextFlags_ReadOnly : 0));
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::End();
 }
 
