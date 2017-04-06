@@ -88,11 +88,13 @@ void Server::handleNetworkMessages()
 			RakNet::BitStream bsIn(pPacket->data, pPacket->length, false);
 			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 			// read stream and print
+			RakNet::RakString guid = pPacket->guid.ToString();
 			RakNet::RakString str;
 			bsIn.Read(str);
 			std::cout << "++ Message Recieved from Client:" << str.C_String() << std::endl;
+			std::string msg(guid + ": " + str);
 			// broadcast message to all clients
-			broadcastClientMessage(m_pPeerInterface, str.C_String());
+			broadcastClientMessage(m_pPeerInterface, msg);
 			break;
 		}
 		default:

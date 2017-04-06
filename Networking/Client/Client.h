@@ -45,10 +45,14 @@ protected:
 	std::string m_currentMessage;
 	unsigned int m_maxMsg;
 	unsigned int m_bufferSize;
-
 	std::list<std::string> m_messages;
 	bool m_newMsg;
 	bool m_readOnly;
+	// user message
+	bool m_sendMessage;
+	char m_msgBuffer[512];
+	// conversation area
+	char m_conversation[1024 * 16];
 	// message functions
 	void addMessage(std::string a_msg);
 	void sendMessage();

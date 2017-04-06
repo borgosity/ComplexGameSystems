@@ -35,8 +35,11 @@ bool Client::startup() {
 	// set msg input to false until server connection
 	m_readOnly = true;
 	m_newMsg = false;
+	m_sendMessage = false;
 	m_maxMsg = 10;
 	m_bufferSize = 0;
+	m_msgBuffer[0] = '\0';
+	m_conversation[0] = '\0';
 	// connect to server
 	handleNetworkConnection();
 
@@ -64,12 +67,6 @@ void Client::update(float deltaTime) {
 
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
-
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.WantCaptureKeyboard)
-	{
-
-	}
 
 	// start thread and send message to other clients
 	//std::thread messageThread(sendServerMessage, m_pPeerInterface, *m_serverAddress, "-!! Hello Clients !!-\n ");
@@ -206,37 +203,48 @@ void Client::handleNetworkMessages()
 
 void Client::chatGUI()
 {
-	static bool read_only = true;
-	static char text[1024 * 16] = "";
 
+	// write message to window if there is a new message
 	if (m_newMsg) {
 		for (auto msgit : m_messages)
 		{
 			std::string msg = msgit;
-			if (m_newMsg &&  m_bufferSize < (1024 * 16 - msg.length())) {
-				strcat_s(text, msg.c_str());
+			unsigned int size = 1024 * 16 - msg.length();
+			if (m_newMsg &&  m_bufferSize < size) {
+				strcat_s(m_conversation, msg.c_str());
 			}
 		}
+		m_messages.clear();
 		m_newMsg = false;
 	}
-
+	// create chat window
 	ImGui::Begin("Chat");
-	ImGui::InputTextMultiline("##source", text, 1024 * 16, ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16), 
-							  ImGuiInputTextFlags_AllowTabInput | (read_only ? ImGuiInputTextFlags_ReadOnly : 0));
-
-	static char msgBuffer[512] = "";
-	ImGui::InputText("##msg",msgBuffer, 512, ImGuiInputTextFlags_AllowTabInput | 
-		                                    ImGuiInputTextFlags_EnterReturnsTrue |
-											(m_readOnly ? ImGuiInputTextFlags_ReadOnly : 0),
-											NULL, NULL);
-	ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
-	ImGui::SameLine(0.0f, -1.0f);
-	if (ImGui::Button("Send", ImVec2(40, 20)) ){
-		addMessage(" - Button was clicked...");
+	// conversation area
+	//ImGui::TextWrapped(text);
+	ImGui::InputTextMultiline("##source", m_conversation, 1024 * 16, ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16),
+							  ImGuiInputTextFlags_AllowTabInput | 
+							  ImGuiInputTextFlags_ReadOnly);
+	
+	// message input text field
+	!m_sendMessage ? m_sendMessage = ImGui::InputText("##msg",m_msgBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue) : ImGui::InputText("##msg", m_msgBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue);
+	// set focus if nothing is in focus
+	if (!ImGui::IsAnyItemActive()) {
+		ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 	}
-
+	ImGui::SameLine(0.0f, -1.0f);
+	// send button
+	!m_sendMessage ? m_sendMessage = ImGui::Button("Send", ImVec2(40, 20)) : ImGui::Button("Send", ImVec2(40, 20));
+	// debug text
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
 	ImGui::End();
+	// send message if there is one
+	if (m_sendMessage) {
+		m_currentMessage = m_msgBuffer;
+		m_msgBuffer[0] = '\0';
+		m_sendMessage = false;
+		sendMessage();
+	}
 }
 
 void Client::addMessage(std::string a_msg)
@@ -254,5 +262,8 @@ void Client::addMessage(std::string a_msg)
 
 void Client::sendMessage()
 {
+	//std::thread messageThread(sendServerMessage, m_pPeerInterface, *m_serverAddress, m_currentMessage);
+	sendServerMessage(m_pPeerInterface, *m_serverAddress, m_currentMessage);
+	//messageThread.join();
 }
 
