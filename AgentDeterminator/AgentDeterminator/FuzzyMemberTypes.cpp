@@ -8,6 +8,12 @@ FMF_LeftShoulder::FMF_LeftShoulder(float a_startValue, float a_endValaue)
 {
 	m_fLeftValue = a_startValue;
 	m_fPeakLeftValue = a_endValaue;
+	// values vector
+	m_values.push_back(a_startValue);
+	m_values.push_back(a_endValaue);
+}
+FMF_LeftShoulder::~FMF_LeftShoulder()
+{
 }
 /// Returns set membership value
 float FMF_LeftShoulder::membership(float a_value)
@@ -29,6 +35,10 @@ float FMF_LeftShoulder::maxMembership()
 {
 	return (m_fLeftValue) * 0.5f;
 }
+std::vector<float> FMF_LeftShoulder::settings(std::vector<float> a_values)
+{
+	return std::vector<float>();
+}
 /**********************************************************************************************************
 * Right Shoulder Functions
 ***********************************************************************************************************/
@@ -36,6 +46,12 @@ FMF_RightShoulder::FMF_RightShoulder(float a_startValue, float a_endValaue)
 {
 	m_fRightValue = a_startValue;
 	m_fPeakRightValue = a_endValaue;
+	// values vector
+	m_values.push_back(a_startValue);
+	m_values.push_back(a_endValaue);
+}
+FMF_RightShoulder::~FMF_RightShoulder()
+{
 }
 /// Returns set membership value
 float FMF_RightShoulder::membership(float a_value)
@@ -57,6 +73,10 @@ float FMF_RightShoulder::maxMembership()
 {
 	return (m_fRightValue + 1) * 0.5f;
 }
+std::vector<float> FMF_RightShoulder::settings(std::vector<float> a_values)
+{
+	return std::vector<float>();
+}
 /**********************************************************************************************************
 * Triangular Functions
 ***********************************************************************************************************/
@@ -65,6 +85,13 @@ FMF_Triangular::FMF_Triangular(float a_minStartValue, float a_maxPeakValue, floa
 	m_fLeftValue = a_minStartValue;
 	m_fPeakValue = a_maxPeakValue;
 	m_fRightValue = a_minEndVlaue;
+	// values vector
+	m_values.push_back(a_minStartValue);
+	m_values.push_back(a_maxPeakValue);
+	m_values.push_back(a_minEndVlaue);
+}
+FMF_Triangular::~FMF_Triangular()
+{
 }
 /// Returns set membership value
 float FMF_Triangular::membership(float a_value)
@@ -89,6 +116,10 @@ float FMF_Triangular::maxMembership()
 {
 	return m_fPeakValue;
 }
+std::vector<float> FMF_Triangular::settings(std::vector<float> a_values)
+{
+	return std::vector<float>();
+}
 /**********************************************************************************************************
 * Trapazoid Functions
 ***********************************************************************************************************/
@@ -98,6 +129,14 @@ FMF_Trapazoid::FMF_Trapazoid(float a_minStartValue, float a_maxStartValue, float
 	m_fPeakLeftValue = a_maxStartValue;
 	m_fPeakRightValue = a_maxEndValue;
 	m_fRightValue = a_minEndVlaue;
+	// values vector
+	m_values.push_back(a_minStartValue);
+	m_values.push_back(a_maxStartValue;
+	m_values.push_back(a_maxEndValue;
+	m_values.push_back(a_minEndVlaue);
+}
+FMF_Trapazoid::~FMF_Trapazoid()
+{
 }
 /// Returns set membership value
 float FMF_Trapazoid::membership(float a_value)
@@ -121,4 +160,13 @@ float FMF_Trapazoid::membership(float a_value)
 float FMF_Trapazoid::maxMembership()
 {
 	return (m_fPeakLeftValue + m_fPeakRightValue) * 0.5f;
+}
+
+std::vector<float> FMF_Trapazoid::settings(std::vector<float> a_values)
+{
+	return std::vector<float>();
+}
+
+FuzzyMemberFunction::~FuzzyMemberFunction()
+{
 }

@@ -6,17 +6,10 @@ Behaviour::Behaviour()
 {
 }
 
-Behaviour::Behaviour(std::string a_name)
-{
-}
-
 Behaviour::~Behaviour()
 {
 }
-/// update behaviour
-void Behaviour::Update()
-{
-}
+
 /// AND function retrun the lower value
 float Behaviour::AND(float a_left, float a_right)
 {

@@ -69,7 +69,22 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -137,6 +152,7 @@
     <ClInclude Include="Agents.h" />
     <ClInclude Include="Behaviour.h" />
     <ClInclude Include="Decisions.h" />
+    <ClInclude Include="Follow.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
   </ItemGroup>
@@ -144,6 +160,7 @@
     <ClCompile Include="Agents.cpp" />
     <ClCompile Include="Behaviour.cpp" />
     <ClCompile Include="Decisions.cpp" />
+    <ClCompile Include="Follow.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
   </ItemGroup>
