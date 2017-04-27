@@ -17,5 +17,9 @@ protected:
 	float m_fCurrentValue;
 	float m_fPrevValue;
 
+	float AND(float a_left, float a_right);
+	float OR(float a_left, float a_right);
+	float NOT(float a_value);
+
 };
 
