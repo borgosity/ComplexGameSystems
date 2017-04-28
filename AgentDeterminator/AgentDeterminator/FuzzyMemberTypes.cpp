@@ -37,7 +37,13 @@ float FMF_LeftShoulder::maxMembership()
 }
 std::vector<float> FMF_LeftShoulder::settings(std::vector<float> a_values)
 {
-	return std::vector<float>();
+	// vector values
+	m_values = a_values;
+	// float values
+	m_fLeftValue = m_values[0];
+	m_fPeakLeftValue = m_values[1];
+
+	return m_values;
 }
 /**********************************************************************************************************
 * Right Shoulder Functions
@@ -75,7 +81,13 @@ float FMF_RightShoulder::maxMembership()
 }
 std::vector<float> FMF_RightShoulder::settings(std::vector<float> a_values)
 {
-	return std::vector<float>();
+	// vector values
+	m_values = a_values;
+	// float values
+	m_fRightValue = m_values[0];
+	m_fPeakRightValue = m_values[1];
+
+	return m_values;
 }
 /**********************************************************************************************************
 * Triangular Functions
@@ -118,7 +130,14 @@ float FMF_Triangular::maxMembership()
 }
 std::vector<float> FMF_Triangular::settings(std::vector<float> a_values)
 {
-	return std::vector<float>();
+	// vector values
+	m_values = a_values;
+	// float values
+	m_fLeftValue = m_values[0];
+	m_fPeakValue = m_values[1];
+	m_fRightValue = m_values[2];
+
+	return m_values;
 }
 /**********************************************************************************************************
 * Trapazoid Functions
@@ -131,8 +150,8 @@ FMF_Trapazoid::FMF_Trapazoid(float a_minStartValue, float a_maxStartValue, float
 	m_fRightValue = a_minEndVlaue;
 	// values vector
 	m_values.push_back(a_minStartValue);
-	m_values.push_back(a_maxStartValue;
-	m_values.push_back(a_maxEndValue;
+	m_values.push_back(a_maxStartValue);
+	m_values.push_back(a_maxEndValue);
 	m_values.push_back(a_minEndVlaue);
 }
 FMF_Trapazoid::~FMF_Trapazoid()
@@ -164,7 +183,15 @@ float FMF_Trapazoid::maxMembership()
 
 std::vector<float> FMF_Trapazoid::settings(std::vector<float> a_values)
 {
-	return std::vector<float>();
+	// vector values
+	m_values = a_values;
+	// float values
+	m_fLeftValue = m_values[0];
+	m_fPeakLeftValue = m_values[1];
+	m_fPeakRightValue = m_values[2];
+	m_fRightValue = m_values[3];
+
+	return m_values;
 }
 
 FuzzyMemberFunction::~FuzzyMemberFunction()

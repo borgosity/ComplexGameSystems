@@ -15,7 +15,7 @@ public:
 			float a_followLowMin, float followLowMax, float a_followMediumMin, float a_followMediumMid, float followMediumMax, float a_followHighMin, float followHighMax);
 	virtual  ~Follow();
 
-	void update();
+	void update(Agent & a_agent);
 
 	// get fuzzy settings
 	std::vector<float> distance() { return m_distanceSettings; };
@@ -45,5 +45,7 @@ private:
 	std::vector<float> m_distanceSettings;
 	std::vector<float> m_healthSettings;
 	std::vector<float> m_followSettings;
+	// fill vectors function
+	void initVectors();
 };
 

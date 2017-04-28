@@ -1,4 +1,5 @@
 #include "Follow.h"
+#include "Agents.h"
 
 
 
@@ -56,6 +57,11 @@ Follow::Follow(float a_distanceMin, float distanceMax, float a_healthMin, float 
 	m_followLow = new FMF_LeftShoulder(followLowMin, followLowMax);
 	m_followMedium = new FMF_Triangular(followOkayMin, followOkayPeak, followOkayMax);
 	m_followHigh = new FMF_RightShoulder(followGoodMin, followGoodMax);
+
+	// fill settings vector
+	initVectors();
+	// set initial follow weight
+	traits.currWeight = 0;
 }
 
 Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax, 
@@ -74,6 +80,9 @@ Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanc
 	m_followLow = new FMF_LeftShoulder(a_followLowMin, followLowMax);
 	m_followMedium = new FMF_Triangular(a_followMediumMin, a_followMediumMid, followMediumMax);
 	m_followHigh = new FMF_RightShoulder(a_followHighMin, followHighMax);
+	
+	// fill settings vector
+	initVectors();
 }
 
 
@@ -82,22 +91,78 @@ Follow::~Follow()
 	destroy();
 }
 
-void Follow::update()
+void Follow::update(Agent & a_agent)
 {
+	float follow = 0;
+	// how far from target
+	float targetClose = m_distanceClose->membership(a_agent.vitals.currentDistance);
+	float targetNear = m_distanceMiddle->membership(a_agent.vitals.currentDistance);
+	float targetFar = m_distanceFar->membership(a_agent.vitals.currentDistance);
+	// how much health
+	float healthLow = m_healthLow->membership(a_agent.vitals.health);
+	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
+	float healthGood = m_healthGood->membership(a_agent.vitals.health);
+	// how followable is the target
+	float followLow = OR(AND(healthLow, targetNear), AND(healthLow, targetFar));
+	float followMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
+	float followHigh = OR(healthGood, OR(AND(healthLow, targetClose), AND(healthOkay, targetClose)));
+	// set max values
+	float maxFollowLow = m_followLow->maxMembership();
+	float maxFollowMid = m_followMedium->maxMembership();
+	float maxFollowHigh = m_followHigh->maxMembership();
+	// defuzzify
+	follow = maxFollowHigh * followHigh + maxFollowMid * followMid + maxFollowLow * followLow;
+	follow /= (0.1f + followHigh + followMid + followLow);
+	// set weight
+	traits.prevWeight = traits.currWeight;
+	traits.currWeight = follow;
 }
 
 std::vector<float> Follow::distance(std::vector<float> a_settings)
 {
+	// clear settings
+	m_distanceSettings.empty();
+	// set new settings
+	std::vector<float> dc = m_distanceClose->settings(a_settings);
+	std::vector<float> dm = m_distanceMiddle->settings(a_settings);
+	std::vector<float> df = m_distanceFar->settings(a_settings);
+	// save settings
+	m_distanceSettings.insert(m_distanceSettings.end(), dc.begin(), dc.end());
+	m_distanceSettings.insert(m_distanceSettings.end(), dm.begin(), dm.end());
+	m_distanceSettings.insert(m_distanceSettings.end(), df.begin(), df.end());
+
 	return m_distanceSettings;
 }
 
 std::vector<float> Follow::health(std::vector<float> a_settings)
 {
+	// clear settings
+	m_healthSettings.empty();
+	// set new settings
+	std::vector<float> hl = m_healthLow->settings(a_settings);
+	std::vector<float> ho = m_healthOkay->settings(a_settings);
+	std::vector<float> hg = m_healthGood->settings(a_settings);
+	// save settings
+	m_healthSettings.insert(m_healthSettings.end(), hl.begin(), hl.end());
+	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
+	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
+
 	return m_healthSettings;
 }
 
 std::vector<float> Follow::followable(std::vector<float> a_settings)
 {
+	// clear settings
+	m_followSettings.empty();
+	// set new settings
+	std::vector<float> fl = m_followLow->settings(a_settings);
+	std::vector<float> fm = m_followMedium->settings(a_settings);
+	std::vector<float> fh = m_followHigh->settings(a_settings);
+	// save settings
+	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
+	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
+	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
+
 	return m_followSettings;
 }
 
@@ -112,4 +177,38 @@ void Follow::destroy()
 	deallocate(m_followLow);
 	deallocate(m_followMedium);
 	deallocate(m_followHigh);
+}
+
+void Follow::initVectors()
+{
+	// clear settings
+	m_distanceSettings.empty();
+	// set new settings
+	std::vector<float> dc = m_distanceClose->settings();
+	std::vector<float> dm = m_distanceMiddle->settings();
+	std::vector<float> df = m_distanceFar->settings();
+	// save settings
+	m_distanceSettings.insert(m_distanceSettings.end(), dc.begin(), dc.end());
+	m_distanceSettings.insert(m_distanceSettings.end(), dm.begin(), dm.end());
+	m_distanceSettings.insert(m_distanceSettings.end(), df.begin(), df.end());
+	// clear settings
+	m_healthSettings.empty();
+	// set new settings
+	std::vector<float> hl = m_healthLow->settings();
+	std::vector<float> ho = m_healthOkay->settings();
+	std::vector<float> hg = m_healthGood->settings();
+	// save settings
+	m_healthSettings.insert(m_healthSettings.end(), hl.begin(), hl.end());
+	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
+	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
+	// clear settings
+	m_followSettings.empty();
+	// set new settings
+	std::vector<float> fl = m_followLow->settings();
+	std::vector<float> fm = m_followMedium->settings();
+	std::vector<float> fh = m_followHigh->settings();
+	// save settings
+	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
+	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
+	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
 }

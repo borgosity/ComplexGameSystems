@@ -4,5 +4,7 @@ class Decisions
 public:
 	Decisions();
 	~Decisions();
+private:
+
 };
 

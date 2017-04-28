@@ -18,6 +18,7 @@ public:
 	virtual ~FuzzyMemberFunction();
 
 protected:
+	// member function values stored in left to right membership graph order
 	std::vector<float> m_values;
 	// membership functions
 	float virtual membership(float a_value) = 0;

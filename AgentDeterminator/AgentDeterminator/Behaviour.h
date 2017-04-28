@@ -1,20 +1,29 @@
 #pragma once
 #include <string>
 
+class Agent;
+
+struct BehaviourTraits
+{
+	std::string name;
+	float priority;
+	float currWeight;
+	float prevWeight;
+};
+
+
 class Behaviour
 {
 public:
 	Behaviour();
 	virtual ~Behaviour();
 
-	void virtual update() = 0;
+	void virtual update(Agent & a_agent) = 0;
 	void virtual destroy() = 0;
 
-protected:
-	std::string m_sName;
+	BehaviourTraits traits;
 
-	float m_fCurrentValue;
-	float m_fPrevValue;
+protected:
 
 	float AND(float a_left, float a_right);
 	float OR(float a_left, float a_right);

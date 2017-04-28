@@ -183,16 +183,19 @@ float Agent::checkSleepDesirable()
 	float active = Complex_FuzzyLogicApp::m_fuzzyEngine.superActive->getMembership(tiredness);
 	//are we very hungry?
 	float awake  = Complex_FuzzyLogicApp::m_fuzzyEngine.awake->getMembership(tiredness);
+
 	//how close are we to food...
 	float caveClose = Complex_FuzzyLogicApp::m_fuzzyEngine.veryNear->getMembership(caveRange);
 	float caveMedium = Complex_FuzzyLogicApp::m_fuzzyEngine.mediumRange->getMembership(caveRange);
 	float caveFar = Complex_FuzzyLogicApp::m_fuzzyEngine.farAway->getMembership(caveRange);
+
 	//is this a very desirable action?
 	float veryDesirableValue = Fuzzy::OR(Fuzzy::AND(caveClose,awake),tired);
 	//is it a desirable action?
 	float desirableValue = Fuzzy::AND(Fuzzy::NOT(caveFar),tired);
 	//is in undesirable?  In this case if we are full it's undesirable
 	float undesirableValue = active;
+
 	//set up our maximum values readt to defuzzify
 	float maxVeryDesirable = Complex_FuzzyLogicApp::m_fuzzyEngine.veryDesirable->getMaxMembership();
 	float maxDesirable = Complex_FuzzyLogicApp::m_fuzzyEngine.desirable->getMaxMembership();
@@ -218,10 +221,12 @@ float Agent::checkDrinkingDesirable()
 	//are we very hungry?
 	float veryThirsty = Complex_FuzzyLogicApp::m_fuzzyEngine.veryThirsty->getMembership(water);
 	float weekFromThirst = Complex_FuzzyLogicApp::m_fuzzyEngine.WeekFromThirsty->getMembership(water);
+
 	//how close are we to food...
 	float waterRangeClose = Complex_FuzzyLogicApp::m_fuzzyEngine.veryNear->getMembership(waterRange);
 	float waterRangeMedium = Complex_FuzzyLogicApp::m_fuzzyEngine.mediumRange->getMembership(waterRange);
 	float waterRangeFar = Complex_FuzzyLogicApp::m_fuzzyEngine.farAway->getMembership(waterRange);
+
 	//is this a very desirable action?
 	float veryDesirableValue = Fuzzy::OR(Fuzzy::AND(waterRangeClose,thirsty),veryThirsty);
 	veryDesirableValue= Fuzzy::OR(veryDesirableValue,weekFromThirst);
@@ -233,6 +238,8 @@ float Agent::checkDrinkingDesirable()
 	float maxVeryDesirable = Complex_FuzzyLogicApp::m_fuzzyEngine.veryDesirable->getMaxMembership();
 	float maxDesirable = Complex_FuzzyLogicApp::m_fuzzyEngine.desirable->getMaxMembership();
 	float maxUndesirable = Complex_FuzzyLogicApp::m_fuzzyEngine.undesirable->getMaxMembership();
+
+
 	//defuzzify
 	desire = maxVeryDesirable*veryDesirableValue + maxDesirable* desirableValue + maxUndesirable*undesirableValue;
 	desire /= (.1f + veryDesirableValue + desirableValue + undesirableValue);

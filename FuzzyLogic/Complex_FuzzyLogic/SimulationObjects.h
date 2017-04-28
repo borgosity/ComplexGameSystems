@@ -69,14 +69,18 @@ public:
 class Agent : public BaseAgent
 {
 public:
+	Agent(glm::vec2 position);
+	
 	float maxSpeed;
+	
 	virtual void update(float delta);
 	virtual void draw(aie::Renderer2D* spriteBatch);
 	void drawBar(aie::Renderer2D* spriteBatch, float value,int index);
-	Agent(glm::vec2 position);
+	
 	float checkEatingDesirable();
 	float checkSleepDesirable();
 	float checkDrinkingDesirable();
+	
 	glm::vec2 gotoFood(float desirability,float delta);
 	glm::vec2 gotoCave(float desirability,float delta);
 	glm::vec2 gotoWater(float desirability,float delta);

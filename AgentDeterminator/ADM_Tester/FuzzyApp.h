@@ -1,5 +1,6 @@
 #pragma once
 #include "Application.h"
+#include "Agents.h"
 
 
 class FuzzyApp : public aie::Application
@@ -15,7 +16,7 @@ public:
 	virtual void draw();
 
 private:
-
+	CompanionAgent * m_buddyAgent = nullptr;
 
 };
 
