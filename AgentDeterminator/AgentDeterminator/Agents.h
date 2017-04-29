@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Follow.h"
 #include "Evade.h"
+#include "Attack.h"
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -68,5 +69,6 @@ public:
 private:
 	Follow	* m_followBehaviour = nullptr;
 	Evade	* m_evadeBehaviour = nullptr;
+	Attack	* m_attackBehaviour = nullptr;
 };
 

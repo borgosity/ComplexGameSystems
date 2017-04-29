@@ -73,9 +73,11 @@ CompanionAgent::CompanionAgent(std::string a_name = "Companion Agent", glm::vec3
 	// setup behaviour
 	m_followBehaviour = new Follow(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
 	m_evadeBehaviour = new Evade(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
+	m_attackBehaviour = new Attack(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
 	// set beahvbiour priorities
 	m_evadeBehaviour->traits.priority = 1;	// self preservation
 	m_followBehaviour->traits.priority = 2;	// stay with friends
+	m_attackBehaviour->traits.priority = 3; // attack when nessacary 
 }
 
 CompanionAgent::~CompanionAgent()
@@ -86,9 +88,10 @@ CompanionAgent::~CompanionAgent()
 void CompanionAgent::update(float deltaTime)
 {
 	// check decision
+	// if health or distance has changed reevaluate
 	m_followBehaviour->update(*this);
 	m_evadeBehaviour->update(*this);
-
+	m_attackBehaviour->update(*this);
 
 	if ( m_followBehaviour->traits.currWeight > 0) {
 		std::cout << "Follow behaviour = " << m_followBehaviour->traits.currWeight << std::endl;
@@ -102,6 +105,13 @@ void CompanionAgent::update(float deltaTime)
 	}
 	else {
 		std::cout << "Evade behaviour = 0 " << std::endl;
+	}
+
+	if (m_attackBehaviour->traits.currWeight > 0) {
+		std::cout << "Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
+	}
+	else {
+		std::cout << "Attack behaviour = 0 " << std::endl;
 	}
 
 	// waver the distance
