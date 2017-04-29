@@ -1,13 +1,13 @@
-#include "Follow.h"
+#include "Evade.h"
 #include "Agents.h"
 
 
 
-Follow::Follow()
+Evade::Evade()
 {
 }
 
-Follow::Follow(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_followMin, float a_followMax)
+Evade::Evade(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_evadeMin, float a_evadeMax)
 {
 	// ------------------ distance ------------------------------------------
 	// left variables
@@ -42,31 +42,31 @@ Follow::Follow(float a_distanceMin, float distanceMax, float a_healthMin, float 
 	m_healthGood = new FMF_RightShoulder(healthGoodMin, healthGoodMax);
 
 
-	// ------------------ followable ------------------------------------------
+	// ------------------ evadeable ------------------------------------------
 	// left variables
-	float followLowMin = a_followMin;
-	float followLowMax = (a_followMax - a_followMin) / 3;
+	float evadeLowMin = a_evadeMin;
+	float evadeLowMax = (a_evadeMax - a_evadeMin) / 3;
 	// triangular variables
-	float followOkayMin = (followLowMax - followLowMin) / 3;
-	float followOkayPeak = a_followMax  * 0.5f;
-	float followOkayMax = followOkayPeak + followOkayMin;
+	float evadeOkayMin = (evadeLowMax - evadeLowMin) / 3;
+	float evadeOkayPeak = a_evadeMax  * 0.5f;
+	float evadeOkayMax = evadeOkayPeak + evadeOkayMin;
 	// right variables
-	float followGoodMin = (followOkayMax - followOkayMin) / 3;
-	float followGoodMax = a_followMax;
+	float evadeGoodMin = (evadeOkayMax - evadeOkayMin) / 3;
+	float evadeGoodMax = a_evadeMax;
 	// membership function objects
-	m_followLow = new FMF_LeftShoulder(followLowMin, followLowMax);
-	m_followMedium = new FMF_Triangular(followOkayMin, followOkayPeak, followOkayMax);
-	m_followHigh = new FMF_RightShoulder(followGoodMin, followGoodMax);
+	m_evadeLow = new FMF_LeftShoulder(evadeLowMin, evadeLowMax);
+	m_evadeMedium = new FMF_Triangular(evadeOkayMin, evadeOkayPeak, evadeOkayMax);
+	m_evadeHigh = new FMF_RightShoulder(evadeGoodMin, evadeGoodMax);
 
 	// fill settings vector
 	initVectors();
-	// set initial follow weight
+	// set initial evade weight
 	traits.currWeight = 0;
 }
 
-Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax, 
-				float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax, 
-				float a_followLowMin, float followLowMax, float a_followMediumMin, float a_followMediumMid, float followMediumMax, float a_followHighMin, float followHighMax)
+Evade::Evade(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
+	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
+	float a_evadeLowMin, float evadeLowMax, float a_evadeMediumMin, float a_evadeMediumMid, float evadeMediumMax, float a_evadeHighMin, float evadeHighMax)
 {
 	// distance
 	m_distanceClose = new FMF_LeftShoulder(a_distanceCloseMin, distanceCloseMax);
@@ -76,24 +76,24 @@ Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanc
 	m_healthLow = new FMF_LeftShoulder(a_healthLowMin, healthLowMax);
 	m_healthOkay = new FMF_Triangular(a_healthOkayMin, a_healthOkayMid, healthOkayMax);
 	m_healthGood = new FMF_RightShoulder(a_healthGoodMin, healthGoodMax);
-	// followable
-	m_followLow = new FMF_LeftShoulder(a_followLowMin, followLowMax);
-	m_followMedium = new FMF_Triangular(a_followMediumMin, a_followMediumMid, followMediumMax);
-	m_followHigh = new FMF_RightShoulder(a_followHighMin, followHighMax);
-	
+	// evadeable
+	m_evadeLow = new FMF_LeftShoulder(a_evadeLowMin, evadeLowMax);
+	m_evadeMedium = new FMF_Triangular(a_evadeMediumMin, a_evadeMediumMid, evadeMediumMax);
+	m_evadeHigh = new FMF_RightShoulder(a_evadeHighMin, evadeHighMax);
+
 	// fill settings vector
 	initVectors();
 }
 
 
-Follow::~Follow()
+Evade::~Evade()
 {
 	destroy();
 }
 
-void Follow::update(Agent & a_agent)
+void Evade::update(Agent & a_agent)
 {
-	float follow = 0;
+	float evade = 0;
 	// how far from target
 	float targetClose = m_distanceClose->membership(a_agent.vitals.currentDistance);
 	float targetNear = m_distanceMiddle->membership(a_agent.vitals.currentDistance);
@@ -102,23 +102,26 @@ void Follow::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
-	// how followable is the target
-	float followLow = OR(AND(healthLow, targetNear), AND(healthLow, targetFar));
-	float followMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float followHigh = OR(healthGood, OR(AND(healthLow, targetClose), AND(healthOkay, targetClose)));
+	// how evadeable is the target
+	float evadeLow = OR(AND(healthOkay, targetFar),
+						OR(AND(healthGood, targetNear), AND(healthGood, targetFar)));
+	float evadeMid = OR(AND(healthLow, targetFar), 
+						OR(AND(healthOkay, targetNear), AND(healthGood, targetClose)));
+	float evadeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
+						 AND(healthOkay, targetClose));
 	// set max values
-	float maxFollowLow = m_followLow->maxMembership();
-	float maxFollowMid = m_followMedium->maxMembership();
-	float maxFollowHigh = m_followHigh->maxMembership();
+	float maxEvadeLow = m_evadeLow->maxMembership();
+	float maxEvadeMid = m_evadeMedium->maxMembership();
+	float maxEvadeHigh = m_evadeHigh->maxMembership();
 	// defuzzify
-	follow = maxFollowHigh * followHigh + maxFollowMid * followMid + maxFollowLow * followLow;
-	follow /= (0.1f + followHigh + followMid + followLow);
+	evade = maxEvadeHigh * evadeHigh + maxEvadeMid * evadeMid + maxEvadeLow * evadeLow;
+	evade /= (0.1f + evadeHigh + evadeMid + evadeLow);
 	// set weight
 	traits.prevWeight = traits.currWeight;
-	traits.currWeight = follow;
+	traits.currWeight = evade;
 }
 
-std::vector<float> Follow::distance(std::vector<float> a_settings)
+std::vector<float> Evade::distance(std::vector<float> a_settings)
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -134,7 +137,7 @@ std::vector<float> Follow::distance(std::vector<float> a_settings)
 	return m_distanceSettings;
 }
 
-std::vector<float> Follow::health(std::vector<float> a_settings)
+std::vector<float> Evade::health(std::vector<float> a_settings)
 {
 	// clear settings
 	m_healthSettings.empty();
@@ -150,23 +153,23 @@ std::vector<float> Follow::health(std::vector<float> a_settings)
 	return m_healthSettings;
 }
 
-std::vector<float> Follow::followable(std::vector<float> a_settings)
+std::vector<float> Evade::evadeable(std::vector<float> a_settings)
 {
 	// clear settings
-	m_followSettings.empty();
+	m_evadeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_followLow->settings(a_settings);
-	std::vector<float> fm = m_followMedium->settings(a_settings);
-	std::vector<float> fh = m_followHigh->settings(a_settings);
+	std::vector<float> fl = m_evadeLow->settings(a_settings);
+	std::vector<float> fm = m_evadeMedium->settings(a_settings);
+	std::vector<float> fh = m_evadeHigh->settings(a_settings);
 	// save settings
-	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
-	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
-	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
 
-	return m_followSettings;
+	return m_evadeSettings;
 }
 
-void Follow::destroy()
+void Evade::destroy()
 {
 	deallocate(m_distanceClose);
 	deallocate(m_distanceMiddle);
@@ -174,12 +177,12 @@ void Follow::destroy()
 	deallocate(m_healthLow);
 	deallocate(m_healthOkay);
 	deallocate(m_healthGood);
-	deallocate(m_followLow);
-	deallocate(m_followMedium);
-	deallocate(m_followHigh);
+	deallocate(m_evadeLow);
+	deallocate(m_evadeMedium);
+	deallocate(m_evadeHigh);
 }
 
-void Follow::initVectors()
+void Evade::initVectors()
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -202,13 +205,13 @@ void Follow::initVectors()
 	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
 	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
 	// clear settings
-	m_followSettings.empty();
+	m_evadeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_followLow->settings();
-	std::vector<float> fm = m_followMedium->settings();
-	std::vector<float> fh = m_followHigh->settings();
+	std::vector<float> fl = m_evadeLow->settings();
+	std::vector<float> fm = m_evadeMedium->settings();
+	std::vector<float> fh = m_evadeHigh->settings();
 	// save settings
-	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
-	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
-	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
+	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
 }

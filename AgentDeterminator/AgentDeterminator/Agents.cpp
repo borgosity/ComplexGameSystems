@@ -72,6 +72,10 @@ CompanionAgent::CompanionAgent(std::string a_name = "Companion Agent", glm::vec3
 	vitals.currentDistance = 0.0f;
 	// setup behaviour
 	m_followBehaviour = new Follow(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
+	m_evadeBehaviour = new Evade(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
+	// set beahvbiour priorities
+	m_evadeBehaviour->traits.priority = 1;	// self preservation
+	m_followBehaviour->traits.priority = 2;	// stay with friends
 }
 
 CompanionAgent::~CompanionAgent()
@@ -83,6 +87,7 @@ void CompanionAgent::update(float deltaTime)
 {
 	// check decision
 	m_followBehaviour->update(*this);
+	m_evadeBehaviour->update(*this);
 
 
 	if ( m_followBehaviour->traits.currWeight > 0) {
@@ -92,20 +97,27 @@ void CompanionAgent::update(float deltaTime)
 		std::cout << "Follow behaviour = 0 " << std::endl;
 	}
 
-	// waver the distance
-	// reduce agent health over time
-	if (vitals.currentDistance < 50) {
-		vitals.currentDistance += deltaTime;
+	if (m_evadeBehaviour->traits.currWeight > 0) {
+		std::cout << "Evade behaviour = " << m_evadeBehaviour->traits.currWeight << std::endl;
 	}
-	else if (vitals.currentDistance > 0) {
-		vitals.currentDistance -= deltaTime;
+	else {
+		std::cout << "Evade behaviour = 0 " << std::endl;
 	}
 
+	// waver the distance
 	// reduce agent health over time
-	//if (vitals.health > 0) {
-	//	vitals.health -= deltaTime;
+	//if (vitals.currentDistance < 50) {
+	//	vitals.currentDistance += deltaTime;
 	//}
-	//else {
-	//	vitals.health = 0;
+	//else if (vitals.currentDistance > 0) {
+	//	vitals.currentDistance -= deltaTime;
 	//}
+
+	// reduce agent health over time
+	if (vitals.health > 0) {
+		vitals.health -= deltaTime;
+	}
+	else {
+		vitals.health = 0;
+	}
 }

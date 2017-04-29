@@ -3,6 +3,7 @@
 #include <iostream>
 #include "GameObject.h"
 #include "Follow.h"
+#include "Evade.h"
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -65,6 +66,7 @@ public:
 	virtual void update(float deltaTime);
 
 private:
-	Follow * m_followBehaviour = nullptr;
+	Follow	* m_followBehaviour = nullptr;
+	Evade	* m_evadeBehaviour = nullptr;
 };
 

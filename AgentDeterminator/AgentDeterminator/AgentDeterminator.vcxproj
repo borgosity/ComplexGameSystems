@@ -70,12 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
-    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
-    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
+    <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)dependencies\$(ProjectName)\$(Configuration)\</OutDir>
@@ -152,6 +152,7 @@
     <ClInclude Include="Agents.h" />
     <ClInclude Include="Behaviour.h" />
     <ClInclude Include="Decisions.h" />
+    <ClInclude Include="Evade.h" />
     <ClInclude Include="Follow.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Agents.cpp" />
     <ClCompile Include="Behaviour.cpp" />
     <ClCompile Include="Decisions.cpp" />
+    <ClCompile Include="Evade.cpp" />
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
