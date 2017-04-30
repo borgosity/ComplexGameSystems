@@ -16,7 +16,7 @@ public:
 	virtual void draw();
 
 private:
-	CompanionAgent * m_buddyAgent = nullptr;
-
+	CompanionAgent	* m_buddyAgent = nullptr;
+	EnemyAgent		* m_enemyAgent = nullptr;
 };
 

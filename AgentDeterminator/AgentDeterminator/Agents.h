@@ -5,6 +5,9 @@
 #include "CompanionFollow.h"
 #include "CompanionEvade.h"
 #include "CompanionAttack.h"
+#include "EnemySeek.h"
+#include "EnemyFlee.h"
+#include "EnemyAttack.h"
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -54,6 +57,11 @@ public:
 	virtual ~EnemyAgent();
 
 	virtual void update(float deltaTime);
+
+private:
+	EnemySeek	* m_seekBehaviour = nullptr;
+	EnemyFlee	* m_fleeBehaviour = nullptr;
+	EnemyAttack	* m_attackBehaviour = nullptr;
 };
 /******************************************************************************************************************************
 * Companion Agent
