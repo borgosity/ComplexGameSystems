@@ -93,20 +93,29 @@ PlayerAttack::~PlayerAttack()
 void PlayerAttack::update(Agent & a_agent)
 {
 	float attack = 0;
-	// how far from target
+	// update member sets
 	m_distanceMS->update(a_agent);
+	m_healthMS->update(a_agent);
+	m_attackMS->update(a_agent);
+	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
 	float targetFar = m_distanceMS->doms.rightShoulder;
 	// how much health
-	m_healthMS->update(a_agent);
 	float healthLow = m_healthMS->doms.leftShoulder;
 	float healthOkay = m_healthMS->doms.triangular;
 	float healthGood = m_healthMS->doms.rightShoulder;
+
 	// how attackable is the target
-	float attackLow = healthLow;
-	float attackMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float attackHigh = OR(healthGood, AND(healthOkay, targetClose));
+	float attackLow = OR( healthLow, 
+						OR(
+							OR (AND(healthOkay,targetNear), AND(healthOkay, targetFar)),
+							OR(AND(healthGood, targetNear), AND(healthGood, targetFar))
+						)
+					);
+	float attackMid = 0;
+	float attackHigh = OR(AND(healthGood, targetClose), AND(healthOkay, targetClose));
+
 	// set max values
 	float maxAttackLow = m_attackMS->maxDom.leftShoulder;
 	float maxAttackMid = m_attackMS->maxDom.triangular;

@@ -93,20 +93,26 @@ PlayerWander::~PlayerWander()
 void PlayerWander::update(Agent & a_agent)
 {
 	float wander = 0;
-	// how far from target
+	// update member sets
 	m_distanceMS->update(a_agent);
+	m_healthMS->update(a_agent);
+	m_wanderMS->update(a_agent);
+	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
 	float targetFar = m_distanceMS->doms.rightShoulder;
 	// how much health
-	m_healthMS->update(a_agent);
 	float healthLow = m_healthMS->doms.leftShoulder;
 	float healthOkay = m_healthMS->doms.triangular;
 	float healthGood = m_healthMS->doms.rightShoulder;
+	
 	// how wanderable is the target
-	float wanderLow = healthLow;
-	float wanderMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float wanderHigh = OR(healthGood, AND(healthOkay, targetClose));
+	float wanderLow = AND(healthLow, targetClose);
+	float wanderMid = OR(AND(healthLow, NOT(targetClose)),
+						 OR(AND(healthOkay, targetClose), AND(healthGood, targetClose))
+					);
+	float wanderHigh = AND(NOT(healthLow),NOT(targetClose));
+
 	// set max values
 	float maxWanderLow = m_wanderMS->maxDom.leftShoulder;
 	float maxWanderMid = m_wanderMS->maxDom.triangular;

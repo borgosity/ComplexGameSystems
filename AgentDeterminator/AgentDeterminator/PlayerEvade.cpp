@@ -93,20 +93,28 @@ PlayerEvade::~PlayerEvade()
 void PlayerEvade::update(Agent & a_agent)
 {
 	float evade = 0;
-	// how far from target
+	// update member sets
 	m_distanceMS->update(a_agent);
+	m_healthMS->update(a_agent);
+	m_evadeMS->update(a_agent);
+	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
 	float targetFar = m_distanceMS->doms.rightShoulder;
 	// how much health
-	m_healthMS->update(a_agent);
 	float healthLow = m_healthMS->doms.leftShoulder;
 	float healthOkay = m_healthMS->doms.triangular;
 	float healthGood = m_healthMS->doms.rightShoulder;
+
 	// how evadeable is the target
-	float evadeLow = healthLow;
-	float evadeMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float evadeHigh = OR(healthGood, AND(healthOkay, targetClose));
+	float evadeLow = OR(AND(healthOkay,targetFar),AND(healthGood,NOT(targetClose)));
+	float evadeMid = OR(AND(healthLow, targetFar),
+						OR(AND(healthOkay, targetNear), AND(healthGood, targetClose))
+					);
+	float evadeHigh = OR(AND(healthLow, targetClose), 
+						OR(AND(healthLow, targetNear), AND(healthOkay, targetClose))
+					);
+
 	// set max values
 	float maxEvadeLow = m_evadeMS->maxDom.leftShoulder;
 	float maxEvadeMid = m_evadeMS->maxDom.triangular;

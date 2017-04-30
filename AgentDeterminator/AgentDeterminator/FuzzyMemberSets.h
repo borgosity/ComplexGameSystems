@@ -1,6 +1,8 @@
 #pragma once
 #include "FuzzyMemberTypes.h"
-#include "Agents.h"
+
+
+class Agent;
 
 struct DegreeOfMembership
 {

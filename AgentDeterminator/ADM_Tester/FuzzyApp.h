@@ -18,5 +18,6 @@ public:
 private:
 	CompanionAgent	* m_buddyAgent = nullptr;
 	EnemyAgent		* m_enemyAgent = nullptr;
+	PlayerAgent		* m_playerAgent = nullptr;
 };
 

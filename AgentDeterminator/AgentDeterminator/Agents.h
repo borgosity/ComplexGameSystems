@@ -8,6 +8,9 @@
 #include "EnemySeek.h"
 #include "EnemyFlee.h"
 #include "EnemyAttack.h"
+#include "PlayerWander.h"
+#include "PlayerEvade.h"
+#include "PlayerAttack.h"
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -46,7 +49,10 @@ public:
 	virtual ~PlayerAgent();
 
 	virtual void update(float deltaTime);
-
+private:
+	PlayerWander * m_wanderBehaviour = nullptr;
+	PlayerEvade * m_evadeBehaviour = nullptr;
+	PlayerAttack * m_attackBehaviour = nullptr;
 };
 /******************************************************************************************************************************
 * Enemy Agent

@@ -1,5 +1,5 @@
 #include "FuzzYMemberSets.h"
-
+#include "Agents.h"
 
 
 LeftShoulderTriangularRightShoulder::LeftShoulderTriangularRightShoulder(float a_leftShoulderMin, float a_leftShoulderMax, float triangularMin, float triangularPeak, float triangularMax, float a_rightShoulderMin, float a_rightShoulderMax)
