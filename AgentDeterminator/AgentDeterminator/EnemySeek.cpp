@@ -41,7 +41,6 @@ EnemySeek::EnemySeek(float a_distanceMin, float distanceMax, float a_healthMin, 
 	m_healthOkay = new FMF_Triangular(healthOkayMin, healthOkayPeak, healthOkayMax);
 	m_healthGood = new FMF_RightShoulder(healthGoodMin, healthGoodMax);
 
-
 	// ------------------ seekable ------------------------------------------
 	// left variables
 	float seekLowMin = a_seekMin;
@@ -102,10 +101,16 @@ void EnemySeek::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
+
 	// how seekable is the target
 	float seekLow = OR(AND(healthLow, targetNear), AND(healthLow, targetFar));
-	float seekMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float seekHigh = OR(healthGood, OR(AND(healthLow, targetClose), AND(healthOkay, targetClose)));
+	float seekMid = OR(AND(healthLow, targetClose), 
+						OR(AND(healthOkay, targetNear), 
+							AND(healthOkay, targetFar)
+						)
+					);
+	float seekHigh = OR(healthGood, AND(healthGood, targetClose));
+
 	// set max values
 	float maxSeekLow = m_seekLow->maxMembership();
 	float maxSeekMid = m_seekMedium->maxMembership();

@@ -2,9 +2,9 @@
 #include <vector>
 #include <iostream>
 #include "GameObject.h"
-#include "Follow.h"
-#include "Evade.h"
-#include "Attack.h"
+#include "CompanionFollow.h"
+#include "CompanionEvade.h"
+#include "CompanionAttack.h"
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -67,8 +67,8 @@ public:
 	virtual void update(float deltaTime);
 
 private:
-	Follow	* m_followBehaviour = nullptr;
-	Evade	* m_evadeBehaviour = nullptr;
-	Attack	* m_attackBehaviour = nullptr;
+	CompanionFollow	* m_followBehaviour = nullptr;
+	CompanionEvade	* m_evadeBehaviour = nullptr;
+	CompanionAttack	* m_attackBehaviour = nullptr;
 };
 

@@ -57,6 +57,9 @@
     <ClInclude Include="EnemySeek.h">
       <Filter>Header Files\behaviours</Filter>
     </ClInclude>
+    <ClInclude Include="FuzzyMemberSets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="EnemySeek.cpp">
       <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="FuzzyMemberSets.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

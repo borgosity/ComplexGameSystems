@@ -102,13 +102,12 @@ void EnemyFlee::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
+
 	// how fleeable is the target
-	float fleeLow = OR(AND(healthOkay, targetFar),
-						OR(AND(healthGood, targetNear), AND(healthGood, targetFar)));
-	float fleeMid = OR(AND(healthLow, targetFar), 
-						OR(AND(healthOkay, targetNear), AND(healthGood, targetClose)));
-	float fleeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
-						 AND(healthOkay, targetClose));
+	float fleeLow = OR(healthOkay, healthGood);
+	float fleeMid = AND(healthLow, targetNear);
+	float fleeHigh = AND(healthLow, targetClose);
+	
 	// set max values
 	float maxFleeLow = m_fleeLow->maxMembership();
 	float maxFleeMid = m_fleeMedium->maxMembership();

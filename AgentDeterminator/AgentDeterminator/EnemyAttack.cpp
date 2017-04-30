@@ -102,10 +102,14 @@ void EnemyAttack::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
+
 	// how attackable is the target
-	float attackLow = healthLow;
-	float attackMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float attackHigh = OR(healthGood, AND(healthOkay, targetClose));
+	float attackLow = AND(healthLow, targetFar);
+	float attackMid = OR(AND(healthLow, targetNear), AND(healthOkay, targetFar));
+	float attackHigh = OR( targetClose,
+							OR(AND(healthOkay, targetNear), healthGood)
+						);
+	
 	// set max values
 	float maxAttackLow = m_attackLow->maxMembership();
 	float maxAttackMid = m_attackMedium->maxMembership();

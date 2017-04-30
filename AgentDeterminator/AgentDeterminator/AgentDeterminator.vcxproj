@@ -158,6 +158,7 @@
     <ClInclude Include="EnemyAttack.h" />
     <ClInclude Include="EnemyFlee.h" />
     <ClInclude Include="EnemySeek.h" />
+    <ClInclude Include="FuzzyMemberSets.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="EnemyAttack.cpp" />
     <ClCompile Include="EnemyFlee.cpp" />
     <ClCompile Include="EnemySeek.cpp" />
+    <ClCompile Include="FuzzyMemberSets.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
   </ItemGroup>
