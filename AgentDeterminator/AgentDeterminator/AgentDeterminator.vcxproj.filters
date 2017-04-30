@@ -60,6 +60,15 @@
     <ClInclude Include="FuzzyMemberSets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerAttack.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerEvade.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerWander.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -97,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="FuzzyMemberSets.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttack.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerEvade.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerWander.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

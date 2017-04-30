@@ -161,6 +161,9 @@
     <ClInclude Include="FuzzyMemberSets.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="PlayerAttack.h" />
+    <ClInclude Include="PlayerEvade.h" />
+    <ClInclude Include="PlayerWander.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Agents.cpp" />
@@ -175,6 +178,9 @@
     <ClCompile Include="FuzzyMemberSets.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="PlayerAttack.cpp" />
+    <ClCompile Include="PlayerEvade.cpp" />
+    <ClCompile Include="PlayerWander.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

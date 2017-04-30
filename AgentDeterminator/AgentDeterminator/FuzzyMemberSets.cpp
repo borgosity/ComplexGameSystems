@@ -25,9 +25,14 @@ LeftShoulderTriangularRightShoulder::~LeftShoulderTriangularRightShoulder()
 
 void LeftShoulderTriangularRightShoulder::update(Agent & a_agent)
 {
+	// degrees of membership
 	doms.leftShoulder = m_leftShoulder->membership(a_agent.vitals.currentDistance);
 	doms.triangular = m_triangular->membership(a_agent.vitals.currentDistance);
 	doms.rightShoulder = m_rightShoulder->membership(a_agent.vitals.currentDistance);
+	// max membership
+	maxDom.leftShoulder = m_leftShoulder->maxMembership();
+	maxDom.triangular = m_triangular->maxMembership();
+	maxDom.rightShoulder = m_rightShoulder->maxMembership();
 }
 
 /// Updates Values of the Membership Functions

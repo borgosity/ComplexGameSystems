@@ -2,7 +2,7 @@
 #include "FuzzyMemberTypes.h"
 #include "Agents.h"
 
-struct DegreeOfMemebership
+struct DegreeOfMembership
 {
 	float leftShoulder;
 	float rightShoulder;
@@ -10,6 +10,13 @@ struct DegreeOfMemebership
 	float trapezoid;
 };
 
+struct MaxMembership
+{
+	float leftShoulder;
+	float rightShoulder;
+	float triangular;
+	float trapezoid;
+};
 
 class LeftShoulderTriangularRightShoulder
 {
@@ -20,7 +27,8 @@ public:
 	virtual ~LeftShoulderTriangularRightShoulder();
 
 	void update(Agent & a_agent);
-	DegreeOfMemebership doms;
+	DegreeOfMembership doms;
+	MaxMembership maxDom;
 
 	// get fuzzy settings
 	std::vector<float> settings() { return m_fvSettings; };
