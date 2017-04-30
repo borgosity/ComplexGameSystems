@@ -1,13 +1,13 @@
-#include "Evade.h"
+#include "EnemyFlee.h"
 #include "Agents.h"
 
 
 
-Evade::Evade()
+EnemyFlee::EnemyFlee()
 {
 }
 
-Evade::Evade(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_evadeMin, float a_evadeMax)
+EnemyFlee::EnemyFlee(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_fleeMin, float a_fleeMax)
 {
 	// ------------------ distance ------------------------------------------
 	// left variables
@@ -42,31 +42,31 @@ Evade::Evade(float a_distanceMin, float distanceMax, float a_healthMin, float a_
 	m_healthGood = new FMF_RightShoulder(healthGoodMin, healthGoodMax);
 
 
-	// ------------------ evadeable ------------------------------------------
+	// ------------------ fleeable ------------------------------------------
 	// left variables
-	float evadeLowMin = a_evadeMin;
-	float evadeLowMax = (a_evadeMax - a_evadeMin) / 3;
+	float fleeLowMin = a_fleeMin;
+	float fleeLowMax = (a_fleeMax - a_fleeMin) / 3;
 	// triangular variables
-	float evadeOkayMin = (evadeLowMax - evadeLowMin) / 3;
-	float evadeOkayPeak = a_evadeMax  * 0.5f;
-	float evadeOkayMax = evadeOkayPeak + evadeOkayMin;
+	float fleeOkayMin = (fleeLowMax - fleeLowMin) / 3;
+	float fleeOkayPeak = a_fleeMax  * 0.5f;
+	float fleeOkayMax = fleeOkayPeak + fleeOkayMin;
 	// right variables
-	float evadeGoodMin = (evadeOkayMax - evadeOkayMin) / 3;
-	float evadeGoodMax = a_evadeMax;
+	float fleeGoodMin = (fleeOkayMax - fleeOkayMin) / 3;
+	float fleeGoodMax = a_fleeMax;
 	// membership function objects
-	m_evadeLow = new FMF_LeftShoulder(evadeLowMin, evadeLowMax);
-	m_evadeMedium = new FMF_Triangular(evadeOkayMin, evadeOkayPeak, evadeOkayMax);
-	m_evadeHigh = new FMF_RightShoulder(evadeGoodMin, evadeGoodMax);
+	m_fleeLow = new FMF_LeftShoulder(fleeLowMin, fleeLowMax);
+	m_fleeMedium = new FMF_Triangular(fleeOkayMin, fleeOkayPeak, fleeOkayMax);
+	m_fleeHigh = new FMF_RightShoulder(fleeGoodMin, fleeGoodMax);
 
 	// fill settings vector
 	initVectors();
-	// set initial evade weight
+	// set initial flee weight
 	traits.currWeight = 0;
 }
 
-Evade::Evade(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
+EnemyFlee::EnemyFlee(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
 	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
-	float a_evadeLowMin, float evadeLowMax, float a_evadeMediumMin, float a_evadeMediumMid, float evadeMediumMax, float a_evadeHighMin, float evadeHighMax)
+	float a_fleeLowMin, float fleeLowMax, float a_fleeMediumMin, float a_fleeMediumMid, float fleeMediumMax, float a_fleeHighMin, float fleeHighMax)
 {
 	// distance
 	m_distanceClose = new FMF_LeftShoulder(a_distanceCloseMin, distanceCloseMax);
@@ -76,24 +76,24 @@ Evade::Evade(float a_distanceCloseMin, float distanceCloseMax, float a_distanceM
 	m_healthLow = new FMF_LeftShoulder(a_healthLowMin, healthLowMax);
 	m_healthOkay = new FMF_Triangular(a_healthOkayMin, a_healthOkayMid, healthOkayMax);
 	m_healthGood = new FMF_RightShoulder(a_healthGoodMin, healthGoodMax);
-	// evadeable
-	m_evadeLow = new FMF_LeftShoulder(a_evadeLowMin, evadeLowMax);
-	m_evadeMedium = new FMF_Triangular(a_evadeMediumMin, a_evadeMediumMid, evadeMediumMax);
-	m_evadeHigh = new FMF_RightShoulder(a_evadeHighMin, evadeHighMax);
+	// fleeable
+	m_fleeLow = new FMF_LeftShoulder(a_fleeLowMin, fleeLowMax);
+	m_fleeMedium = new FMF_Triangular(a_fleeMediumMin, a_fleeMediumMid, fleeMediumMax);
+	m_fleeHigh = new FMF_RightShoulder(a_fleeHighMin, fleeHighMax);
 
 	// fill settings vector
 	initVectors();
 }
 
 
-Evade::~Evade()
+EnemyFlee::~EnemyFlee()
 {
 	destroy();
 }
 
-void Evade::update(Agent & a_agent)
+void EnemyFlee::update(Agent & a_agent)
 {
-	float evade = 0;
+	float flee = 0;
 	// how far from target
 	float targetClose = m_distanceClose->membership(a_agent.vitals.currentDistance);
 	float targetNear = m_distanceMiddle->membership(a_agent.vitals.currentDistance);
@@ -102,26 +102,26 @@ void Evade::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
-	// how evadeable is the target
-	float evadeLow = OR(AND(healthOkay, targetFar),
+	// how fleeable is the target
+	float fleeLow = OR(AND(healthOkay, targetFar),
 						OR(AND(healthGood, targetNear), AND(healthGood, targetFar)));
-	float evadeMid = OR(AND(healthLow, targetFar), 
+	float fleeMid = OR(AND(healthLow, targetFar), 
 						OR(AND(healthOkay, targetNear), AND(healthGood, targetClose)));
-	float evadeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
+	float fleeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
 						 AND(healthOkay, targetClose));
 	// set max values
-	float maxEvadeLow = m_evadeLow->maxMembership();
-	float maxEvadeMid = m_evadeMedium->maxMembership();
-	float maxEvadeHigh = m_evadeHigh->maxMembership();
+	float maxFleeLow = m_fleeLow->maxMembership();
+	float maxFleeMid = m_fleeMedium->maxMembership();
+	float maxFleeHigh = m_fleeHigh->maxMembership();
 	// defuzzify
-	evade = maxEvadeHigh * evadeHigh + maxEvadeMid * evadeMid + maxEvadeLow * evadeLow;
-	evade /= (0.1f + evadeHigh + evadeMid + evadeLow);
+	flee = maxFleeHigh * fleeHigh + maxFleeMid * fleeMid + maxFleeLow * fleeLow;
+	flee /= (0.1f + fleeHigh + fleeMid + fleeLow);
 	// set weight
 	traits.prevWeight = traits.currWeight;
-	traits.currWeight = evade;
+	traits.currWeight = flee;
 }
 
-std::vector<float> Evade::distance(std::vector<float> a_settings)
+std::vector<float> EnemyFlee::distance(std::vector<float> a_settings)
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -137,7 +137,7 @@ std::vector<float> Evade::distance(std::vector<float> a_settings)
 	return m_distanceSettings;
 }
 
-std::vector<float> Evade::health(std::vector<float> a_settings)
+std::vector<float> EnemyFlee::health(std::vector<float> a_settings)
 {
 	// clear settings
 	m_healthSettings.empty();
@@ -153,23 +153,23 @@ std::vector<float> Evade::health(std::vector<float> a_settings)
 	return m_healthSettings;
 }
 
-std::vector<float> Evade::evadeable(std::vector<float> a_settings)
+std::vector<float> EnemyFlee::fleeable(std::vector<float> a_settings)
 {
 	// clear settings
-	m_evadeSettings.empty();
+	m_fleeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_evadeLow->settings(a_settings);
-	std::vector<float> fm = m_evadeMedium->settings(a_settings);
-	std::vector<float> fh = m_evadeHigh->settings(a_settings);
+	std::vector<float> fl = m_fleeLow->settings(a_settings);
+	std::vector<float> fm = m_fleeMedium->settings(a_settings);
+	std::vector<float> fh = m_fleeHigh->settings(a_settings);
 	// save settings
-	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fl.begin(), fl.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fm.begin(), fm.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fh.begin(), fh.end());
 
-	return m_evadeSettings;
+	return m_fleeSettings;
 }
 
-void Evade::destroy()
+void EnemyFlee::destroy()
 {
 	deallocate(m_distanceClose);
 	deallocate(m_distanceMiddle);
@@ -177,12 +177,12 @@ void Evade::destroy()
 	deallocate(m_healthLow);
 	deallocate(m_healthOkay);
 	deallocate(m_healthGood);
-	deallocate(m_evadeLow);
-	deallocate(m_evadeMedium);
-	deallocate(m_evadeHigh);
+	deallocate(m_fleeLow);
+	deallocate(m_fleeMedium);
+	deallocate(m_fleeHigh);
 }
 
-void Evade::initVectors()
+void EnemyFlee::initVectors()
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -205,13 +205,13 @@ void Evade::initVectors()
 	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
 	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
 	// clear settings
-	m_evadeSettings.empty();
+	m_fleeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_evadeLow->settings();
-	std::vector<float> fm = m_evadeMedium->settings();
-	std::vector<float> fh = m_evadeHigh->settings();
+	std::vector<float> fl = m_fleeLow->settings();
+	std::vector<float> fm = m_fleeMedium->settings();
+	std::vector<float> fh = m_fleeHigh->settings();
 	// save settings
-	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fl.begin(), fl.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fm.begin(), fm.end());
+	m_fleeSettings.insert(m_fleeSettings.end(), fh.begin(), fh.end());
 }

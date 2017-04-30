@@ -150,21 +150,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agents.h" />
-    <ClInclude Include="Attack.h" />
+    <ClInclude Include="CompanionAttack.h" />
     <ClInclude Include="Behaviour.h" />
     <ClInclude Include="Decisions.h" />
-    <ClInclude Include="Evade.h" />
-    <ClInclude Include="Follow.h" />
+    <ClInclude Include="CompanionEvade.h" />
+    <ClInclude Include="CompanionFollow.h" />
+    <ClInclude Include="EnemyAttack.h" />
+    <ClInclude Include="EnemyFlee.h" />
+    <ClInclude Include="EnemySeek.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Agents.cpp" />
-    <ClCompile Include="Attack.cpp" />
+    <ClCompile Include="CompanionAttack.cpp" />
     <ClCompile Include="Behaviour.cpp" />
     <ClCompile Include="Decisions.cpp" />
-    <ClCompile Include="Evade.cpp" />
-    <ClCompile Include="Follow.cpp" />
+    <ClCompile Include="CompanionEvade.cpp" />
+    <ClCompile Include="CompanionFollow.cpp" />
+    <ClCompile Include="EnemyAttack.cpp" />
+    <ClCompile Include="EnemyFlee.cpp" />
+    <ClCompile Include="EnemySeek.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
   </ItemGroup>

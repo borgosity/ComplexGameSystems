@@ -16,15 +16,15 @@
     <Filter Include="Header Files\behaviours">
       <UniqueIdentifier>{f0cf05b6-8731-47f9-9209-0f0f59c1672f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\behaviours">
+      <UniqueIdentifier>{a30e4c14-7061-4333-ad58-766f26f1c472}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decisions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Behaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FuzzyMemberTypes.h">
@@ -36,21 +36,30 @@
     <ClInclude Include="Agents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Follow.h">
+    <ClInclude Include="CompanionFollow.h">
       <Filter>Header Files\behaviours</Filter>
     </ClInclude>
-    <ClInclude Include="Evade.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CompanionAttack.h">
+      <Filter>Header Files\behaviours</Filter>
     </ClInclude>
-    <ClInclude Include="Attack.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CompanionEvade.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="Behaviour.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAttack.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyFlee.h">
+      <Filter>Header Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySeek.h">
+      <Filter>Header Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Behaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FuzzyMemberTypes.cpp">
@@ -62,14 +71,26 @@
     <ClCompile Include="Agents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Follow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Behaviour.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="Evade.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CompanionAttack.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="Attack.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CompanionEvade.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="CompanionFollow.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAttack.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyFlee.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySeek.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

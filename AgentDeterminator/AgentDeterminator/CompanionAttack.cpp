@@ -1,13 +1,13 @@
-#include "Follow.h"
+#include "CompanionAttack.h"
 #include "Agents.h"
 
 
 
-Follow::Follow()
+CompanionAttack::CompanionAttack()
 {
 }
 
-Follow::Follow(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_followMin, float a_followMax)
+CompanionAttack::CompanionAttack(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_attackMin, float a_attackMax)
 {
 	// ------------------ distance ------------------------------------------
 	// left variables
@@ -42,31 +42,31 @@ Follow::Follow(float a_distanceMin, float distanceMax, float a_healthMin, float 
 	m_healthGood = new FMF_RightShoulder(healthGoodMin, healthGoodMax);
 
 
-	// ------------------ followable ------------------------------------------
+	// ------------------ attackable ------------------------------------------
 	// left variables
-	float followLowMin = a_followMin;
-	float followLowMax = (a_followMax - a_followMin) / 3;
+	float attackLowMin = a_attackMin;
+	float attackLowMax = (a_attackMax - a_attackMin) / 3;
 	// triangular variables
-	float followOkayMin = (followLowMax - followLowMin) / 3;
-	float followOkayPeak = a_followMax  * 0.5f;
-	float followOkayMax = followOkayPeak + followOkayMin;
+	float attackOkayMin = (attackLowMax - attackLowMin) / 3;
+	float attackOkayPeak = a_attackMax  * 0.5f;
+	float attackOkayMax = attackOkayPeak + attackOkayMin;
 	// right variables
-	float followGoodMin = (followOkayMax - followOkayMin) / 3;
-	float followGoodMax = a_followMax;
+	float attackGoodMin = (attackOkayMax - attackOkayMin) / 3;
+	float attackGoodMax = a_attackMax;
 	// membership function objects
-	m_followLow = new FMF_LeftShoulder(followLowMin, followLowMax);
-	m_followMedium = new FMF_Triangular(followOkayMin, followOkayPeak, followOkayMax);
-	m_followHigh = new FMF_RightShoulder(followGoodMin, followGoodMax);
+	m_attackLow = new FMF_LeftShoulder(attackLowMin, attackLowMax);
+	m_attackMedium = new FMF_Triangular(attackOkayMin, attackOkayPeak, attackOkayMax);
+	m_attackHigh = new FMF_RightShoulder(attackGoodMin, attackGoodMax);
 
 	// fill settings vector
 	initVectors();
-	// set initial follow weight
+	// set initial attack weight
 	traits.currWeight = 0;
 }
 
-Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax, 
-				float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax, 
-				float a_followLowMin, float followLowMax, float a_followMediumMin, float a_followMediumMid, float followMediumMax, float a_followHighMin, float followHighMax)
+CompanionAttack::CompanionAttack(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
+	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
+	float a_attackLowMin, float attackLowMax, float a_attackMediumMin, float a_attackMediumMid, float attackMediumMax, float a_attackHighMin, float attackHighMax)
 {
 	// distance
 	m_distanceClose = new FMF_LeftShoulder(a_distanceCloseMin, distanceCloseMax);
@@ -76,24 +76,24 @@ Follow::Follow(float a_distanceCloseMin, float distanceCloseMax, float a_distanc
 	m_healthLow = new FMF_LeftShoulder(a_healthLowMin, healthLowMax);
 	m_healthOkay = new FMF_Triangular(a_healthOkayMin, a_healthOkayMid, healthOkayMax);
 	m_healthGood = new FMF_RightShoulder(a_healthGoodMin, healthGoodMax);
-	// followable
-	m_followLow = new FMF_LeftShoulder(a_followLowMin, followLowMax);
-	m_followMedium = new FMF_Triangular(a_followMediumMin, a_followMediumMid, followMediumMax);
-	m_followHigh = new FMF_RightShoulder(a_followHighMin, followHighMax);
-	
+	// attackable
+	m_attackLow = new FMF_LeftShoulder(a_attackLowMin, attackLowMax);
+	m_attackMedium = new FMF_Triangular(a_attackMediumMin, a_attackMediumMid, attackMediumMax);
+	m_attackHigh = new FMF_RightShoulder(a_attackHighMin, attackHighMax);
+
 	// fill settings vector
 	initVectors();
 }
 
 
-Follow::~Follow()
+CompanionAttack::~CompanionAttack()
 {
 	destroy();
 }
 
-void Follow::update(Agent & a_agent)
+void CompanionAttack::update(Agent & a_agent)
 {
-	float follow = 0;
+	float attack = 0;
 	// how far from target
 	float targetClose = m_distanceClose->membership(a_agent.vitals.currentDistance);
 	float targetNear = m_distanceMiddle->membership(a_agent.vitals.currentDistance);
@@ -102,23 +102,23 @@ void Follow::update(Agent & a_agent)
 	float healthLow = m_healthLow->membership(a_agent.vitals.health);
 	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
 	float healthGood = m_healthGood->membership(a_agent.vitals.health);
-	// how followable is the target
-	float followLow = OR(AND(healthLow, targetNear), AND(healthLow, targetFar));
-	float followMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
-	float followHigh = OR(healthGood, OR(AND(healthLow, targetClose), AND(healthOkay, targetClose)));
+	// how attackable is the target
+	float attackLow = healthLow;
+	float attackMid = OR(AND(healthOkay, targetNear), AND(healthOkay, targetFar));
+	float attackHigh = OR(healthGood, AND(healthOkay, targetClose));
 	// set max values
-	float maxFollowLow = m_followLow->maxMembership();
-	float maxFollowMid = m_followMedium->maxMembership();
-	float maxFollowHigh = m_followHigh->maxMembership();
+	float maxAttackLow = m_attackLow->maxMembership();
+	float maxAttackMid = m_attackMedium->maxMembership();
+	float maxAttackHigh = m_attackHigh->maxMembership();
 	// defuzzify
-	follow = maxFollowHigh * followHigh + maxFollowMid * followMid + maxFollowLow * followLow;
-	follow /= (0.1f + followHigh + followMid + followLow);
+	attack = maxAttackHigh * attackHigh + maxAttackMid * attackMid + maxAttackLow * attackLow;
+	attack /= (0.1f + attackHigh + attackMid + attackLow);
 	// set weight
 	traits.prevWeight = traits.currWeight;
-	traits.currWeight = follow;
+	traits.currWeight = attack;
 }
 
-std::vector<float> Follow::distance(std::vector<float> a_settings)
+std::vector<float> CompanionAttack::distance(std::vector<float> a_settings)
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -134,7 +134,7 @@ std::vector<float> Follow::distance(std::vector<float> a_settings)
 	return m_distanceSettings;
 }
 
-std::vector<float> Follow::health(std::vector<float> a_settings)
+std::vector<float> CompanionAttack::health(std::vector<float> a_settings)
 {
 	// clear settings
 	m_healthSettings.empty();
@@ -150,23 +150,23 @@ std::vector<float> Follow::health(std::vector<float> a_settings)
 	return m_healthSettings;
 }
 
-std::vector<float> Follow::followable(std::vector<float> a_settings)
+std::vector<float> CompanionAttack::attackable(std::vector<float> a_settings)
 {
 	// clear settings
-	m_followSettings.empty();
+	m_attackSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_followLow->settings(a_settings);
-	std::vector<float> fm = m_followMedium->settings(a_settings);
-	std::vector<float> fh = m_followHigh->settings(a_settings);
+	std::vector<float> fl = m_attackLow->settings(a_settings);
+	std::vector<float> fm = m_attackMedium->settings(a_settings);
+	std::vector<float> fh = m_attackHigh->settings(a_settings);
 	// save settings
-	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
-	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
-	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
+	m_attackSettings.insert(m_attackSettings.end(), fl.begin(), fl.end());
+	m_attackSettings.insert(m_attackSettings.end(), fm.begin(), fm.end());
+	m_attackSettings.insert(m_attackSettings.end(), fh.begin(), fh.end());
 
-	return m_followSettings;
+	return m_attackSettings;
 }
 
-void Follow::destroy()
+void CompanionAttack::destroy()
 {
 	deallocate(m_distanceClose);
 	deallocate(m_distanceMiddle);
@@ -174,12 +174,12 @@ void Follow::destroy()
 	deallocate(m_healthLow);
 	deallocate(m_healthOkay);
 	deallocate(m_healthGood);
-	deallocate(m_followLow);
-	deallocate(m_followMedium);
-	deallocate(m_followHigh);
+	deallocate(m_attackLow);
+	deallocate(m_attackMedium);
+	deallocate(m_attackHigh);
 }
 
-void Follow::initVectors()
+void CompanionAttack::initVectors()
 {
 	// clear settings
 	m_distanceSettings.empty();
@@ -202,13 +202,13 @@ void Follow::initVectors()
 	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
 	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
 	// clear settings
-	m_followSettings.empty();
+	m_attackSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_followLow->settings();
-	std::vector<float> fm = m_followMedium->settings();
-	std::vector<float> fh = m_followHigh->settings();
+	std::vector<float> fl = m_attackLow->settings();
+	std::vector<float> fm = m_attackMedium->settings();
+	std::vector<float> fh = m_attackHigh->settings();
 	// save settings
-	m_followSettings.insert(m_followSettings.end(), fl.begin(), fl.end());
-	m_followSettings.insert(m_followSettings.end(), fm.begin(), fm.end());
-	m_followSettings.insert(m_followSettings.end(), fh.begin(), fh.end());
+	m_attackSettings.insert(m_attackSettings.end(), fl.begin(), fl.end());
+	m_attackSettings.insert(m_attackSettings.end(), fm.begin(), fm.end());
+	m_attackSettings.insert(m_attackSettings.end(), fh.begin(), fh.end());
 }
