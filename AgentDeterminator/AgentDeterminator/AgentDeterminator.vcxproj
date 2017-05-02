@@ -164,6 +164,7 @@
     <ClInclude Include="PlayerAttack.h" />
     <ClInclude Include="PlayerEvade.h" />
     <ClInclude Include="PlayerWander.h" />
+    <ClInclude Include="SceneController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Agents.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="PlayerAttack.cpp" />
     <ClCompile Include="PlayerEvade.cpp" />
     <ClCompile Include="PlayerWander.cpp" />
+    <ClCompile Include="SceneController.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,12 +18,15 @@ PlayerAgent::PlayerAgent()
 {
 	m_name = "Player Agent";
 	m_position = glm::vec3(0.0f, 0.0f, 0.0f);
+	m_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	vitals.type = PLAYER;
 }
 
 PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 {
-	std::string m_name = a_name;
-	glm::vec3 m_position = a_position;
+	m_name = a_name;
+	m_position = a_position;
+	m_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	// setup vitals
 	vitals.health = 100;
 	vitals.size = 15;
@@ -32,6 +35,7 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	vitals.strength = vitals.mass * vitals.size * vitals.speed;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
+	vitals.type = PLAYER;
 	// setup behaviour
 	m_wanderBehaviour = new PlayerWander(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
 	m_evadeBehaviour = new PlayerEvade(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
@@ -45,7 +49,7 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 PlayerAgent::~PlayerAgent()
 {
 }
-void PlayerAgent::update(float deltaTime)
+void PlayerAgent::update(float a_dt)
 {
 	// check decision
 	// if health or distance has changed reevaluate
@@ -53,26 +57,28 @@ void PlayerAgent::update(float deltaTime)
 	m_evadeBehaviour->update(*this);
 	m_attackBehaviour->update(*this);
 
-	if (m_wanderBehaviour->traits.currWeight > 0) {
-		std::cout << "--?? Wander behaviour = " << m_wanderBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "--?? Wander behaviour = 0 " << std::endl;
-	}
+	std::cout << "-- Player pos = " << m_position.x << ", " << m_position.y << std::endl;
 
-	if (m_evadeBehaviour->traits.currWeight > 0) {
-		std::cout << "--<<! evade behaviour = " << m_evadeBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "--<<! evade behaviour = 0 " << std::endl;
-	}
+	//if (m_wanderBehaviour->traits.currWeight > 0) {
+	//	std::cout << "--?? Wander behaviour = " << m_wanderBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "--?? Wander behaviour = 0 " << std::endl;
+	//}
 
-	if (m_attackBehaviour->traits.currWeight > 0) {
-		std::cout << "--!>> Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "--!>> Attack behaviour = 0 " << std::endl;
-	}
+	//if (m_evadeBehaviour->traits.currWeight > 0) {
+	//	std::cout << "--<<! evade behaviour = " << m_evadeBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "--<<! evade behaviour = 0 " << std::endl;
+	//}
+
+	//if (m_attackBehaviour->traits.currWeight > 0) {
+	//	std::cout << "--!>> Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "--!>> Attack behaviour = 0 " << std::endl;
+	//}
 
 	// waver the distance
 	// reduce agent health over time
@@ -85,7 +91,7 @@ void PlayerAgent::update(float deltaTime)
 
 	// reduce agent health over time
 	if (vitals.health > 0) {
-		vitals.health -= deltaTime;
+		vitals.health -= a_dt;
 	}
 	else {
 		vitals.health = 0;
@@ -98,12 +104,15 @@ EnemyAgent::EnemyAgent()
 {
 	m_name = "Enemy Agent";
 	m_position = glm::vec3(0.0f, 0.0f, 0.0f);
+	m_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	vitals.type = ENEMY;
 }
 
 EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position) 
 {
-	std::string m_name = a_name;
-	glm::vec3 m_position = a_position;
+	m_name = a_name;
+	m_position = a_position;
+	m_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	// setup vitals
 	vitals.health = 100;
 	vitals.size = 15;
@@ -112,6 +121,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	vitals.strength = vitals.mass * vitals.size * vitals.speed;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
+	vitals.type = ENEMY;
 	// setup behaviour
 	m_seekBehaviour = new EnemySeek(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
 	m_fleeBehaviour = new EnemyFlee(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
@@ -125,7 +135,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 EnemyAgent::~EnemyAgent()
 {
 }
-void EnemyAgent::update(float deltaTime)
+void EnemyAgent::update(float a_dt)
 {
 	// check decision
 	// if health or distance has changed reevaluate
@@ -133,26 +143,26 @@ void EnemyAgent::update(float deltaTime)
 	m_fleeBehaviour->update(*this);
 	m_attackBehaviour->update(*this);
 
-	if (m_seekBehaviour->traits.currWeight > 0) {
-		std::cout << " ## seek behaviour = " << m_seekBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << " ## seek behaviour = 0 " << std::endl;
-	}
+	//if (m_seekBehaviour->traits.currWeight > 0) {
+	//	std::cout << " ## seek behaviour = " << m_seekBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << " ## seek behaviour = 0 " << std::endl;
+	//}
 
-	if (m_fleeBehaviour->traits.currWeight > 0) {
-		std::cout << " <<< flee behaviour = " << m_fleeBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "<<< flee behaviour = 0 " << std::endl;
-	}
+	//if (m_fleeBehaviour->traits.currWeight > 0) {
+	//	std::cout << " <<< flee behaviour = " << m_fleeBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "<<< flee behaviour = 0 " << std::endl;
+	//}
 
-	if (m_attackBehaviour->traits.currWeight > 0) {
-		std::cout << " >>> Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << " >>> Attack behaviour = 0 " << std::endl;
-	}
+	//if (m_attackBehaviour->traits.currWeight > 0) {
+	//	std::cout << " >>> Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << " >>> Attack behaviour = 0 " << std::endl;
+	//}
 
 	// waver the distance
 	// reduce agent health over time
@@ -165,7 +175,7 @@ void EnemyAgent::update(float deltaTime)
 
 	// reduce agent health over time
 	if (vitals.health > 0) {
-		vitals.health -= deltaTime;
+		vitals.health -= a_dt;
 	}
 	else {
 		vitals.health = 0;
@@ -178,14 +188,17 @@ CompanionAgent::CompanionAgent()
 {
 	m_name = "Companion Agent";
 	m_position = glm::vec3(10.0f, 10.0f, 0.0f);
+	m_colour = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+	vitals.type = COMPANION;
 }
 ///
 /// Default fuzzy values for agent are set to 0 - 100.
 ///
 CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 {
-	std::string m_name = a_name;
-	glm::vec3 m_position = a_position;
+	m_name = a_name;
+	m_position = a_position;
+	m_colour = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 	// setup vitals
 	vitals.health = 100;
 	vitals.size = 20;
@@ -194,6 +207,7 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	vitals.strength = vitals.mass * vitals.size * vitals.speed;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
+	vitals.type = COMPANION;
 	// setup behaviour
 	m_followBehaviour = new CompanionFollow(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
 	m_evadeBehaviour = new CompanionEvade(0.0f, 100.0f, 0.0f, vitals.health, 0.0f, 100.0f);
@@ -209,7 +223,7 @@ CompanionAgent::~CompanionAgent()
 	delete m_followBehaviour;
 }
 
-void CompanionAgent::update(float deltaTime)
+void CompanionAgent::update(float a_dt)
 {
 	// check decision
 	// if health or distance has changed reevaluate
@@ -217,26 +231,26 @@ void CompanionAgent::update(float deltaTime)
 	m_evadeBehaviour->update(*this);
 	m_attackBehaviour->update(*this);
 
-	if ( m_followBehaviour->traits.currWeight > 0) {
-		std::cout << "Follow behaviour = " << m_followBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "Follow behaviour = 0 " << std::endl;
-	}
+	//if ( m_followBehaviour->traits.currWeight > 0) {
+	//	std::cout << "Follow behaviour = " << m_followBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "Follow behaviour = 0 " << std::endl;
+	//}
 
-	if (m_evadeBehaviour->traits.currWeight > 0) {
-		std::cout << "Evade behaviour = " << m_evadeBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "Evade behaviour = 0 " << std::endl;
-	}
+	//if (m_evadeBehaviour->traits.currWeight > 0) {
+	//	std::cout << "Evade behaviour = " << m_evadeBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "Evade behaviour = 0 " << std::endl;
+	//}
 
-	if (m_attackBehaviour->traits.currWeight > 0) {
-		std::cout << "Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
-	}
-	else {
-		std::cout << "Attack behaviour = 0 " << std::endl;
-	}
+	//if (m_attackBehaviour->traits.currWeight > 0) {
+	//	std::cout << "Attack behaviour = " << m_attackBehaviour->traits.currWeight << std::endl;
+	//}
+	//else {
+	//	std::cout << "Attack behaviour = 0 " << std::endl;
+	//}
 
 	// waver the distance
 	// reduce agent health over time
@@ -249,7 +263,7 @@ void CompanionAgent::update(float deltaTime)
 
 	// reduce agent health over time
 	if (vitals.health > 0) {
-		vitals.health -= deltaTime;
+		vitals.health -= a_dt;
 	}
 	else {
 		vitals.health = 0;

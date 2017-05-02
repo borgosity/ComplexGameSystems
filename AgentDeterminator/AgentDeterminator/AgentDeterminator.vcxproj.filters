@@ -69,6 +69,9 @@
     <ClInclude Include="PlayerWander.h">
       <Filter>Header Files\behaviours</Filter>
     </ClInclude>
+    <ClInclude Include="SceneController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -115,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="PlayerWander.cpp">
       <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneController.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

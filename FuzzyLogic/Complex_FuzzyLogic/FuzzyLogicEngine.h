@@ -19,7 +19,6 @@ public:
 	TrapezoidFunction* awake;
 	rightShoulderMembershipFunction* superActive;
 
-
 	leftShoulderMembershipFunction* veryHungry;
 	TrapezoidFunction* hungry;
 	rightShoulderMembershipFunction* full;
