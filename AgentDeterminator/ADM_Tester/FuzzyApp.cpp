@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "glm\glm.hpp"
 
+#define M_PI       3.14159265358979323846   // pi
 
 FuzzyApp::FuzzyApp()
 {
@@ -96,3 +97,29 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 		a_renderer->drawSprite(nullptr, position.x, position.y, agent->vitals.size, agent->vitals.size);
 	}
 }
+
+void FuzzyApp::drawWander(Agent & a_agent)
+{
+	// line from original location to centre of circle
+	m_renderer->drawLine(m_vPrevLoc.x, m_vPrevLoc.y, m_vCircleCentre.x, m_vCircleCentre.y, 1.0f);
+	// line to edge of circle
+	m_renderer->drawLine(m_vCircleCentre.x, m_vCircleCentre.y, m_vTarget.x, m_vTarget.y, 2.0f);
+	// path agent should be heading along
+	m_renderer->drawLine(behaviour->m_position.x, behaviour->m_position.y, m_vTarget.x, m_vTarget.y, 3.0f);
+
+	// draw a cirle with lines
+	double slice = 2 * M_PI / 360;
+	glm::vec2 point1(0.0f, 0.0f);
+	for (int i = 0; i < 360; i++)
+	{
+		double angle = slice * i;
+		glm::vec2 point2(m_vCircleCentre.x + m_fRadius * cos(angle), m_vCircleCentre.y + m_fRadius * sin(angle));
+		if (point1.x == 0 && point1.y == 0)
+		{
+			point1 = point2;
+		}
+		behaviour->m_spriteBatch->drawLine(point1.x, point1.y, point2.x, point2.y);
+		point1 = point2;
+	}
+}
+

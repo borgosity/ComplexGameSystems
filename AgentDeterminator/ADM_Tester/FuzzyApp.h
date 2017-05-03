@@ -28,5 +28,6 @@ private:
 	aie::Font		* m_font;
 
 	void drawAgents(aie::Renderer2D * a_renderer);
+	void drawWander(Agent & a_agent);
 };
 

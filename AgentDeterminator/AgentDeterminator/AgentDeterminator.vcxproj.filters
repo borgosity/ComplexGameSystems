@@ -19,6 +19,12 @@
     <Filter Include="Source Files\behaviours">
       <UniqueIdentifier>{a30e4c14-7061-4333-ad58-766f26f1c472}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\actions">
+      <UniqueIdentifier>{9b58d650-2abe-467f-9c9a-2556c3d35cf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\actions">
+      <UniqueIdentifier>{50c0dd09-f34e-48c5-9e0f-79d262281fbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -72,6 +78,12 @@
     <ClInclude Include="SceneController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="WanderAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -121,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="SceneController.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="WanderAction.cpp">
+      <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

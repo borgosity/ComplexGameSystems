@@ -35,7 +35,24 @@ struct AgentStats {
 	float minDistance;		// minimum distance to target
 	AgentType type;
 };
-
+/******************************************************************************************************************************
+* Agent Movement Struct
+*******************************************************************************************************************************/
+struct MovementInfo {
+	glm::vec3 position;
+	glm::vec3 sensor;
+	glm::vec3 velocity;
+	glm::vec3 acceleration;
+	glm::vec3 heading;
+	float maxSpeed;
+	float maxAcceleration;
+	float maxForce;
+	float livelyness;		// used to determine delay between wander updates
+	float prevTime;			//used in wander delay
+	float sight;
+	float rotation;
+	float rotationDampening;
+};
 /******************************************************************************************************************************
 * Base Agent
 *******************************************************************************************************************************/
@@ -46,8 +63,12 @@ public:
 	Agent();
 	virtual ~Agent();
 
+	virtual glm::vec3 position() override { return movedata.position; };
+	virtual glm::vec3 position(glm::vec3 a_position) override { movedata.position = a_position;  return movedata.position; };
+
 	std::vector<Agent*> * m_agents;
-	AgentStats vitals;
+	AgentStats		vitals;
+	MovementInfo	movedata;
 protected:
 
 };
