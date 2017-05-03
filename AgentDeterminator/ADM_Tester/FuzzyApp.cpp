@@ -2,6 +2,7 @@
 #include "Font.h"
 #include "Input.h"
 #include "glm\glm.hpp"
+#include "WanderAction.h"
 
 #define M_PI       3.14159265358979323846   // pi
 
@@ -76,6 +77,7 @@ void FuzzyApp::draw()
 
 	// draw your stuff here!
 	drawAgents(m_renderer);
+	drawWander(*m_playerAgent, *m_playerAgent->wanderPtr());
 
 	// output some text
 	m_renderer->drawText(m_font, "Press ESC to quit", 0, 0);
@@ -98,14 +100,14 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 	}
 }
 
-void FuzzyApp::drawWander(Agent & a_agent)
+void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 {
 	// line from original location to centre of circle
-	m_renderer->drawLine(m_vPrevLoc.x, m_vPrevLoc.y, m_vCircleCentre.x, m_vCircleCentre.y, 1.0f);
+	m_renderer->drawLine(a_wander.controls.prevLoc.x, a_wander.controls.prevLoc.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
 	// line to edge of circle
-	m_renderer->drawLine(m_vCircleCentre.x, m_vCircleCentre.y, m_vTarget.x, m_vTarget.y, 2.0f);
+	m_renderer->drawLine(a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, a_wander.controls.target.x, a_wander.controls.target.y, 2.0f);
 	// path agent should be heading along
-	m_renderer->drawLine(behaviour->m_position.x, behaviour->m_position.y, m_vTarget.x, m_vTarget.y, 3.0f);
+	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, a_wander.controls.target.x, a_wander.controls.target.y, 3.0f);
 
 	// draw a cirle with lines
 	double slice = 2 * M_PI / 360;
@@ -113,12 +115,12 @@ void FuzzyApp::drawWander(Agent & a_agent)
 	for (int i = 0; i < 360; i++)
 	{
 		double angle = slice * i;
-		glm::vec2 point2(m_vCircleCentre.x + m_fRadius * cos(angle), m_vCircleCentre.y + m_fRadius * sin(angle));
+		glm::vec2 point2(a_wander.controls.circleCentre.x + a_wander.controls.radius * cos(angle), a_wander.controls.circleCentre.y + a_wander.controls.radius * sin(angle));
 		if (point1.x == 0 && point1.y == 0)
 		{
 			point1 = point2;
 		}
-		behaviour->m_spriteBatch->drawLine(point1.x, point1.y, point2.x, point2.y);
+		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
 		point1 = point2;
 	}
 }

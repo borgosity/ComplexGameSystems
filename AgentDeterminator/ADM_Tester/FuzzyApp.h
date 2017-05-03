@@ -4,7 +4,6 @@
 #include "SceneController.h"
 #include "Agents.h"
 
-
 class FuzzyApp : public aie::Application
 {
 public:
@@ -28,6 +27,6 @@ private:
 	aie::Font		* m_font;
 
 	void drawAgents(aie::Renderer2D * a_renderer);
-	void drawWander(Agent & a_agent);
+	void drawWander(Agent & a_agent, WanderAction & a_wander);
 };
 

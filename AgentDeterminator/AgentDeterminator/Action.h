@@ -21,7 +21,6 @@ enum ActionType
 class Action
 {
 public:
-	Action();
 	virtual ~Action() = 0 {};
 	// sub classes must implement
 	virtual void update(float a_dt, Agent & a_agent) = 0;

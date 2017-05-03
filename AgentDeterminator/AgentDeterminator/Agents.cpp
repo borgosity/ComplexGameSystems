@@ -1,5 +1,5 @@
 #include "Agents.h"
-
+#include "WanderAction.h"
 
 /******************************************************************************************************************************
 * Base Agent
@@ -44,6 +44,8 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	m_evadeBehaviour->traits.priority = 1;	// self preservation
 	m_attackBehaviour->traits.priority = 2;	// attack if needed
 	m_wanderBehaviour->traits.priority = 3;	// wander around if all is cool
+	// actions
+	actions.push_back(new WanderAction(50.0f, 0.25f, 50.0f));
 }
 
 PlayerAgent::~PlayerAgent()

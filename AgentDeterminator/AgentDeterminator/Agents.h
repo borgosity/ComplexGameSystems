@@ -12,6 +12,9 @@
 #include "PlayerEvade.h"
 #include "PlayerAttack.h"
 
+class Action;
+class WanderAction;
+
 /******************************************************************************************************************************
 * Agent Statistics Struct
 *******************************************************************************************************************************/
@@ -69,6 +72,7 @@ public:
 	std::vector<Agent*> * m_agents;
 	AgentStats		vitals;
 	MovementInfo	movedata;
+	std::vector<Action*> actions;
 protected:
 
 };
@@ -82,10 +86,13 @@ public:
 	virtual ~PlayerAgent();
 
 	virtual void update(float a_dt);
+	WanderAction * wanderPtr() { return m_wanderAction; };
+
 private:
 	PlayerWander * m_wanderBehaviour = nullptr;
 	PlayerEvade * m_evadeBehaviour = nullptr;
 	PlayerAttack * m_attackBehaviour = nullptr;
+	WanderAction * m_wanderAction = nullptr;
 };
 /******************************************************************************************************************************
 * Enemy Agent

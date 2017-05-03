@@ -6,23 +6,21 @@
 WanderAction::WanderAction()
 {
 	m_actionType = AN_WANDER;
-	m_fRadius = 50.0f;
-	m_fJitter = 0.25f;
-	m_fDistance = (float)(rand() % 75 + 1);
-	m_vTarget.x = (float)(rand() % 800);
-	m_vTarget.y = (float)(rand() % 600);
-	m_fWanderAngle = (float)(rand() % 360 + 1);
+	controls.radius = 50.0f;
+	controls.jitter = 0.25f;
+	controls.distance = (float)(rand() % 75 + 1);
+	controls.target = glm::vec3((float)(rand() % 800), (float)(rand() % 600), 0.0f);
+	controls.wanderAngle = (float)(rand() % 360 + 1);
 }
 
 WanderAction::WanderAction(float radius, float jitter, float distance)
 {
 	m_actionType = AN_WANDER;
-	m_fRadius = radius;
-	m_fJitter = jitter;
-	m_fDistance = distance;
-	m_vTarget.x = (float)(rand() % 800);
-	m_vTarget.y = (float)(rand() % 600);
-	m_fWanderAngle = (float)(rand() % 360 + 1);
+	controls.radius = radius;
+	controls.jitter = jitter;
+	controls.distance = distance;
+	controls.target = glm::vec3((float)(rand() % 800), (float)(rand() % 600), 0.0f);
+	controls.wanderAngle = (float)(rand() % 360 + 1);
 }
 
 WanderAction::~WanderAction()
@@ -39,7 +37,7 @@ void WanderAction::update(float a_dt, Agent & a_agent)
 		//wander2(deltaTime, behaviour);
 	}
 
-	glm::vec3 acceleration = (glm::normalize(m_vTarget - a_agent.movedata.position) * a_agent.movedata.maxSpeed) - a_agent.movedata.velocity;
+	glm::vec3 acceleration = (glm::normalize(controls.target - a_agent.movedata.position) * a_agent.movedata.maxSpeed) - a_agent.movedata.velocity;
 
 	if (glm::length(acceleration) > a_agent.movedata.maxAcceleration)
 	{
@@ -61,8 +59,8 @@ void WanderAction::setAngle(glm::vec2 & a_vec2, float a_wanderAngle)
 
 void WanderAction::randomTarget()
 {
-	m_vTarget.x = m_fRadius*cos(m_fWanderAngle) + m_vCircleCentre.x;
-	m_vTarget.y = m_fRadius*sin(m_fWanderAngle) + m_vCircleCentre.y;
+	controls.target.x = controls.radius*cos(controls.wanderAngle) + controls.circleCentre.x;
+	controls.target.y = controls.radius*sin(controls.wanderAngle) + controls.circleCentre.y;
 }
 
 void WanderAction::wander1(float a_dt, MovementInfo & a_movedata)
@@ -73,26 +71,26 @@ void WanderAction::wander1(float a_dt, MovementInfo & a_movedata)
 
 	// specify the location of the circle centre based on the agents current velocity
 	// then normalise it and move(scale) it to the specified distance infront of the agent
-	m_vCircleCentre.x = a_movedata.position.x;
-	m_vCircleCentre.y = a_movedata.position.y;
+	controls.circleCentre.x = a_movedata.position.x;
+	controls.circleCentre.y = a_movedata.position.y;
 	// record current position of agent
-	m_vPrevLoc.x = a_movedata.position.x;
-	m_vPrevLoc.y = a_movedata.position.y;
-	//m_vCircleCentre = glm::normalize(m_vCircleCentre);
+	controls.prevLoc.x = a_movedata.position.x;
+	controls.prevLoc.y = a_movedata.position.y;
+	//controls.circleCentre = glm::normalize(controls.circleCentre);
 
 	// ** NEED TO GET THE DIRECTION THAT THE AGENT IS FACING **
-	m_vCircleCentre.x = m_fDistance*cos(a_movedata.rotation) + a_movedata.position.x;
-	m_vCircleCentre.y = m_fDistance*sin(a_movedata.rotation) + a_movedata.position.y;
-	//m_vCircleCentre += m_fDistance; // moves circle ot in front of agent
+	controls.circleCentre.x = controls.distance*cos(a_movedata.rotation) + a_movedata.position.x;
+	controls.circleCentre.y = controls.distance*sin(a_movedata.rotation) + a_movedata.position.y;
+	//controls.circleCentre += controls.distance; // moves circle ot in front of agent
 
 	// find random spot on circle
 	randomTarget();
 
 	// change wanderAngle for next frame
-	m_fWanderAngle += ((float)(rand() % 360 + 1) * m_fJitter) - (m_fJitter * 0.5f);
+	controls.wanderAngle += ((float)(rand() % 360 + 1) * controls.jitter) - (controls.jitter * 0.5f);
 
 	// calcutate and return wander force
-	glm::vec2 wanderForce(m_vCircleCentre + m_vTarget);
+	glm::vec3 wanderForce(controls.circleCentre + controls.target);
 
 	// calculate the acceleration required to move agent to target (distance minus current velocity)
 	//glm::vec2 acceleration(glm::distance(wanderForce, a_movedata.velocity) - a_movedata.velocity);
@@ -105,7 +103,7 @@ void WanderAction::wander2(float a_dt, MovementInfo & a_movedata)
 
 	// vector from agent to target
 	glm::vec3 distance = glm::normalize(target - a_movedata.position);
-	distance *= m_fRadius;
+	distance *= controls.radius;
 	// scale vector by maxSpeed
 	distance = distance * a_movedata.maxSpeed;
 	// calculate the acceleration required to move agent to target (distance minus current velocity)
