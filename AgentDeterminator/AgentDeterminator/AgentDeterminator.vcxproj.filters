@@ -87,6 +87,15 @@
     <ClInclude Include="FollowAction.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
+    <ClInclude Include="SeekAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="EvadeAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="FleeAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -144,6 +153,15 @@
       <Filter>Source Files\actions</Filter>
     </ClCompile>
     <ClCompile Include="FollowAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="SeekAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="EvadeAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="FleeAction.cpp">
       <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>

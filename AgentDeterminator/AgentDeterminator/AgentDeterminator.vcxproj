@@ -159,6 +159,8 @@
     <ClInclude Include="EnemyAttack.h" />
     <ClInclude Include="EnemyFlee.h" />
     <ClInclude Include="EnemySeek.h" />
+    <ClInclude Include="EvadeAction.h" />
+    <ClInclude Include="FleeAction.h" />
     <ClInclude Include="FollowAction.h" />
     <ClInclude Include="FuzzyMemberSets.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
@@ -167,6 +169,7 @@
     <ClInclude Include="PlayerEvade.h" />
     <ClInclude Include="PlayerWander.h" />
     <ClInclude Include="SceneController.h" />
+    <ClInclude Include="SeekAction.h" />
     <ClInclude Include="WanderAction.h" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +183,8 @@
     <ClCompile Include="EnemyAttack.cpp" />
     <ClCompile Include="EnemyFlee.cpp" />
     <ClCompile Include="EnemySeek.cpp" />
+    <ClCompile Include="EvadeAction.cpp" />
+    <ClCompile Include="FleeAction.cpp" />
     <ClCompile Include="FollowAction.cpp" />
     <ClCompile Include="FuzzyMemberSets.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
@@ -188,6 +193,7 @@
     <ClCompile Include="PlayerEvade.cpp" />
     <ClCompile Include="PlayerWander.cpp" />
     <ClCompile Include="SceneController.cpp" />
+    <ClCompile Include="SeekAction.cpp" />
     <ClCompile Include="WanderAction.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
