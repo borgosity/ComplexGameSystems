@@ -4,6 +4,7 @@
 #include <glm\gtx\norm.hpp>
 #include <algorithm>
 
+
 WanderAction::WanderAction()
 {
 	m_actionType = AN_WANDER;

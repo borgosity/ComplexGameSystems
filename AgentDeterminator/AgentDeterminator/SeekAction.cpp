@@ -30,7 +30,9 @@ void SeekAction::update(float a_dt, Agent & a_agent)
 {
 	if (m_pTarget != nullptr)
 	{
-		// the above compacted
+		// vector from agent to target
+		// scale vector by maxSpeed
+		// calculate the acceleration required to move agent to target (distance minus current velocity)
 		glm::vec3 acceleration = (glm::normalize(m_pTarget->movedata.position - a_agent.movedata.position) * a_agent.movedata.maxSpeed) - a_agent.movedata.velocity;
 
 		if (glm::length(acceleration) > a_agent.movedata.maxAcceleration)

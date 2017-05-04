@@ -15,8 +15,9 @@ struct WanderValues
 	float		distance;		// circle distance from player	
 	float		jitter;			// wander jitter
 	float		wanderAngle;		// wander angle
+	float		screenH;
+	float		screenW;
 };
-
 
 class WanderAction :
 	public Action

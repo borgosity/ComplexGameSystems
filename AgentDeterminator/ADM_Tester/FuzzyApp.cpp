@@ -54,7 +54,6 @@ void FuzzyApp::update(float a_dt)
 	// agent off screen?
 	offScreen();
 
-
 	m_playerAgent->vitals.currentDistance = glm::distance(m_playerAgent->position(), m_enemyAgent->position());
 	//m_playerAgent->update(deltaTime);
 	
@@ -105,7 +104,8 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 {
 	// line from original location to centre of circle
-	m_renderer->drawLine(a_wander.controls.prevLoc.x, a_wander.controls.prevLoc.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
+	//m_renderer->drawLine(a_wander.controls.prevLoc.x, a_wander.controls.prevLoc.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
+	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
 	// line to edge of circle
 	m_renderer->drawLine(a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, a_wander.controls.target.x, a_wander.controls.target.y, 2.0f);
 	// path agent should be heading along

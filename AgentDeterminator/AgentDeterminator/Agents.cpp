@@ -1,6 +1,10 @@
 #include "Agents.h"
 #include "WanderAction.h"
 #include "FollowAction.h"
+#include "FleeAction.h"
+#include "EvadeAction.h"
+#include "SeekAction.h"
+#include "AttackAction.h"
 
 #define M_PI       3.14159265358979323846   // pi
 
@@ -13,6 +17,34 @@ Agent::Agent()
 
 Agent::~Agent()
 {
+}
+void Agent::move(float a_dt)
+{
+	// update velocity vector
+	movedata.velocity += movedata.acceleration * a_dt;
+
+	glm::vec3 vel = movedata.velocity;
+
+	// check if the magnitude of the velocity is greater than max speed
+	if (glm::length(vel) > movedata.maxSpeed)
+	{
+		// update members old vars 
+		vel = glm::normalize(vel) * movedata.maxSpeed;
+
+		// update new vector style member vars
+		movedata.velocity = glm::normalize(vel) * movedata.maxSpeed;
+
+	}
+
+	// set rotation
+	movedata.rotation = (float)atan2(movedata.velocity.x, movedata.velocity.y) * M_PI / 2;
+
+	// reset acceleration vector
+	movedata.acceleration.x = 0.0f;
+	movedata.acceleration.y = 0.0f;
+
+	// increase postition vector by velocity vector
+	movedata.position += movedata.velocity;
 }
 /******************************************************************************************************************************
 * Player Agent
@@ -40,6 +72,7 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = PLAYER;
+	vitals.dead = false;
 	// movement
 	movedata.position = a_position;
 	movedata.acceleration = glm::vec3(0.0f);
@@ -62,7 +95,11 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	m_wanderBehaviour->traits.priority = 3;	// wander around if all is cool
 	// actions
 	m_wanderAction = new WanderAction(20.0f, 0.25f, 150.0f);
+	m_attackAction = new AttackAction();
+	m_evadeAction = new EvadeAction();
 	actions.push_back(m_wanderAction);
+	actions.push_back(m_evadeAction);
+	actions.push_back(m_attackAction);
 }
 
 PlayerAgent::~PlayerAgent()
@@ -71,7 +108,9 @@ PlayerAgent::~PlayerAgent()
 void PlayerAgent::update(float a_dt)
 {
 	// check decision
-
+	if (vitals.dead) {
+		return;
+	}
 	// if health or distance has changed reevaluate
 	m_wanderBehaviour->update(*this);
 	m_evadeBehaviour->update(*this);
@@ -79,43 +118,9 @@ void PlayerAgent::update(float a_dt)
 
 	// ----------------------------------- do appropriate action
 	m_wanderAction->update(a_dt, *this);
-	std::cout << "-- Player pos = " << movedata.position.x << ", " << movedata.position.y << std::endl;
-
 
 	// ----------------------------------- movement after action processed -----------------------------------
-	// update velocity vector
-	movedata.velocity += movedata.acceleration * a_dt;
-
-	glm::vec3 vel = movedata.velocity;
-
-	// check if the magnitude of the velocity is greater than max speed
-	if (glm::length(vel) > movedata.maxSpeed)
-	{
-		// update members old vars 
-		vel = glm::normalize(vel) * movedata.maxSpeed;
-
-		// update new vector style member vars
-		movedata.velocity = glm::normalize(vel) * movedata.maxSpeed;
-
-	}
-
-	// set rotation
-	movedata.rotation = (float)atan2(movedata.velocity.x, movedata.velocity.y) * M_PI / 2;
-
-	// reset acceleration vector
-	movedata.acceleration.x = 0.0f;
-	movedata.acceleration.y = 0.0f;
-
-	// increase postition vector by velocity vector
-	movedata.position += movedata.velocity;
-
-	// reduce agent health over time
-	if (vitals.health > 0) {
-		vitals.health -= a_dt;
-	}
-	else {
-		vitals.health = 0;
-	}
+	move(a_dt);
 }
 /******************************************************************************************************************************
 * Enemy Agent
@@ -143,6 +148,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = ENEMY;
+	vitals.dead = false;
 	// movement
 	movedata.position = a_position;
 	movedata.velocity.x = 0.0f;
@@ -165,8 +171,12 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	m_attackBehaviour->traits.priority = 2;	// attack if possible
 	m_seekBehaviour->traits.priority = 3;	// find something to attack
 	// actions
-	//m_wAction = new WanderAction(50.0f, 0.25f, 50.0f);
-	//actions.push_back(m_wanderAction);
+	m_wanderAction = new WanderAction(50.0f, 0.25f, 50.0f);
+	m_fleeAction = new FleeAction();
+	m_attackAction = new AttackAction();
+	actions.push_back(m_wanderAction);
+	actions.push_back(m_attackAction);
+	actions.push_back(m_fleeAction);
 }
 
 EnemyAgent::~EnemyAgent()
@@ -175,19 +185,48 @@ EnemyAgent::~EnemyAgent()
 void EnemyAgent::update(float a_dt)
 {
 	// check decision
+	if (vitals.dead) {
+		return;
+	}
 	// if health or distance has changed reevaluate
 	m_seekBehaviour->update(*this);
 	m_fleeBehaviour->update(*this);
 	m_attackBehaviour->update(*this);
 
-
-
-	// reduce agent health over time
-	if (vitals.health > 0) {
-		vitals.health -= a_dt;
+	// ----------------------------------- do appropriate action
+	if (m_seekAction->targetAgent() != nullptr) {
+		m_seekAction->update(a_dt, *this);
 	}
-	else {
-		vitals.health = 0;
+	else
+	{
+		if (m_pEnemyAgent != nullptr && !m_pEnemyAgent->vitals.dead) {
+			m_seekAction->targetAgent(m_pEnemyAgent);
+		}
+		else {
+			findTarget();
+			std::cout << "ERROR :: Enemy Agent has no enemy to follow (= nullptr)" << std::endl;
+		}
+	}
+
+	// ----------------------------------- movement after action processed -----------------------------------
+	move(a_dt);
+}
+void EnemyAgent::findTarget()
+{
+	float closestDistance = 0.0f;
+	Agent * closestAgent = nullptr;
+
+	for (auto agent : *m_agents)
+	{
+		// if not a friend
+		if (agent->vitals.type != ENEMY && !agent->vitals.dead) {
+			// get distance
+			float distance = glm::distance(movedata.position, agent->movedata.position);
+			// check if it is the closest yet seen
+			if (distance <= closestDistance){
+				closestAgent = agent;
+			}
+		}
 	}
 }
 /******************************************************************************************************************************
@@ -219,6 +258,7 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = COMPANION;
+	vitals.dead = false;
 	// movement
 	movedata.position = a_position;
 	movedata.velocity.x = 0.0f;
@@ -242,7 +282,11 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	m_attackBehaviour->traits.priority = 3; // attack when nessacary 
 	// actions
 	m_followAction = new FollowAction();
+	m_evadeAction = new EvadeAction();
+	m_attackAction = new AttackAction();
 	actions.push_back(m_followAction);
+	actions.push_back(m_evadeAction);
+	actions.push_back(m_attackAction);
 }
 
 CompanionAgent::~CompanionAgent()
@@ -253,6 +297,7 @@ CompanionAgent::~CompanionAgent()
 void CompanionAgent::update(float a_dt)
 {
 	// check decision
+
 	// if health or distance has changed reevaluate
 	m_followBehaviour->update(*this);
 	m_evadeBehaviour->update(*this);
@@ -271,49 +316,8 @@ void CompanionAgent::update(float a_dt)
 			std::cout << "ERROR :: Companion Agent has no buddy to follow (= nullptr)" << std::endl;
 		}
 	}
-	std::cout << "-- Player pos = " << movedata.position.x << ", " << movedata.position.y << std::endl;
-
 
 	// ----------------------------------- movement after action processed -----------------------------------
-	// update velocity vector
-	movedata.velocity += movedata.acceleration * a_dt;
+	move(a_dt);
 
-	glm::vec3 vel = movedata.velocity;
-
-	// check if the magnitude of the velocity is greater than max speed
-	if (glm::length(vel) > movedata.maxSpeed)
-	{
-		// update members old vars 
-		vel = glm::normalize(vel) * movedata.maxSpeed;
-
-		// update new vector style member vars
-		movedata.velocity = glm::normalize(vel) * movedata.maxSpeed;
-
-	}
-
-	// set rotation
-	movedata.rotation = (float)atan2(movedata.velocity.x, movedata.velocity.y) * M_PI / 2;
-
-	// reset acceleration vector
-	movedata.acceleration.x = 0.0f;
-	movedata.acceleration.y = 0.0f;
-
-	// increase postition vector by velocity vector
-	movedata.position += movedata.velocity;
-
-	// reduce agent health over time
-	if (vitals.health > 0) {
-		vitals.health -= a_dt;
-	}
-	else {
-		vitals.health = 0;
-	}
-
-	// reduce agent health over time
-	if (vitals.health > 0) {
-		vitals.health -= a_dt;
-	}
-	else {
-		vitals.health = 0;
-	}
 }

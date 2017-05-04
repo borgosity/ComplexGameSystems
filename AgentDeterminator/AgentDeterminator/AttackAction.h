@@ -5,7 +5,7 @@
 
 class Agent;
 
-struct SeekValues
+struct AttackValues
 {
 	glm::vec3	target;			// target vector
 	glm::vec3	prevLoc;		// previous location
@@ -13,25 +13,26 @@ struct SeekValues
 };
 
 
-class SeekAction :
+class AttackAction :
 	public Action
 {
 public:
-	SeekAction();
-	SeekAction(Agent * a_target);
-	virtual ~SeekAction();
+	AttackAction();
+	AttackAction(Agent * a_target);
+	virtual ~AttackAction();
 	virtual void update(float a_dt, Agent & a_agent);
 
-	Agent * targetAgent() { 
-		if (m_pTarget != nullptr) return m_pTarget;
-		else return	nullptr; };
+	Agent * targetAgent() { return m_pTarget; };
 	Agent * targetAgent(Agent * a_targetAgent) {
 		m_pTarget = a_targetAgent; return m_pTarget;
 	};
-	SeekValues controls;
+	bool arrivedToggle() { m_arrived = !m_arrived; return m_arrived; };
+	AttackValues controls;
 
 private:
 	// agent member variables
-	Agent * m_pTarget = nullptr;
+	Agent * m_pTarget;
+	bool m_arrived;
+	void arrive(float a_dt, Agent & a_agent);
 };
 

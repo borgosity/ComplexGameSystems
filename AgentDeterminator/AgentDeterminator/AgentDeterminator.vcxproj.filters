@@ -96,6 +96,12 @@
     <ClInclude Include="FleeAction.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
+    <ClInclude Include="PursueAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -162,6 +168,12 @@
       <Filter>Source Files\actions</Filter>
     </ClCompile>
     <ClCompile Include="FleeAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PursueAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackAction.cpp">
       <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>

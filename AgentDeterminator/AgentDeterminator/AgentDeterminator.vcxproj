@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="Agents.h" />
+    <ClInclude Include="AttackAction.h" />
     <ClInclude Include="CompanionAttack.h" />
     <ClInclude Include="Behaviour.h" />
     <ClInclude Include="Decisions.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="PlayerAttack.h" />
     <ClInclude Include="PlayerEvade.h" />
     <ClInclude Include="PlayerWander.h" />
+    <ClInclude Include="PursueAction.h" />
     <ClInclude Include="SceneController.h" />
     <ClInclude Include="SeekAction.h" />
     <ClInclude Include="WanderAction.h" />
@@ -175,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="Agents.cpp" />
+    <ClCompile Include="AttackAction.cpp" />
     <ClCompile Include="CompanionAttack.cpp" />
     <ClCompile Include="Behaviour.cpp" />
     <ClCompile Include="Decisions.cpp" />
@@ -192,6 +195,7 @@
     <ClCompile Include="PlayerAttack.cpp" />
     <ClCompile Include="PlayerEvade.cpp" />
     <ClCompile Include="PlayerWander.cpp" />
+    <ClCompile Include="PursueAction.cpp" />
     <ClCompile Include="SceneController.cpp" />
     <ClCompile Include="SeekAction.cpp" />
     <ClCompile Include="WanderAction.cpp" />

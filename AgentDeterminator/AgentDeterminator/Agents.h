@@ -12,7 +12,8 @@
 #include "PlayerEvade.h"
 #include "PlayerAttack.h"
 
-class Action;
+#include "Action.h"
+//class Action;
 class WanderAction;
 class FollowAction;
 class AttackAction;
@@ -42,6 +43,8 @@ struct AgentStats {
 	float currentDistance;	// distance from target
 	float minDistance;		// minimum distance to target
 	AgentType type;
+	bool dead;
+	ActionType action;
 };
 /******************************************************************************************************************************
 * Agent Movement Struct
@@ -71,6 +74,7 @@ public:
 	Agent();
 	virtual ~Agent();
 
+
 	virtual glm::vec3 position() override { return movedata.position; };
 	virtual glm::vec3 position(glm::vec3 a_position) override { movedata.position = a_position;  return movedata.position; };
 
@@ -78,8 +82,9 @@ public:
 	AgentStats		vitals;
 	MovementInfo	movedata;
 	std::vector<Action*> actions;
-protected:
 
+protected:
+	void move(float a_dt);
 };
 /******************************************************************************************************************************
 * Player Agent
@@ -94,6 +99,8 @@ public:
 	WanderAction * wanderPtr() { return m_wanderAction; };
 
 private:
+	// agents
+	Agent * m_pEnemyAgent = nullptr;
 	// Behaviours
 	PlayerWander * m_wanderBehaviour = nullptr;
 	PlayerEvade * m_evadeBehaviour = nullptr;
@@ -113,15 +120,20 @@ public:
 	virtual ~EnemyAgent();
 
 	virtual void update(float a_dt);
-
+	void findTarget();
 private:
+	// agents
+	Agent * m_pBuddyAgent = nullptr;
+	Agent * m_pEnemyAgent = nullptr;
+	// behaviours
 	EnemySeek	* m_seekBehaviour = nullptr;
 	EnemyFlee	* m_fleeBehaviour = nullptr;
 	EnemyAttack	* m_attackBehaviour = nullptr;
 	// Actions
 	SeekAction * m_seekAction = nullptr;
 	AttackAction * m_attackAction = nullptr;
-	EvadeAction * m_evadeAction = nullptr;
+	FleeAction * m_fleeAction = nullptr;
+	WanderAction * m_wanderAction = nullptr;
 };
 /******************************************************************************************************************************
 * Companion Agent
