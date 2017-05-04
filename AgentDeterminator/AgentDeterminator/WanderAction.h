@@ -36,7 +36,6 @@ private:
 	// private member functions
 	void setAngle(glm::vec2 & a_vec2, float a_wanderAngle);
 	void randomTarget();  // uses private meber variable to produce the target
-	void wander1(float a_dt, MovementInfo & a_movedata);
-	void wander2(float a_dt, MovementInfo & a_movedata);
+	void wander(float a_dt, MovementInfo & a_movedata);
 };
 

@@ -3,6 +3,7 @@
 #include "Renderer2D.h"
 #include "SceneController.h"
 #include "Agents.h"
+#include "GameDef.h"
 
 class FuzzyApp : public aie::Application
 {
@@ -28,5 +29,6 @@ private:
 
 	void drawAgents(aie::Renderer2D * a_renderer);
 	void drawWander(Agent & a_agent, WanderAction & a_wander);
+	void offScreen();
 };
 

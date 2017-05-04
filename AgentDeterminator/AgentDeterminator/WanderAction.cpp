@@ -2,6 +2,7 @@
 #include "Agents.h"
 #include <GLFW\glfw3.h>
 #include <glm\gtx\norm.hpp>
+#include <algorithm>
 
 WanderAction::WanderAction()
 {
@@ -33,8 +34,7 @@ void WanderAction::update(float a_dt, Agent & a_agent)
 	if ((glfwGetTime() - a_agent.movedata.prevTime) > a_agent.movedata.livelyness || (glfwGetTime() - a_agent.movedata.prevTime) < 0)
 	{
 		a_agent.movedata.prevTime = (float)glfwGetTime();
-		wander1(a_dt, a_agent.movedata);
-		//wander2(deltaTime, behaviour);
+		wander(a_dt, a_agent.movedata);
 	}
 
 	glm::vec3 acceleration = (glm::normalize(controls.target - a_agent.movedata.position) * a_agent.movedata.maxSpeed) - a_agent.movedata.velocity;
@@ -63,7 +63,7 @@ void WanderAction::randomTarget()
 	controls.target.y = controls.radius*sin(controls.wanderAngle) + controls.circleCentre.y;
 }
 
-void WanderAction::wander1(float a_dt, MovementInfo & a_movedata)
+void WanderAction::wander(float a_dt, MovementInfo & a_movedata)
 {
 	// reset velocity
 	a_movedata.velocity.x = 0;
@@ -90,34 +90,12 @@ void WanderAction::wander1(float a_dt, MovementInfo & a_movedata)
 	controls.wanderAngle += ((float)(rand() % 360 + 1) * controls.jitter) - (controls.jitter * 0.5f);
 
 	// calcutate and return wander force
-	glm::vec3 wanderForce(controls.circleCentre + controls.target);
+	//glm::vec3 wanderForce(controls.circleCentre + controls.target);
 
-	// calculate the acceleration required to move agent to target (distance minus current velocity)
-	//glm::vec2 acceleration(glm::distance(wanderForce, a_movedata.velocity) - a_movedata.velocity);
+	//// calculate the acceleration required to move agent to target (distance minus current velocity)
+	//glm::vec3 acceleration(glm::distance(wanderForce, a_movedata.velocity) - a_movedata.velocity);
+
 }
 
-void WanderAction::wander2(float a_dt, MovementInfo & a_movedata)
-{
-	//// pick a random target on the screen
-	glm::vec3 target((float)(rand() % 800 + 0.5), (float)(rand() % 600 + 0.5), 0.0f);
-
-	// vector from agent to target
-	glm::vec3 distance = glm::normalize(target - a_movedata.position);
-	distance *= controls.radius;
-	// scale vector by maxSpeed
-	distance = distance * a_movedata.maxSpeed;
-	// calculate the acceleration required to move agent to target (distance minus current velocity)
-	glm::vec3 acceleration = distance - a_movedata.velocity;
-
-	if (glm::length(acceleration) > a_movedata.maxAcceleration)
-	{
-		acceleration = glm::normalize(acceleration) * a_movedata.maxAcceleration;
-		a_movedata.acceleration = acceleration;
-	}
-
-	// Apply accleration to agent
-	a_movedata.velocity += acceleration * a_dt;
-	a_movedata.position += a_movedata.velocity * a_dt;
-}
 
 

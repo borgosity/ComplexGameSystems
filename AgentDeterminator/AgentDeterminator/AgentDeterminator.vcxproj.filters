@@ -84,6 +84,9 @@
     <ClInclude Include="WanderAction.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
+    <ClInclude Include="FollowAction.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files\actions</Filter>
     </ClCompile>
     <ClCompile Include="WanderAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowAction.cpp">
       <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>

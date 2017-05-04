@@ -8,7 +8,7 @@ int main()
 	FuzzyApp * app = new FuzzyApp();
 	
 	if (app != nullptr) {
-		app->run("AIE", 1280, 720, false);
+		app->run("AIE", SCREEN_W, SCREEN_H, false);
 	}
 
 	delete app;

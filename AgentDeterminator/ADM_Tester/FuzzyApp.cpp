@@ -4,8 +4,6 @@
 #include "glm\glm.hpp"
 #include "WanderAction.h"
 
-#define M_PI       3.14159265358979323846   // pi
-
 FuzzyApp::FuzzyApp()
 {
 }
@@ -23,9 +21,10 @@ bool FuzzyApp::startup()
 	//scene controller
 	m_sceneController = new SceneController();
 	// agents
-	m_buddyAgent = new CompanionAgent("Buddy", glm::vec3(100.0f, 100.0f, 0.0f));
+	m_playerAgent = new PlayerAgent("Hero", glm::vec3(0.0f, 0.0f, 0.0f));
+	m_buddyAgent = new CompanionAgent("Buddy", glm::vec3(400.0f, 500.0f, 0.0f));
+	m_buddyAgent->buddyAgent(m_playerAgent);
 	m_enemyAgent = new EnemyAgent("Enemy", glm::vec3(500.0f, 400.0f, 0.0f));
-	m_playerAgent = new PlayerAgent("Hero", glm::vec3(50.0f, 50.0f, 0.0f));
 	// add egents to scene controller
 	m_sceneController->addAgent(m_buddyAgent);
 	m_sceneController->addAgent(m_enemyAgent);
@@ -51,6 +50,9 @@ void FuzzyApp::update(float a_dt)
 
 	// update agents
 	m_sceneController->update(a_dt);
+
+	// agent off screen?
+	offScreen();
 
 
 	m_playerAgent->vitals.currentDistance = glm::distance(m_playerAgent->position(), m_enemyAgent->position());
@@ -122,6 +124,33 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 		}
 		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
 		point1 = point2;
+	}
+}
+
+void FuzzyApp::offScreen()
+{
+	for (auto agent : m_sceneController->m_agentObjects)
+	{
+		// gone off east side of screen
+		if (agent->movedata.position.x > (SCREEN_W + agent->vitals.size))
+		{
+			agent->movedata.position.x = (0.0f + agent->vitals.size);
+		}
+		// gone off west side of screen
+		if (agent->movedata.position.x < (0.0f - agent->vitals.size))
+		{
+			agent->movedata.position.x = (SCREEN_W - agent->vitals.size);
+		}
+		// gone off north side of screen
+		if (agent->movedata.position.y > (SCREEN_H + agent->vitals.size))
+		{
+			agent->movedata.position.y = (0.0f + agent->vitals.size);
+		}
+		// gone off south side of screen
+		if (agent->movedata.position.y < (0.0f - agent->vitals.size))
+		{
+			agent->movedata.position.y = (SCREEN_H - agent->vitals.size);
+		}
 	}
 }
 

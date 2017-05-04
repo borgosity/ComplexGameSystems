@@ -14,6 +14,11 @@
 
 class Action;
 class WanderAction;
+class FollowAction;
+class AttackAction;
+class SeekAction;
+class FleeAction;
+class EvadeAction;
 
 /******************************************************************************************************************************
 * Agent Statistics Struct
@@ -89,10 +94,14 @@ public:
 	WanderAction * wanderPtr() { return m_wanderAction; };
 
 private:
+	// Behaviours
 	PlayerWander * m_wanderBehaviour = nullptr;
 	PlayerEvade * m_evadeBehaviour = nullptr;
 	PlayerAttack * m_attackBehaviour = nullptr;
+	// Actions
 	WanderAction * m_wanderAction = nullptr;
+	AttackAction * m_attackAction = nullptr;
+	EvadeAction * m_evadeAction = nullptr;
 };
 /******************************************************************************************************************************
 * Enemy Agent
@@ -109,6 +118,10 @@ private:
 	EnemySeek	* m_seekBehaviour = nullptr;
 	EnemyFlee	* m_fleeBehaviour = nullptr;
 	EnemyAttack	* m_attackBehaviour = nullptr;
+	// Actions
+	SeekAction * m_seekAction = nullptr;
+	AttackAction * m_attackAction = nullptr;
+	EvadeAction * m_evadeAction = nullptr;
 };
 /******************************************************************************************************************************
 * Companion Agent
@@ -120,10 +133,29 @@ public:
 	virtual ~CompanionAgent();
 
 	virtual void update(float a_dt);
+	// set get
+	Agent * buddyAgent() { return m_pBuddyAgent; };
+	Agent * buddyAgent(Agent * a_buddyAgent) {
+		m_pBuddyAgent = a_buddyAgent; return m_pBuddyAgent;
+	};
+	Agent * enemyAgent() { return m_pEnemyAgent; };
+	Agent * enemyAgent(Agent * a_enemyAgent) {
+		m_pEnemyAgent = a_enemyAgent; return m_pEnemyAgent;
+	};
 
 private:
+	// agents
+	Agent * m_pBuddyAgent = nullptr;
+	Agent * m_pEnemyAgent = nullptr;
+
+	// behaviours
 	CompanionFollow	* m_followBehaviour = nullptr;
 	CompanionEvade	* m_evadeBehaviour = nullptr;
 	CompanionAttack	* m_attackBehaviour = nullptr;
+
+	// Actions
+	FollowAction * m_followAction = nullptr;
+	AttackAction * m_attackAction = nullptr;
+	EvadeAction * m_evadeAction = nullptr;
 };
 

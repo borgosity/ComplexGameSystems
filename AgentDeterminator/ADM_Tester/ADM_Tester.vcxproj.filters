@@ -26,5 +26,8 @@
     <ClInclude Include="FuzzyApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
