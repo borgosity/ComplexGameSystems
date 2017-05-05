@@ -15,6 +15,7 @@ enum ActionType
 	AN_SEEK,
 	AN_WAIT,
 	AN_WANDER,
+	AN_NONE
 };
 
 /// Base class for Agent Actions

@@ -21,15 +21,16 @@ bool FuzzyApp::startup()
 	//scene controller
 	m_sceneController = new SceneController();
 	// agents
-	m_playerAgent = new PlayerAgent("Hero", glm::vec3(0.0f, 0.0f, 0.0f));
+	m_playerAgent = new PlayerAgent("Hero", glm::vec3(400.0f, 400.0f, 0.0f));
 	m_buddyAgent = new CompanionAgent("Buddy", glm::vec3(400.0f, 500.0f, 0.0f));
-	m_buddyAgent->buddyAgent(m_playerAgent);
 	m_enemyAgent = new EnemyAgent("Enemy", glm::vec3(500.0f, 400.0f, 0.0f));
 	// add egents to scene controller
 	m_sceneController->addAgent(m_buddyAgent);
 	m_sceneController->addAgent(m_enemyAgent);
 	m_sceneController->addAgent(m_playerAgent);
-
+	// initialise agent behaviours
+	m_buddyAgent->buddyAgent(m_playerAgent);
+	m_enemyAgent->findTarget();
 	return true;
 }
 
@@ -79,9 +80,12 @@ void FuzzyApp::draw()
 	// draw your stuff here!
 	drawAgents(m_renderer);
 	drawWander(*m_playerAgent, *m_playerAgent->wanderPtr());
+	drawSeek(*m_enemyAgent);
+	drawGUI();
 
 	// output some text
 	m_renderer->drawText(m_font, "Press ESC to quit", 0, 0);
+
 
 	// done drawing sprites
 	m_renderer->end();
@@ -114,6 +118,8 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 	// draw a cirle with lines
 	double slice = 2 * M_PI / 360;
 	glm::vec2 point1(0.0f, 0.0f);
+
+
 	for (int i = 0; i < 360; i++)
 	{
 		double angle = slice * i;
@@ -124,6 +130,42 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 		}
 		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
 		point1 = point2;
+	}
+}
+
+void FuzzyApp::drawSeek(Agent & a_agent)
+{
+	// draw a cirle with lines
+	double slice = 2 * M_PI / 360;
+	glm::vec2 point1(0.0f, 0.0f);
+	
+	// set coulor
+	glm::vec4 colour = a_agent.colour();
+	m_renderer->setRenderColour(colour.r, colour.g, colour.b, colour.a);
+
+	// simplify data
+	float radius = a_agent.movedata.sight;
+	glm::vec3 center = a_agent.movedata.position;
+
+	// draw points
+	for (int i = 0; i < 360; i++)
+	{
+		double angle = slice * i;
+		glm::vec2 point2(center.x + radius * cos(angle), center.y + radius * sin(angle));
+		if (point1.x == 0 && point1.y == 0)
+		{
+			point1 = point2;
+		}
+		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
+		point1 = point2;
+	}
+}
+
+void FuzzyApp::drawGUI()
+{
+	for (auto agent : m_sceneController->m_agentObjects)
+	{
+		agent->drawGUI();
 	}
 }
 

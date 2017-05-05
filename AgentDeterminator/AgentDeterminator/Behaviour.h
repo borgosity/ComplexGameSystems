@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+#include "Action.h"
 
 class Agent;
 
@@ -9,8 +11,8 @@ struct BehaviourTraits
 	float priority;
 	float currWeight;
 	float prevWeight;
+	ActionType action;
 };
-
 
 class Behaviour
 {
@@ -20,9 +22,9 @@ public:
 
 	void virtual update(Agent & a_agent) = 0;
 	void virtual destroy() = 0;
-
+	std::vector<float> virtual desireSettings() = 0;
 	BehaviourTraits traits;
-
+	
 protected:
 
 	float AND(float a_left, float a_right);

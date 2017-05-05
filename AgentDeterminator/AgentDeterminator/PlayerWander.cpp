@@ -9,6 +9,8 @@ PlayerWander::PlayerWander()
 
 PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_wanderMin, float a_wanderMax)
 {
+	traits.name = "Wander";
+	traits.action = AN_WANDER;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;

@@ -2,17 +2,9 @@
 #include <vector>
 #include <iostream>
 #include "GameObject.h"
-#include "CompanionFollow.h"
-#include "CompanionEvade.h"
-#include "CompanionAttack.h"
-#include "EnemySeek.h"
-#include "EnemyFlee.h"
-#include "EnemyAttack.h"
-#include "PlayerWander.h"
-#include "PlayerEvade.h"
-#include "PlayerAttack.h"
-
 #include "Action.h"
+#include "Decisions.h"
+
 //class Action;
 class WanderAction;
 class FollowAction;
@@ -78,6 +70,7 @@ public:
 	virtual glm::vec3 position() override { return movedata.position; };
 	virtual glm::vec3 position(glm::vec3 a_position) override { movedata.position = a_position;  return movedata.position; };
 
+	void virtual drawGUI() = 0;
 	std::vector<Agent*> * m_agents;
 	AgentStats		vitals;
 	MovementInfo	movedata;
@@ -85,6 +78,7 @@ public:
 
 protected:
 	void move(float a_dt);
+	void healthCheck();
 };
 /******************************************************************************************************************************
 * Player Agent
@@ -96,15 +90,14 @@ public:
 	virtual ~PlayerAgent();
 
 	virtual void update(float a_dt);
+	void drawGUI();
 	WanderAction * wanderPtr() { return m_wanderAction; };
-
+	void findEnemy();
 private:
 	// agents
 	Agent * m_pEnemyAgent = nullptr;
-	// Behaviours
-	PlayerWander * m_wanderBehaviour = nullptr;
-	PlayerEvade * m_evadeBehaviour = nullptr;
-	PlayerAttack * m_attackBehaviour = nullptr;
+	// brain
+	PlayerBrain * m_brain = nullptr;
 	// Actions
 	WanderAction * m_wanderAction = nullptr;
 	AttackAction * m_attackAction = nullptr;
@@ -120,15 +113,15 @@ public:
 	virtual ~EnemyAgent();
 
 	virtual void update(float a_dt);
+	void drawGUI();
 	void findTarget();
 private:
 	// agents
 	Agent * m_pBuddyAgent = nullptr;
 	Agent * m_pEnemyAgent = nullptr;
-	// behaviours
-	EnemySeek	* m_seekBehaviour = nullptr;
-	EnemyFlee	* m_fleeBehaviour = nullptr;
-	EnemyAttack	* m_attackBehaviour = nullptr;
+	bool	m_allDead; // flag for all enemies dead
+	// brain
+	EnemyBrain * m_brain = nullptr;
 	// Actions
 	SeekAction * m_seekAction = nullptr;
 	AttackAction * m_attackAction = nullptr;
@@ -145,6 +138,9 @@ public:
 	virtual ~CompanionAgent();
 
 	virtual void update(float a_dt);
+	void drawGUI();
+	void findEnemy();
+
 	// set get
 	Agent * buddyAgent() { return m_pBuddyAgent; };
 	Agent * buddyAgent(Agent * a_buddyAgent) {
@@ -159,12 +155,8 @@ private:
 	// agents
 	Agent * m_pBuddyAgent = nullptr;
 	Agent * m_pEnemyAgent = nullptr;
-
-	// behaviours
-	CompanionFollow	* m_followBehaviour = nullptr;
-	CompanionEvade	* m_evadeBehaviour = nullptr;
-	CompanionAttack	* m_attackBehaviour = nullptr;
-
+	// brain
+	CompanionBrain * m_brain = nullptr;
 	// Actions
 	FollowAction * m_followAction = nullptr;
 	AttackAction * m_attackAction = nullptr;

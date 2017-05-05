@@ -16,6 +16,7 @@ public:
 	virtual  ~EnemySeek();
 
 	void update(Agent & a_agent);
+	std::vector<float> desireSettings() { return seekable(); };
 
 	// get fuzzy settings
 	std::vector<float> distance() { return m_distanceSettings; };

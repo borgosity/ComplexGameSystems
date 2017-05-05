@@ -9,6 +9,8 @@ CompanionAttack::CompanionAttack()
 
 CompanionAttack::CompanionAttack(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_attackMin, float a_attackMax)
 {
+	traits.name = "Attack";
+	traits.action = AN_ATTACK;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;

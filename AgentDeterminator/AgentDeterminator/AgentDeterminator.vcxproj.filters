@@ -25,6 +25,9 @@
     <Filter Include="Source Files\actions">
       <UniqueIdentifier>{50c0dd09-f34e-48c5-9e0f-79d262281fbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\dependencies">
+      <UniqueIdentifier>{b7f51920-09d2-479d-b592-cef6cb9ccd2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -102,6 +105,15 @@
     <ClInclude Include="AttackAction.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
+    <ClInclude Include="gl_core_4_4.h">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_glfw3.h">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="FuzzyStructs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -146,16 +158,10 @@
     <ClCompile Include="PlayerEvade.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerWander.cpp">
-      <Filter>Source Files\behaviours</Filter>
-    </ClCompile>
     <ClCompile Include="SceneController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Action.cpp">
-      <Filter>Source Files\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="WanderAction.cpp">
       <Filter>Source Files\actions</Filter>
     </ClCompile>
     <ClCompile Include="FollowAction.cpp">
@@ -175,6 +181,18 @@
     </ClCompile>
     <ClCompile Include="AttackAction.cpp">
       <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_core_4_4.c">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_glfw3.cpp">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="WanderAction.cpp">
+      <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerWander.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

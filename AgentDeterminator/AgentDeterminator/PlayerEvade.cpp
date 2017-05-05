@@ -9,6 +9,8 @@ PlayerEvade::PlayerEvade()
 
 PlayerEvade::PlayerEvade(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_evadeMin, float a_evadeMax)
 {
+	traits.name = "Evade";
+	traits.action = AN_EVADE;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;

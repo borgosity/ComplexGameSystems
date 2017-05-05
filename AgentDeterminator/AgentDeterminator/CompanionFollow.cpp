@@ -9,6 +9,8 @@ CompanionFollow::CompanionFollow()
 
 CompanionFollow::CompanionFollow(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_followMin, float a_followMax)
 {
+	traits.name = "Follow";
+	traits.action = AN_FOLLOW;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;

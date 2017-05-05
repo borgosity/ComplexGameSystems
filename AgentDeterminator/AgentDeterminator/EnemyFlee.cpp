@@ -9,6 +9,8 @@ EnemyFlee::EnemyFlee()
 
 EnemyFlee::EnemyFlee(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_fleeMin, float a_fleeMax)
 {
+	traits.name = "Flee";
+	traits.action = AN_FLEE;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;

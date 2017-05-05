@@ -15,6 +15,7 @@ public:
 		float a_fleeLowMin, float fleeLowMax, float a_fleeMediumMin, float a_fleeMediumMid, float fleeMediumMax, float a_fleeHighMin, float fleeHighMax);
 
 	void update(Agent & a_agent);
+	std::vector<float> desireSettings() { return fleeable(); };
 
 	// get fuzzy settings
 	std::vector<float> distance() { return m_distanceSettings; };

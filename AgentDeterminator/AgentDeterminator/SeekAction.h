@@ -22,9 +22,7 @@ public:
 	virtual ~SeekAction();
 	virtual void update(float a_dt, Agent & a_agent);
 
-	Agent * targetAgent() { 
-		if (m_pTarget != nullptr) return m_pTarget;
-		else return	nullptr; };
+	Agent * targetAgent() { return m_pTarget;};
 	Agent * targetAgent(Agent * a_targetAgent) {
 		m_pTarget = a_targetAgent; return m_pTarget;
 	};
@@ -32,6 +30,6 @@ public:
 
 private:
 	// agent member variables
-	Agent * m_pTarget = nullptr;
+	Agent * m_pTarget;
 };
 

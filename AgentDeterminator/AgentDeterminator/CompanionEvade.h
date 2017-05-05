@@ -15,6 +15,7 @@ public:
 		float a_evadeLowMin, float evadeLowMax, float a_evadeMediumMin, float a_evadeMediumMid, float evadeMediumMax, float a_evadeHighMin, float evadeHighMax);
 
 	void update(Agent & a_agent);
+	std::vector<float> desireSettings() { return evadeable(); };
 
 	// get fuzzy settings
 	std::vector<float> distance() { return m_distanceSettings; };

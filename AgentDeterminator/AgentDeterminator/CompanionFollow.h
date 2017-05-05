@@ -16,6 +16,7 @@ public:
 	virtual  ~CompanionFollow();
 
 	void update(Agent & a_agent);
+	std::vector<float> desireSettings() { return followable(); };
 
 	// get fuzzy settings
 	std::vector<float> distance() { return m_distanceSettings; };

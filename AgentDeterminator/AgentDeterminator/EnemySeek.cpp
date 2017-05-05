@@ -9,6 +9,8 @@ EnemySeek::EnemySeek()
 
 EnemySeek::EnemySeek(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_seekMin, float a_seekMax)
 {
+	traits.name = "Seek";
+	traits.action = AN_SEEK;
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;
