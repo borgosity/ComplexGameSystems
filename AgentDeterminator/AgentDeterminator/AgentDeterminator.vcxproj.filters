@@ -25,6 +25,9 @@
     <Filter Include="Source Files\actions">
       <UniqueIdentifier>{50c0dd09-f34e-48c5-9e0f-79d262281fbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\dependencies">
+      <UniqueIdentifier>{3a9f0cd5-12b2-45bb-9491-fc057b524b20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -102,6 +105,12 @@
     <ClInclude Include="AttackAction.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
+    <ClInclude Include="gl_core_4_4.h">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_glfw3.h">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Decisions.cpp">
@@ -175,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="AttackAction.cpp">
       <Filter>Source Files\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_core_4_4.c">
+      <Filter>Resource Files\dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_glfw3.cpp">
+      <Filter>Resource Files\dependencies</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

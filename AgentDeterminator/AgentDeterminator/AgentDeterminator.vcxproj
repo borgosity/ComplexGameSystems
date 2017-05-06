@@ -92,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glm; $(SolutionDir)dependencies\glfw\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glm; $(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glm; $(SolutionDir)dependencies\glfw\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glm; $(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +166,8 @@
     <ClInclude Include="FuzzyMemberSets.h" />
     <ClInclude Include="FuzzyMemberTypes.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="gl_core_4_4.h" />
+    <ClInclude Include="imgui_glfw3.h" />
     <ClInclude Include="PlayerAttack.h" />
     <ClInclude Include="PlayerEvade.h" />
     <ClInclude Include="PlayerWander.h" />
@@ -192,6 +194,8 @@
     <ClCompile Include="FuzzyMemberSets.cpp" />
     <ClCompile Include="FuzzyMemberTypes.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="gl_core_4_4.c" />
+    <ClCompile Include="imgui_glfw3.cpp" />
     <ClCompile Include="PlayerAttack.cpp" />
     <ClCompile Include="PlayerEvade.cpp" />
     <ClCompile Include="PlayerWander.cpp" />
