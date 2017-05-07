@@ -113,6 +113,9 @@ public:
 private:
 	// agents
 	Agent * m_pEnemyAgent = nullptr;
+	bool m_bShowWanderSets;
+	bool m_bShowEvadeSets;
+	bool m_bShowAttackSets;
 	// Behaviours
 	PlayerWander * m_wanderBehaviour = nullptr;
 	PlayerEvade * m_evadeBehaviour = nullptr;

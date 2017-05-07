@@ -1,13 +1,19 @@
 #include "FuzzyMemberTypes.h"
 
 
+FuzzyMemberFunction::~FuzzyMemberFunction()
+{
+}
+
+
 /**********************************************************************************************************
 * Left Shoulder Functions
 ***********************************************************************************************************/
 FMF_LeftShoulder::FMF_LeftShoulder(float a_startValue, float a_endValaue)
 {
-	m_fLeftValue = a_startValue;
-	m_fPeakLeftValue = a_endValaue;
+	graph.name = "Left Shoulder";
+	graph.start = a_startValue;
+	graph.end = a_endValaue;
 	// values vector
 	m_values.push_back(a_startValue);
 	m_values.push_back(a_endValaue);
@@ -19,29 +25,29 @@ FMF_LeftShoulder::~FMF_LeftShoulder()
 float FMF_LeftShoulder::membership(float a_value)
 {
 	float result = 0;
-	if (a_value <= m_fLeftValue) {
+	if (a_value <= graph.start) {
 		result = 1;
 	}
-	else if (a_value >= m_fPeakLeftValue) {
+	else if (a_value >= graph.end) {
 		result = 0;
 	}
 	else {
-		result = (-a_value / (m_fPeakLeftValue - m_fLeftValue)) + (m_fPeakLeftValue / (m_fPeakLeftValue - m_fLeftValue));
+		result = (-a_value / (graph.end - graph.start)) + (graph.end / (graph.end - graph.start));
 	}
 	return result;
 }
 /// Returns maximum membership value
 float FMF_LeftShoulder::maxMembership()
 {
-	return (m_fLeftValue) * 0.5f;
+	return (graph.start) * 0.5f;
 }
 std::vector<float> FMF_LeftShoulder::settings(std::vector<float> a_values)
 {
 	// vector values
 	m_values = a_values;
 	// float values
-	m_fLeftValue = m_values[0];
-	m_fPeakLeftValue = m_values[1];
+	graph.start = m_values[0];
+	graph.end = m_values[1];
 
 	return m_values;
 }
@@ -50,8 +56,9 @@ std::vector<float> FMF_LeftShoulder::settings(std::vector<float> a_values)
 ***********************************************************************************************************/
 FMF_RightShoulder::FMF_RightShoulder(float a_startValue, float a_endValaue)
 {
-	m_fRightValue = a_startValue;
-	m_fPeakRightValue = a_endValaue;
+	graph.name = "Right Shoulder";
+	graph.start = a_startValue;
+	graph.end = a_endValaue;
 	// values vector
 	m_values.push_back(a_startValue);
 	m_values.push_back(a_endValaue);
@@ -63,29 +70,29 @@ FMF_RightShoulder::~FMF_RightShoulder()
 float FMF_RightShoulder::membership(float a_value)
 {
 	float result = 0;
-	if (a_value <= m_fRightValue) {
+	if (a_value <= graph.start) {
 		result = 0;
 	}
-	else if (a_value >= m_fPeakRightValue) {
+	else if (a_value >= graph.end) {
 		result = 1;
 	}
 	else {
-		result = (a_value / (m_fPeakRightValue - m_fRightValue)) - (m_fRightValue / (m_fPeakRightValue - m_fRightValue));
+		result = (a_value / (graph.end - graph.start)) - (graph.start / (graph.end - graph.start));
 	}
 	return result;
 }
 /// Returns maximum membership value
 float FMF_RightShoulder::maxMembership()
 {
-	return (m_fRightValue + 1) * 0.5f;
+	return (graph.start + 1) * 0.5f;
 }
 std::vector<float> FMF_RightShoulder::settings(std::vector<float> a_values)
 {
 	// vector values
 	m_values = a_values;
 	// float values
-	m_fRightValue = m_values[0];
-	m_fPeakRightValue = m_values[1];
+	graph.start = m_values[0];
+	graph.end = m_values[1];
 
 	return m_values;
 }
@@ -94,9 +101,10 @@ std::vector<float> FMF_RightShoulder::settings(std::vector<float> a_values)
 ***********************************************************************************************************/
 FMF_Triangular::FMF_Triangular(float a_minStartValue, float a_maxPeakValue, float a_minEndVlaue)
 {
-	m_fLeftValue = a_minStartValue;
-	m_fPeakValue = a_maxPeakValue;
-	m_fRightValue = a_minEndVlaue;
+	graph.name = "Triangular";
+	graph.start = a_minStartValue;
+	graph.peak = a_maxPeakValue;
+	graph.end = a_minEndVlaue;
 	// values vector
 	m_values.push_back(a_minStartValue);
 	m_values.push_back(a_maxPeakValue);
@@ -109,33 +117,33 @@ FMF_Triangular::~FMF_Triangular()
 float FMF_Triangular::membership(float a_value)
 {
 	float result = 0;
-	if (a_value <= m_fLeftValue || a_value >= m_fRightValue) {
+	if (a_value <= graph.start || a_value >= graph.end) {
 		result = 0;
 	}
-	else if (a_value == m_fPeakValue) {
+	else if (a_value == graph.peak) {
 		result = 1;
 	}
-	else if ((a_value > m_fLeftValue) && (a_value < m_fPeakValue)) {
-		result = (a_value / (m_fPeakValue - m_fLeftValue)) - (m_fLeftValue / (m_fPeakValue - m_fLeftValue));
+	else if ((a_value > graph.start) && (a_value < graph.peak)) {
+		result = (a_value / (graph.peak - graph.start)) - (graph.start / (graph.peak - graph.start));
 	}
 	else {
-		result = (-a_value / (m_fRightValue - m_fPeakValue)) + (m_fRightValue / (m_fRightValue - m_fPeakValue));
+		result = (-a_value / (graph.end - graph.peak)) + (graph.end / (graph.end - graph.peak));
 	}
 	return result;
 }
 /// Returns maximum membership value
 float FMF_Triangular::maxMembership()
 {
-	return m_fPeakValue;
+	return graph.peak;
 }
 std::vector<float> FMF_Triangular::settings(std::vector<float> a_values)
 {
 	// vector values
 	m_values = a_values;
 	// float values
-	m_fLeftValue = m_values[0];
-	m_fPeakValue = m_values[1];
-	m_fRightValue = m_values[2];
+	graph.start = m_values[0];
+	graph.peak = m_values[1];
+	graph.end = m_values[2];
 
 	return m_values;
 }
@@ -144,10 +152,12 @@ std::vector<float> FMF_Triangular::settings(std::vector<float> a_values)
 ***********************************************************************************************************/
 FMF_Trapazoid::FMF_Trapazoid(float a_minStartValue, float a_maxStartValue, float a_maxEndValue, float a_minEndVlaue)
 {
-	m_fLeftValue = a_minStartValue;
-	m_fPeakLeftValue = a_maxStartValue;
-	m_fPeakRightValue = a_maxEndValue;
-	m_fRightValue = a_minEndVlaue;
+	graph.name = "Trapazoid";
+	graph.start = a_minStartValue;
+	graph.peak = a_maxStartValue;
+	graph.peakB = a_maxEndValue;
+	graph.end = a_minEndVlaue;
+
 	// values vector
 	m_values.push_back(a_minStartValue);
 	m_values.push_back(a_maxStartValue);
@@ -161,24 +171,24 @@ FMF_Trapazoid::~FMF_Trapazoid()
 float FMF_Trapazoid::membership(float a_value)
 {
 	float result = 0;
-	if (a_value <= m_fLeftValue || a_value >= m_fRightValue) {
+	if (a_value <= graph.start || a_value >= graph.end) {
 		result = 0;
 	}
-	else if ((a_value >= m_fPeakLeftValue) && (a_value <= m_fPeakRightValue)) {
+	else if ((a_value >= graph.peak) && (a_value <= graph.peakB)) {
 		result = 1;
 	}
-	else if ((a_value > m_fLeftValue) && (a_value < m_fPeakLeftValue)) {
-		result = (a_value / (m_fPeakLeftValue - m_fLeftValue)) - (m_fLeftValue / (m_fPeakLeftValue - m_fLeftValue));
+	else if ((a_value > graph.start) && (a_value < graph.peak)) {
+		result = (a_value / (graph.peak - graph.start)) - (graph.start / (graph.peak - graph.start));
 	}
 	else {
-		result = (-a_value / (m_fRightValue - m_fPeakRightValue)) + (m_fRightValue / (m_fRightValue - m_fPeakRightValue));
+		result = (-a_value / (graph.end - graph.peakB)) + (graph.end / (graph.end - graph.peakB));
 	}
 	return result;
 }
 /// Returns maximum membership value
 float FMF_Trapazoid::maxMembership()
 {
-	return (m_fPeakLeftValue + m_fPeakRightValue) * 0.5f;
+	return (graph.peak + graph.peakB) * 0.5f;
 }
 
 std::vector<float> FMF_Trapazoid::settings(std::vector<float> a_values)
@@ -186,14 +196,10 @@ std::vector<float> FMF_Trapazoid::settings(std::vector<float> a_values)
 	// vector values
 	m_values = a_values;
 	// float values
-	m_fLeftValue = m_values[0];
-	m_fPeakLeftValue = m_values[1];
-	m_fPeakRightValue = m_values[2];
-	m_fRightValue = m_values[3];
+	graph.start = m_values[0];
+	graph.peak = m_values[1];
+	graph.peakB = m_values[2];
+	graph.end = m_values[3];
 
 	return m_values;
-}
-
-FuzzyMemberFunction::~FuzzyMemberFunction()
-{
 }

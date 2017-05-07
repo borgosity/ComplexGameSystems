@@ -1,16 +1,18 @@
 #pragma once
 #include <string>
+#include <list>
 
 class Agent;
 
 struct BehaviourTraits
 {
-	std::string name;
-	float priority;
-	float currWeight;
-	float prevWeight;
+	std::string name = "No Name";
+	float priority = 1.0f;
+	float currWeight = 0.0f;
+	float prevWeight = 0.0f;
+	float maxHistory = 50.0f;
+	std::list<float> history = {0.0f};
 };
-
 
 class Behaviour
 {
@@ -28,7 +30,7 @@ protected:
 	float AND(float a_left, float a_right);
 	float OR(float a_left, float a_right);
 	float NOT(float a_value);
-
+	void saveHistory(float a_currVal);
 	template<typename T>
 	void deallocate(T a_ptr);
 };

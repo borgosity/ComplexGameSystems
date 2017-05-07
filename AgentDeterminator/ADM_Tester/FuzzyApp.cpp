@@ -105,7 +105,10 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 void FuzzyApp::drawAction(Agent & a_agent)
 {
 	
-	drawWander(a_agent, *m_playerAgent->wanderPtr());
+	if (a_agent.vitals.type == PLAYER) {
+		drawWander(a_agent, *m_playerAgent->wanderPtr());
+	}
+
 	drawRadius(a_agent);
 }
 

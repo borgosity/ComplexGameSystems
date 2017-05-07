@@ -1,6 +1,6 @@
 #include "PlayerWander.h"
 #include "Agents.h"
-
+#include "imgui_glfw3.h"
 
 
 PlayerWander::PlayerWander()
@@ -9,6 +9,7 @@ PlayerWander::PlayerWander()
 
 PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healthMin, float a_healthMax, float a_wanderMin, float a_wanderMax)
 {
+	traits.name = "Wander";
 	// ------------------ distance ------------------------------------------
 	// left variables
 	float distanceCloseMin = a_distanceMin;
@@ -23,7 +24,7 @@ PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
 		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax);
+		distanceFarMin, distanceFarMax, "Distance");
 
 	// ------------------ health ------------------------------------------
 	// left variables
@@ -39,7 +40,7 @@ PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
 		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax);
+		healthGoodMin, healthGoodMax, "Health");
 
 	// ------------------ wanderable ------------------------------------------
 	// left variables
@@ -55,7 +56,7 @@ PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_wanderMS = new LeftShoulderTriangularRightShoulder(wanderLowMin, wanderLowMax,
 		wanderMidMin, wanderMidPeak, wanderMidMax,
-		wanderHighMin, wanderHighMax);
+		wanderHighMin, wanderHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -67,18 +68,19 @@ PlayerWander::PlayerWander(float a_distanceCloseMin, float distanceCloseMax, flo
 	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
 	float a_wanderLowMin, float wanderLowMax, float a_wanderMediumMin, float a_wanderMediumMid, float wanderMediumMax, float a_wanderHighMin, float wanderHighMax)
 {
+	traits.name = "Wander";
 	// distance
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(a_distanceCloseMin, distanceCloseMax,
 		a_distanceMiddleMin, a_distanceMiddleMid, distanceMiddleMax,
-		a_distanceFarMin, distanceFarMax);
+		a_distanceFarMin, distanceFarMax, "Distance");
 	// health
 	m_healthMS = new LeftShoulderTriangularRightShoulder(a_healthLowMin, healthLowMax,
 		a_healthOkayMin, a_healthOkayMid, healthOkayMax,
-		a_healthGoodMin, healthGoodMax);
+		a_healthGoodMin, healthGoodMax, "Health");
 	// wanderable
 	m_wanderMS = new LeftShoulderTriangularRightShoulder(a_wanderLowMin, wanderLowMax,
 		a_wanderMediumMin, a_wanderMediumMid, wanderMediumMax,
-		a_wanderHighMin, wanderHighMax);
+		a_wanderHighMin, wanderHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -123,6 +125,20 @@ void PlayerWander::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = wander;
+	saveHistory(wander);
+}
+
+void PlayerWander::drawGUI()
+{
+	std::string windowName = traits.name + " Membership Sets";
+	ImGui::Begin(windowName.c_str());
+	ImGui::Columns(3, "mixed", false);
+	m_healthMS->drawGUI();
+	ImGui::NextColumn();
+	m_distanceMS->drawGUI();
+	ImGui::NextColumn();
+	m_wanderMS->drawGUI();
+	ImGui::End();
 }
 
 std::vector<float> PlayerWander::distance(std::vector<float> a_settings)

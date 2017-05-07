@@ -10,12 +10,20 @@ enum FuzzyMemberType {
 	FMT_GAUSIAN,
 	FMT_SINGLETON
 };
+struct FuzzyMFValues {
+	std::string name = "default";
+	float start = 0.0f;
+	float peak = 0.0f;
+	float peakB = 0.0f;
+	float end = 0.0f;
+};
 /*************************************************************************
 * Base Membership Class
 ***************************************************************************/
 class FuzzyMemberFunction {
 public:
 	virtual ~FuzzyMemberFunction();
+	FuzzyMFValues graph;
 
 protected:
 	// member function values stored in left to right membership graph order
@@ -30,24 +38,24 @@ protected:
 /*************************************************************************
 * Left SHoulder Membership Class
 ***************************************************************************/
-class FMF_LeftShoulder : FuzzyMemberFunction {
+class FMF_LeftShoulder : public FuzzyMemberFunction {
 public:
 	FMF_LeftShoulder(float a_startValue, float a_endValaue);
 	virtual ~FMF_LeftShoulder();
+
+	//FuzzyMFValues graph;
 	// membership functions
 	float virtual membership(float a_value);
 	float virtual maxMembership();
 	// fuzzy settings get/set
 	std::vector<float> virtual settings() { return m_values; };
 	std::vector<float> virtual settings(std::vector<float> a_values);
-private:
-	float m_fLeftValue;
-	float m_fPeakLeftValue;
+
 };
 /*************************************************************************
 * Right Shoulder Membership Class
 ***************************************************************************/
-class FMF_RightShoulder : FuzzyMemberFunction {
+class FMF_RightShoulder : public FuzzyMemberFunction {
 public:
 	FMF_RightShoulder(float a_startValue, float a_endValaue);
 	virtual ~FMF_RightShoulder();
@@ -57,14 +65,12 @@ public:
 	// fuzzy settings get/set
 	std::vector<float> virtual settings() { return m_values; };
 	std::vector<float> virtual settings(std::vector<float> a_values);
-private:
-	float m_fRightValue;
-	float m_fPeakRightValue;
+
 };
 /*************************************************************************
 * Triangular Membership Class
 ***************************************************************************/
-class FMF_Triangular : FuzzyMemberFunction {
+class FMF_Triangular : public FuzzyMemberFunction {
 public:
 	FMF_Triangular(float a_minStartValue, float a_maxPeakValue, float a_minEndVlaue);
 	virtual ~FMF_Triangular();
@@ -74,15 +80,12 @@ public:
 	// fuzzy settings get/set
 	std::vector<float> virtual settings() { return m_values; };
 	std::vector<float> virtual settings(std::vector<float> a_values);
-private:
-	float m_fLeftValue;
-	float m_fPeakValue;
-	float m_fRightValue;
+
 };
 /*************************************************************************
 * Trapazoid Membership Class
 ***************************************************************************/
-class FMF_Trapazoid : FuzzyMemberFunction {
+class FMF_Trapazoid : public FuzzyMemberFunction {
 public:
 	FMF_Trapazoid(float a_minStartValue, float a_maxStartValue, float a_maxEndValue, float a_minEndVlaue);
 	virtual ~FMF_Trapazoid();
@@ -92,9 +95,5 @@ public:
 	// fuzzy settings get/set
 	std::vector<float> virtual settings() { return m_values; };
 	std::vector<float> virtual settings(std::vector<float> a_values);
-private:
-	float m_fLeftValue;
-	float m_fPeakLeftValue;
-	float m_fPeakRightValue;
-	float m_fRightValue;
+
 };

@@ -141,6 +141,10 @@ PlayerAgent::PlayerAgent()
 	movedata.position = m_position;
 	m_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	vitals.type = PLAYER;
+	// gui controls
+	m_bShowWanderSets = false;
+	m_bShowEvadeSets = false;
+	m_bShowAttackSets = false;
 }
 
 PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
@@ -153,7 +157,7 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 15;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = PLAYER;
@@ -185,6 +189,10 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	actions.push_back(m_wanderAction);
 	actions.push_back(m_evadeAction);
 	actions.push_back(m_attackAction);
+	// gui controls
+	m_bShowWanderSets = false;
+	m_bShowEvadeSets = false;
+	m_bShowAttackSets = false;
 }
 
 PlayerAgent::~PlayerAgent()
@@ -210,57 +218,61 @@ void PlayerAgent::update(float a_dt)
 
 void PlayerAgent::drawBehaviours()
 {
+	// get history
+	std::vector<float> wHistory(m_wanderBehaviour->traits.history.begin(), m_wanderBehaviour->traits.history.end());
+	std::vector<float> eHistory(m_evadeBehaviour->traits.history.begin(), m_evadeBehaviour->traits.history.end());
+	std::vector<float> aHistory(m_attackBehaviour->traits.history.begin(), m_attackBehaviour->traits.history.end());
+	
 	// create agent window
 	std::string windowName = m_name + " Behaviours";
 	ImGui::Begin(windowName.c_str());
 	// set columns
-	ImGui::Columns(3, "mixed");
-	ImGui::Separator();
+	ImGui::Columns(3, "mixed", false);
+	//ImGui::Separator();
 	// first column
-	ImGui::Text("Behaviour One");
+	ImGui::Text(m_wanderBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
 	ImGui::ProgressBar(m_wanderBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
-	std::vector<float> health = m_wanderBehaviour->health();
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", wHistory.data(), wHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowWanderSets = !m_bShowWanderSets;
 
-	int count = 0;
-	std::string label = "LS";
-	for (auto msVal : health)
-	{
-		if (count > 1 && count < 5) label = "TRI";
-		if (count > 4) label = "RS";
-		count++;
-		ImGui::InputFloat(label.c_str(), &msVal, 1.0f, 1.0f, 2);
-	}
 	// second column
 	ImGui::NextColumn();
-	ImGui::Text("Behaviour Two");
+	ImGui::Text(m_evadeBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
 	ImGui::ProgressBar(m_evadeBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
-	health = m_evadeBehaviour->health();
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", eHistory.data(), eHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowEvadeSets = !m_bShowEvadeSets;
 
-	count = 0;
-	label = "LS";
-	for (auto msVal : health)
-	{
-		if (count > 1 && count < 5) label = "TRI";
-		if (count > 4) label = "RS";
-		count++;
-		ImGui::InputFloat(label.c_str(), &msVal, 1.0f, 1.0f, 2);
-	}
 	// third column
 	ImGui::NextColumn();
-	ImGui::Text("Behaviour Three");
+	ImGui::Text(m_attackBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
 	ImGui::ProgressBar(m_attackBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
-	health = m_attackBehaviour->health();
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", aHistory.data(), aHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowAttackSets = !m_bShowAttackSets;
+	
 
-	count = 0;
-	label = "LS";
-	for (auto msVal : health)
-	{
-		if (count > 1 && count < 5) label = "TRI";
-		if (count > 4) label = "RS";
-		count++;
-		ImGui::InputFloat(label.c_str(), &msVal, 1.0f, 1.0f, 2);
-	}
 	ImGui::End();
+
+
+	
+	// draw other GUI windows as required
+	if (m_bShowWanderSets) {
+		m_wanderBehaviour->drawGUI();
+	}
+	if (m_bShowEvadeSets) {
+		//m_evadeBehaviour->drawGUI();
+	}
+	if (m_bShowAttackSets) {
+		//m_attackBehaviour->drawGUI();
+	}
 }
 /******************************************************************************************************************************
 * Enemy Agent
@@ -284,7 +296,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 15;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = ENEMY;
@@ -397,7 +409,7 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 20;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = COMPANION;
