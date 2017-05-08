@@ -15,6 +15,7 @@ public:
 	virtual  ~PlayerEvade();
 
 	void update(Agent & a_agent);
+
 	std::vector<float> desireSettings() { return evadeable(); };
 
 	// get fuzzy settings

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Behaviour.h"
-#include "FuzzyMemberTypes.h"
+#include "FuzzyMemberSets.h"
 
 
 class EnemyAttack :
@@ -16,6 +16,7 @@ public:
 	virtual  ~EnemyAttack();
 
 	void update(Agent & a_agent);
+
 	std::vector<float> desireSettings() { return attackable(); };
 
 	// get fuzzy settings
@@ -31,17 +32,11 @@ public:
 
 private:
 	// distance
-	FMF_LeftShoulder	* m_distanceClose = nullptr;
-	FMF_Triangular		* m_distanceMiddle = nullptr;
-	FMF_RightShoulder	* m_distanceFar = nullptr;
+	LeftShoulderTriangularRightShoulder * m_distanceMS = nullptr;
 	// health
-	FMF_LeftShoulder	* m_healthLow = nullptr;
-	FMF_Triangular		* m_healthOkay = nullptr;
-	FMF_RightShoulder	* m_healthGood = nullptr;
+	LeftShoulderTriangularRightShoulder * m_healthMS = nullptr;
 	// attackable
-	FMF_LeftShoulder	* m_attackLow = nullptr;
-	FMF_Triangular		* m_attackMedium = nullptr;
-	FMF_RightShoulder	* m_attackHigh = nullptr;
+	LeftShoulderTriangularRightShoulder * m_attackMS = nullptr;
 	// fuzzy settings
 	std::vector<float> m_distanceSettings;
 	std::vector<float> m_healthSettings;

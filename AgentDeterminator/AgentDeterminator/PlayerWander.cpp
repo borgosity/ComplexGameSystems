@@ -97,9 +97,10 @@ void PlayerWander::update(Agent & a_agent)
 {
 	float wander = 0;
 	// update member sets
-	m_distanceMS->update(a_agent);
-	m_healthMS->update(a_agent);
-	m_wanderMS->update(a_agent);
+	m_distanceMS->update(a_agent, a_agent.vitals.foeDistance);
+	m_healthMS->update(a_agent, a_agent.vitals.health);
+	m_wanderMS->update(a_agent, traits.currWeight);
+
 	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
@@ -117,8 +118,8 @@ void PlayerWander::update(Agent & a_agent)
 	float wanderHigh = AND(NOT(healthLow),NOT(targetClose));
 
 	// set max values
-	float maxWanderLow = m_wanderMS->maxDom.leftShoulder;
-	float maxWanderMid = m_wanderMS->maxDom.triangular;
+	float maxWanderLow  = m_wanderMS->maxDom.leftShoulder;
+	float maxWanderMid  = m_wanderMS->maxDom.triangular;
 	float maxWanderHigh = m_wanderMS->maxDom.rightShoulder;
 	// defuzzify
 	wander = maxWanderHigh * wanderHigh + maxWanderMid * wanderMid + maxWanderLow * wanderLow;
@@ -129,18 +130,18 @@ void PlayerWander::update(Agent & a_agent)
 	saveHistory(wander);
 }
 
-void PlayerWander::drawGUI()
-{
-	std::string windowName = traits.name + " Membership Sets";
-	ImGui::Begin(windowName.c_str());
-	ImGui::Columns(3, "mixed", false);
-	m_healthMS->drawGUI();
-	ImGui::NextColumn();
-	m_distanceMS->drawGUI();
-	ImGui::NextColumn();
-	m_wanderMS->drawGUI();
-	ImGui::End();
-}
+//void PlayerWander::drawGUI()
+//{
+//	std::string windowName = traits.name + " Membership Sets";
+//	ImGui::Begin(windowName.c_str());
+//	ImGui::Columns(3, "mixed", false);
+//	m_healthMS->drawGUI();
+//	ImGui::NextColumn();
+//	m_distanceMS->drawGUI();
+//	ImGui::NextColumn();
+//	m_wanderMS->drawGUI();
+//	ImGui::End();
+//}
 
 std::vector<float> PlayerWander::distance(std::vector<float> a_settings)
 {
@@ -181,6 +182,10 @@ void PlayerWander::destroy()
 
 void PlayerWander::initVectors()
 {
+	// fill list of membersets
+	m_memberSets.push_back(m_distanceMS);
+	m_memberSets.push_back(m_healthMS);
+	m_memberSets.push_back(m_wanderMS);
 	// clear settings
 	m_distanceSettings.empty();
 	// set new settings

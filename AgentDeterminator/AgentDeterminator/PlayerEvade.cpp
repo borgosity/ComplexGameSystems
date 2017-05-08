@@ -61,8 +61,7 @@ PlayerEvade::PlayerEvade(float a_distanceMin, float distanceMax, float a_healthM
 
 	// fill settings vector
 	initVectors();
-	// set initial evade weight
-	traits.currWeight = 0;
+
 }
 
 PlayerEvade::PlayerEvade(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
@@ -97,9 +96,9 @@ void PlayerEvade::update(Agent & a_agent)
 {
 	float evade = 0;
 	// update member sets
-	m_distanceMS->update(a_agent);
-	m_healthMS->update(a_agent);
-	m_evadeMS->update(a_agent);
+	m_distanceMS->update(a_agent, a_agent.vitals.foeDistance);
+	m_healthMS->update(a_agent, a_agent.vitals.health);
+	m_evadeMS->update(a_agent, traits.currWeight);
 	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
@@ -170,6 +169,12 @@ void PlayerEvade::destroy()
 
 void PlayerEvade::initVectors()
 {
+	// fill list of membersets
+	m_memberSets.push_back(m_distanceMS);
+	m_memberSets.push_back(m_healthMS);
+	m_memberSets.push_back(m_evadeMS);
+
+
 	// clear settings
 	m_distanceSettings.empty();
 	// set new settings

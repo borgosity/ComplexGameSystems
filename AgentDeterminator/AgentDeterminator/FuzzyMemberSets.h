@@ -28,7 +28,7 @@ public:
 										float a_rightShoulderMin, float a_rightShoulderMax, std::string a_name);
 	virtual ~LeftShoulderTriangularRightShoulder();
 
-	void update(Agent & a_agent);
+	void update(Agent & a_agent, float a_input);
 	void drawGUI();
 	DegreeOfMembership doms;
 	MaxMembership maxDom;

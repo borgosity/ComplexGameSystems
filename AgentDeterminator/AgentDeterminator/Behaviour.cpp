@@ -1,6 +1,7 @@
 #include "Behaviour.h"
-
-
+#include "imgui_glfw3.h"
+#include "FuzzyMemberSets.h"
+#include "Agents.h"
 
 Behaviour::Behaviour()
 {
@@ -8,6 +9,20 @@ Behaviour::Behaviour()
 
 Behaviour::~Behaviour()
 {
+}
+
+void Behaviour::drawGUI(Agent & a_agent)
+{
+	std::string windowName = a_agent.name() + "'s " + traits.name + " Membership Sets";
+	ImGui::Begin(windowName.c_str());
+	ImGui::Columns(m_memberSets.size(), "mixed", false);
+	// loops through member sets and draw data
+	for (auto memberSet : m_memberSets)
+	{
+		memberSet->drawGUI();
+		ImGui::NextColumn();
+	}
+	ImGui::End();
 }
 
 /// AND function retrun the lower value

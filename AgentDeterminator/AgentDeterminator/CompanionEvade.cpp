@@ -23,9 +23,9 @@ CompanionEvade::CompanionEvade(float a_distanceMin, float distanceMax, float a_h
 	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
 	float distanceFarMax = distanceMax;
 	// membership function objects
-	m_distanceClose = new FMF_LeftShoulder(distanceCloseMin, distanceCloseMax);
-	m_distanceMiddle = new FMF_Triangular(distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax);
-	m_distanceFar = new FMF_RightShoulder(distanceFarMin, distanceFarMax);
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
+		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
+		distanceFarMin, distanceFarMax, "Distance");
 
 	// ------------------ health ------------------------------------------
 	// left variables
@@ -39,49 +39,48 @@ CompanionEvade::CompanionEvade(float a_distanceMin, float distanceMax, float a_h
 	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
 	float healthGoodMax = a_healthMax;
 	// membership function objects
-	m_healthLow = new FMF_LeftShoulder(healthLowMin, healthLowMax);
-	m_healthOkay = new FMF_Triangular(healthOkayMin, healthOkayPeak, healthOkayMax);
-	m_healthGood = new FMF_RightShoulder(healthGoodMin, healthGoodMax);
-
+	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
+		healthOkayMin, healthOkayPeak, healthOkayMax,
+		healthGoodMin, healthGoodMax, "Health");
 
 	// ------------------ evadeable ------------------------------------------
 	// left variables
 	float evadeLowMin = a_evadeMin;
 	float evadeLowMax = (a_evadeMax - a_evadeMin) / 3;
 	// triangular variables
-	float evadeOkayMin = (evadeLowMax - evadeLowMin) / 3;
-	float evadeOkayPeak = a_evadeMax  * 0.5f;
-	float evadeOkayMax = evadeOkayPeak + evadeOkayMin;
+	float evadeMidMin = (evadeLowMax - evadeLowMin) / 3;
+	float evadeMidPeak = a_evadeMax  * 0.5f;
+	float evadeMidMax = evadeMidPeak + evadeMidMin;
 	// right variables
-	float evadeGoodMin = (evadeOkayMax - evadeOkayMin) / 3;
-	float evadeGoodMax = a_evadeMax;
+	float evadeHighMin = (evadeMidMax - evadeMidMin) / 3;
+	float evadeHighMax = a_evadeMax;
 	// membership function objects
-	m_evadeLow = new FMF_LeftShoulder(evadeLowMin, evadeLowMax);
-	m_evadeMedium = new FMF_Triangular(evadeOkayMin, evadeOkayPeak, evadeOkayMax);
-	m_evadeHigh = new FMF_RightShoulder(evadeGoodMin, evadeGoodMax);
+	m_evadeMS = new LeftShoulderTriangularRightShoulder(evadeLowMin, evadeLowMax,
+		evadeMidMin, evadeMidPeak, evadeMidMax,
+		evadeHighMin, evadeHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
-	// set initial evade weight
-	traits.currWeight = 0;
+
 }
 
 CompanionEvade::CompanionEvade(float a_distanceCloseMin, float distanceCloseMax, float a_distanceMiddleMin, float a_distanceMiddleMid, float distanceMiddleMax, float a_distanceFarMin, float distanceFarMax,
 	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
 	float a_evadeLowMin, float evadeLowMax, float a_evadeMediumMin, float a_evadeMediumMid, float evadeMediumMax, float a_evadeHighMin, float evadeHighMax)
 {
+	traits.name = "Evade";
 	// distance
-	m_distanceClose = new FMF_LeftShoulder(a_distanceCloseMin, distanceCloseMax);
-	m_distanceMiddle = new FMF_Triangular(a_distanceMiddleMin, a_distanceMiddleMid, distanceMiddleMax);
-	m_distanceFar = new FMF_RightShoulder(a_distanceFarMin, distanceFarMax);
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(a_distanceCloseMin, distanceCloseMax,
+		a_distanceMiddleMin, a_distanceMiddleMid, distanceMiddleMax,
+		a_distanceFarMin, distanceFarMax, "Distance");
 	// health
-	m_healthLow = new FMF_LeftShoulder(a_healthLowMin, healthLowMax);
-	m_healthOkay = new FMF_Triangular(a_healthOkayMin, a_healthOkayMid, healthOkayMax);
-	m_healthGood = new FMF_RightShoulder(a_healthGoodMin, healthGoodMax);
+	m_healthMS = new LeftShoulderTriangularRightShoulder(a_healthLowMin, healthLowMax,
+		a_healthOkayMin, a_healthOkayMid, healthOkayMax,
+		a_healthGoodMin, healthGoodMax, "Health");
 	// evadeable
-	m_evadeLow = new FMF_LeftShoulder(a_evadeLowMin, evadeLowMax);
-	m_evadeMedium = new FMF_Triangular(a_evadeMediumMin, a_evadeMediumMid, evadeMediumMax);
-	m_evadeHigh = new FMF_RightShoulder(a_evadeHighMin, evadeHighMax);
+	m_evadeMS = new LeftShoulderTriangularRightShoulder(a_evadeLowMin, evadeLowMax,
+		a_evadeMediumMin, a_evadeMediumMid, evadeMediumMax,
+		a_evadeHighMin, evadeHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -96,14 +95,19 @@ CompanionEvade::~CompanionEvade()
 void CompanionEvade::update(Agent & a_agent)
 {
 	float evade = 0;
+	// update member sets
+	m_distanceMS->update(a_agent, a_agent.vitals.foeDistance);
+	m_healthMS->update(a_agent, a_agent.vitals.health);
+	m_evadeMS->update(a_agent, traits.currWeight);
 	// how far from target
-	float targetClose = m_distanceClose->membership(a_agent.vitals.currentDistance);
-	float targetNear = m_distanceMiddle->membership(a_agent.vitals.currentDistance);
-	float targetFar = m_distanceFar->membership(a_agent.vitals.currentDistance);
+	float targetClose = m_distanceMS->doms.leftShoulder;
+	float targetNear = m_distanceMS->doms.triangular;
+	float targetFar = m_distanceMS->doms.rightShoulder;
 	// how much health
-	float healthLow = m_healthLow->membership(a_agent.vitals.health);
-	float healthOkay = m_healthOkay->membership(a_agent.vitals.health);
-	float healthGood = m_healthGood->membership(a_agent.vitals.health);
+	float healthLow = m_healthMS->doms.leftShoulder;
+	float healthOkay = m_healthMS->doms.triangular;
+	float healthGood = m_healthMS->doms.rightShoulder;
+
 	// how evadeable is the target
 	float evadeLow = OR(AND(healthOkay, targetFar),
 						OR(AND(healthGood, targetNear), AND(healthGood, targetFar)));
@@ -112,9 +116,10 @@ void CompanionEvade::update(Agent & a_agent)
 	float evadeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
 						 AND(healthOkay, targetClose));
 	// set max values
-	float maxEvadeLow = m_evadeLow->maxMembership();
-	float maxEvadeMid = m_evadeMedium->maxMembership();
-	float maxEvadeHigh = m_evadeHigh->maxMembership();
+	float maxEvadeLow = m_evadeMS->maxDom.leftShoulder;
+	float maxEvadeMid = m_evadeMS->maxDom.triangular;
+	float maxEvadeHigh = m_evadeMS->maxDom.rightShoulder;
+
 	// defuzzify
 	evade = maxEvadeHigh * evadeHigh + maxEvadeMid * evadeMid + maxEvadeLow * evadeLow;
 	evade /= (0.1f + evadeHigh + evadeMid + evadeLow);
@@ -128,13 +133,7 @@ std::vector<float> CompanionEvade::distance(std::vector<float> a_settings)
 	// clear settings
 	m_distanceSettings.empty();
 	// set new settings
-	std::vector<float> dc = m_distanceClose->settings(a_settings);
-	std::vector<float> dm = m_distanceMiddle->settings(a_settings);
-	std::vector<float> df = m_distanceFar->settings(a_settings);
-	// save settings
-	m_distanceSettings.insert(m_distanceSettings.end(), dc.begin(), dc.end());
-	m_distanceSettings.insert(m_distanceSettings.end(), dm.begin(), dm.end());
-	m_distanceSettings.insert(m_distanceSettings.end(), df.begin(), df.end());
+	m_distanceSettings = m_distanceMS->settings(a_settings);
 
 	return m_distanceSettings;
 }
@@ -144,13 +143,7 @@ std::vector<float> CompanionEvade::health(std::vector<float> a_settings)
 	// clear settings
 	m_healthSettings.empty();
 	// set new settings
-	std::vector<float> hl = m_healthLow->settings(a_settings);
-	std::vector<float> ho = m_healthOkay->settings(a_settings);
-	std::vector<float> hg = m_healthGood->settings(a_settings);
-	// save settings
-	m_healthSettings.insert(m_healthSettings.end(), hl.begin(), hl.end());
-	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
-	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
+	m_healthSettings = m_healthMS->settings(a_settings);
 
 	return m_healthSettings;
 }
@@ -160,60 +153,35 @@ std::vector<float> CompanionEvade::evadeable(std::vector<float> a_settings)
 	// clear settings
 	m_evadeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_evadeLow->settings(a_settings);
-	std::vector<float> fm = m_evadeMedium->settings(a_settings);
-	std::vector<float> fh = m_evadeHigh->settings(a_settings);
-	// save settings
-	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
+	m_evadeSettings = m_evadeMS->settings(a_settings);
 
 	return m_evadeSettings;
 }
 
 void CompanionEvade::destroy()
 {
-	deallocate(m_distanceClose);
-	deallocate(m_distanceMiddle);
-	deallocate(m_distanceFar);
-	deallocate(m_healthLow);
-	deallocate(m_healthOkay);
-	deallocate(m_healthGood);
-	deallocate(m_evadeLow);
-	deallocate(m_evadeMedium);
-	deallocate(m_evadeHigh);
+	deallocate(m_distanceMS);
+	deallocate(m_healthMS);
+	deallocate(m_evadeMS);
 }
 
 void CompanionEvade::initVectors()
 {
+	// fill list of membersets
+	m_memberSets.push_back(m_distanceMS);
+	m_memberSets.push_back(m_healthMS);
+	m_memberSets.push_back(m_evadeMS);
+
 	// clear settings
 	m_distanceSettings.empty();
 	// set new settings
-	std::vector<float> dc = m_distanceClose->settings();
-	std::vector<float> dm = m_distanceMiddle->settings();
-	std::vector<float> df = m_distanceFar->settings();
-	// save settings
-	m_distanceSettings.insert(m_distanceSettings.end(), dc.begin(), dc.end());
-	m_distanceSettings.insert(m_distanceSettings.end(), dm.begin(), dm.end());
-	m_distanceSettings.insert(m_distanceSettings.end(), df.begin(), df.end());
+	m_distanceSettings = m_distanceMS->settings();
 	// clear settings
 	m_healthSettings.empty();
 	// set new settings
-	std::vector<float> hl = m_healthLow->settings();
-	std::vector<float> ho = m_healthOkay->settings();
-	std::vector<float> hg = m_healthGood->settings();
-	// save settings
-	m_healthSettings.insert(m_healthSettings.end(), hl.begin(), hl.end());
-	m_healthSettings.insert(m_healthSettings.end(), ho.begin(), ho.end());
-	m_healthSettings.insert(m_healthSettings.end(), hg.begin(), hg.end());
+	m_healthSettings = m_healthMS->settings();
 	// clear settings
 	m_evadeSettings.empty();
 	// set new settings
-	std::vector<float> fl = m_evadeLow->settings();
-	std::vector<float> fm = m_evadeMedium->settings();
-	std::vector<float> fh = m_evadeHigh->settings();
-	// save settings
-	m_evadeSettings.insert(m_evadeSettings.end(), fl.begin(), fl.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fm.begin(), fm.end());
-	m_evadeSettings.insert(m_evadeSettings.end(), fh.begin(), fh.end());
+	m_evadeSettings = m_evadeMS->settings();
 }

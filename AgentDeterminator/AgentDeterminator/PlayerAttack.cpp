@@ -97,9 +97,9 @@ void PlayerAttack::update(Agent & a_agent)
 {
 	float attack = 0;
 	// update member sets
-	m_distanceMS->update(a_agent);
-	m_healthMS->update(a_agent);
-	m_attackMS->update(a_agent);
+	m_distanceMS->update(a_agent, a_agent.vitals.foeDistance);
+	m_healthMS->update(a_agent, a_agent.vitals.health);
+	m_attackMS->update(a_agent, traits.currWeight);
 	// how far from target
 	float targetClose = m_distanceMS->doms.leftShoulder;
 	float targetNear = m_distanceMS->doms.triangular;
@@ -130,6 +130,11 @@ void PlayerAttack::update(Agent & a_agent)
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = attack;
 	saveHistory(attack);
+}
+
+void PlayerAttack::drawGUI()
+{
+
 }
 
 std::vector<float> PlayerAttack::distance(std::vector<float> a_settings)
@@ -171,6 +176,10 @@ void PlayerAttack::destroy()
 
 void PlayerAttack::initVectors()
 {
+	// fill list of membersets
+	m_memberSets.push_back(m_distanceMS);
+	m_memberSets.push_back(m_healthMS);
+	m_memberSets.push_back(m_attackMS);
 	// clear settings
 	m_distanceSettings.empty();
 	// set new settings

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Behaviour.h"
-#include "FuzzyMemberTypes.h"
+#include "FuzzyMemberSets.h"
 
 
 class CompanionFollow :
@@ -16,6 +16,7 @@ public:
 	virtual  ~CompanionFollow();
 
 	void update(Agent & a_agent);
+
 	std::vector<float> desireSettings() { return followable(); };
 
 	// get fuzzy settings
@@ -31,17 +32,12 @@ public:
 
 private:
 	// distance
-	FMF_LeftShoulder	* m_distanceClose = nullptr;
-	FMF_Triangular		* m_distanceMiddle = nullptr;
-	FMF_RightShoulder	* m_distanceFar = nullptr;
+	LeftShoulderTriangularRightShoulder * m_distanceMS = nullptr;
 	// health
-	FMF_LeftShoulder	* m_healthLow = nullptr;
-	FMF_Triangular		* m_healthOkay = nullptr;
-	FMF_RightShoulder	* m_healthGood = nullptr;
-	// followable
-	FMF_LeftShoulder	* m_followLow = nullptr;
-	FMF_Triangular		* m_followMedium = nullptr;
-	FMF_RightShoulder	* m_followHigh = nullptr;
+	LeftShoulderTriangularRightShoulder * m_healthMS = nullptr;
+	// evadeable
+	LeftShoulderTriangularRightShoulder * m_followMS = nullptr;
+
 	// fuzzy settings
 	std::vector<float> m_distanceSettings;
 	std::vector<float> m_healthSettings;

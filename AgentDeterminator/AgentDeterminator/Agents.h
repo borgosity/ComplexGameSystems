@@ -32,7 +32,8 @@ struct AgentStats {
 	float speed = 0.0f;
 	float size = 0.0f;
 	float mass = 0.0f;
-	float currentDistance = 0.0f;	// distance from target
+	float foeDistance = 0.0f;
+	float friendDistance = 0.0f;	// distance from target
 	float minDistance = 0.0f;		// minimum distance to target
 	AgentType type;
 	bool dead = false;
@@ -66,21 +67,19 @@ public:
 	Agent();
 	virtual ~Agent();
 
-
 	virtual glm::vec3 position() override { return movedata.position; };
 	virtual glm::vec3 position(glm::vec3 a_position) override { movedata.position = a_position;  return movedata.position; };
+	
 	// draw GUI's
 	void drawGUI();
 	void drawVitals();
 	void drawMoveData();
 	virtual void drawBehaviours() = 0 {};
 
-	void virtual drawGUI() = 0;
 	std::vector<Agent*> * m_agents;
 	AgentStats		vitals;
 	MovementInfo	movedata;
 	std::vector<Action*> actions;
-
 
 protected:
 	// gui controls
@@ -100,6 +99,7 @@ public:
 	virtual ~PlayerAgent();
 
 	virtual void update(float a_dt);
+	virtual void drawBehaviours();
 	WanderAction * wanderPtr() { return m_wanderAction; };
 	void findEnemy();
 private:
@@ -125,6 +125,7 @@ public:
 	virtual ~EnemyAgent();
 
 	virtual void update(float a_dt);
+	virtual void drawBehaviours();
 	void findTarget();
 private:
 	// agents
@@ -149,9 +150,8 @@ public:
 	virtual ~CompanionAgent();
 
 	virtual void update(float a_dt);
-	void drawGUI();
+	virtual void drawBehaviours();
 	void findEnemy();
-	void drawBehaviours();
 
 	// set get
 	Agent * buddyAgent() { return m_pBuddyAgent; };

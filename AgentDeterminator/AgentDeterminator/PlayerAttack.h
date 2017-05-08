@@ -16,6 +16,7 @@ public:
 	virtual  ~PlayerAttack();
 
 	void update(Agent & a_agent);
+	void drawGUI();
 	std::vector<float> desireSettings() { return attackable(); };
 
 	// get fuzzy settings

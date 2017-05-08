@@ -29,22 +29,38 @@ Decisions::~Decisions()
 void Decisions::drawGUI(Agent & a_agent)
 {
 	// create agent window
-	ImGui::Begin(a_agent.name().c_str());
-
+	std::string windowName = a_agent.name() + " Behaviours";
+	ImGui::Begin(windowName.c_str());
+	// set columns
+	ImGui::Columns(behaviours.size(), "mixed", false);
+	// loops through behavoirs and draw data
 	for (auto behaviour : behaviours)
 	{
-		float weight = behaviour->traits.currWeight / 100;
+		// get history
+		std::vector<float> history(behaviour->traits.history.begin(), behaviour->traits.history.end());
 		// display behaviour values
-
-		std::vector<float> values = behaviour->desireSettings();
-
-		//ImGui::PlotLines(behaviour->traits.name.c_str(), values.data(), values.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 100));
-
-		ImGui::ProgressBar(weight, ImVec2(0.0f, 0.0f));
-		ImGui::SameLine(0.0f, -1.0f);
 		ImGui::Text(behaviour->traits.name.c_str());
+		ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+		ImGui::ProgressBar(behaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
+		ImGui::Text("History");
+		ImGui::PlotHistogram("", history.data(), history.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+		ImGui::PopItemWidth();
+		// draw button and handle clicks
+		std::string buttonName = behaviour->traits.name + " Sets";
+		if (ImGui::Button(buttonName.c_str())) behaviour->traits.showSets = !behaviour->traits.showSets;
+		// add new column if not end
+		ImGui::NextColumn();
 	}
 	ImGui::End();
+
+	// check if behaviour needs to draw membership sets
+	for (auto behaviour : behaviours)
+	{
+		// draw other GUI windows as required
+		if (behaviour->traits.showSets) {
+			behaviour->drawGUI(a_agent);
+		}
+	}
 }
 ActionType Decisions::saysDoThis()
 {
@@ -112,6 +128,8 @@ void PlayerBrain::update(float a_dt)
 	m_attackBehaviour->update(*m_pAgent);
 	// set highest priority
 	sortBehaviours();
+	// set action
+	m_pAgent->vitals.action = m_highestPriority->traits.action;
 }
 
 /*******************************************************************************
@@ -148,14 +166,14 @@ EnemyBrain::~EnemyBrain()
 
 void EnemyBrain::update(float a_dt)
 {
-
-
 	// if health or distance has changed reevaluate
 	m_seekBehaviour->update(*m_pAgent);
 	m_fleeBehaviour->update(*m_pAgent);
 	m_attackBehaviour->update(*m_pAgent);
 	// set highest priority
 	sortBehaviours();
+	// set action
+	m_pAgent->vitals.action = m_highestPriority->traits.action;
 }
 /*******************************************************************************
 * Companion Functions
@@ -197,4 +215,6 @@ void CompanionBrain::update(float a_dt)
 	m_attackBehaviour->update(*m_pAgent);
 	// set highest priority
 	sortBehaviours();
+	// set action
+	m_pAgent->vitals.action = m_highestPriority->traits.action;
 }

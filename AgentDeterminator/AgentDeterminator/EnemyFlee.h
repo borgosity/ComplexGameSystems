@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Behaviour.h"
-#include "FuzzyMemberTypes.h"
+#include "FuzzyMemberSets.h"
 
 class EnemyFlee :
 	public Behaviour
@@ -15,6 +15,7 @@ public:
 		float a_fleeLowMin, float fleeLowMax, float a_fleeMediumMin, float a_fleeMediumMid, float fleeMediumMax, float a_fleeHighMin, float fleeHighMax);
 
 	void update(Agent & a_agent);
+
 	std::vector<float> desireSettings() { return fleeable(); };
 
 	// get fuzzy settings
@@ -30,17 +31,11 @@ public:
 
 private:
 	// distance
-	FMF_LeftShoulder	* m_distanceClose = nullptr;
-	FMF_Triangular		* m_distanceMiddle = nullptr;
-	FMF_RightShoulder	* m_distanceFar = nullptr;
+	LeftShoulderTriangularRightShoulder * m_distanceMS = nullptr;
 	// health
-	FMF_LeftShoulder	* m_healthLow = nullptr;
-	FMF_Triangular		* m_healthOkay = nullptr;
-	FMF_RightShoulder	* m_healthGood = nullptr;
-	// fleeable
-	FMF_LeftShoulder	* m_fleeLow = nullptr;
-	FMF_Triangular		* m_fleeMedium = nullptr;
-	FMF_RightShoulder	* m_fleeHigh = nullptr;
+	LeftShoulderTriangularRightShoulder * m_healthMS = nullptr;
+	// evadeable
+	LeftShoulderTriangularRightShoulder * m_fleeMS = nullptr;
 	// fuzzy settings
 	std::vector<float> m_distanceSettings;
 	std::vector<float> m_healthSettings;

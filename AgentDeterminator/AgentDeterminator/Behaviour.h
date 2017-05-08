@@ -1,7 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
+#include <list>
+#include"Action.h"
 
 class Agent;
+class LeftShoulderTriangularRightShoulder;
 
 struct BehaviourTraits
 {
@@ -12,6 +16,7 @@ struct BehaviourTraits
 	float prevWeight = 0.0f;
 	float maxHistory = 50.0f;
 	std::list<float> history = {0.0f};
+	bool showSets = false;
 };
 
 class Behaviour
@@ -21,16 +26,21 @@ public:
 	virtual ~Behaviour();
 
 	void virtual update(Agent & a_agent) = 0;
+	void drawGUI(Agent & a_agent);
 	void virtual destroy() = 0;
 	std::vector<float> virtual desireSettings() = 0;
 	BehaviourTraits traits;
 	
 protected:
-
+	// protected variables
+	std::vector<LeftShoulderTriangularRightShoulder*> m_memberSets;
+	// protected functions
 	float AND(float a_left, float a_right);
 	float OR(float a_left, float a_right);
 	float NOT(float a_value);
+
 	void saveHistory(float a_currVal);
+	
 	template<typename T>
 	void deallocate(T a_ptr);
 };

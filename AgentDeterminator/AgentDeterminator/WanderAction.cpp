@@ -36,6 +36,7 @@ void WanderAction::update(float a_dt, Agent & a_agent)
 	{
 		a_agent.movedata.prevTime = (float)glfwGetTime();
 		wander(a_dt, a_agent.movedata);
+		a_agent.movedata.heading = controls.target;
 	}
 
 	glm::vec3 acceleration = (glm::normalize(controls.target - a_agent.movedata.position) * a_agent.movedata.maxSpeed) - a_agent.movedata.velocity;
@@ -43,8 +44,9 @@ void WanderAction::update(float a_dt, Agent & a_agent)
 	if (glm::length(acceleration) > a_agent.movedata.maxAcceleration)
 	{
 		acceleration = glm::normalize(acceleration) * a_agent.movedata.maxAcceleration;
-		a_agent.movedata.acceleration = acceleration;
 	}
+	// set acceleration
+	a_agent.movedata.acceleration = acceleration;
 
 	// Apply accleration to agent
 	a_agent.movedata.velocity += acceleration * a_dt;
@@ -67,8 +69,7 @@ void WanderAction::randomTarget()
 void WanderAction::wander(float a_dt, MovementInfo & a_movedata)
 {
 	// reset velocity
-	a_movedata.velocity.x = 0;
-	a_movedata.velocity.y = 0;
+	a_movedata.velocity = glm::vec3(0.0f);
 
 	// specify the location of the circle centre based on the agents current velocity
 	// then normalise it and move(scale) it to the specified distance infront of the agent

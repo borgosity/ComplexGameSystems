@@ -24,12 +24,12 @@ LeftShoulderTriangularRightShoulder::~LeftShoulderTriangularRightShoulder()
 	destroy();
 }
 
-void LeftShoulderTriangularRightShoulder::update(Agent & a_agent)
+void LeftShoulderTriangularRightShoulder::update(Agent & a_agent, float a_input)
 {
 	// degrees of membership
-	doms.leftShoulder = m_leftShoulder->membership(a_agent.vitals.currentDistance);
-	doms.triangular = m_triangular->membership(a_agent.vitals.currentDistance);
-	doms.rightShoulder = m_rightShoulder->membership(a_agent.vitals.currentDistance);
+	doms.leftShoulder = m_leftShoulder->membership(a_input);
+	doms.triangular = m_triangular->membership(a_input);
+	doms.rightShoulder = m_rightShoulder->membership(a_input);
 	// max membership
 	maxDom.leftShoulder = m_leftShoulder->maxMembership();
 	maxDom.triangular = m_triangular->maxMembership();
@@ -39,8 +39,6 @@ void LeftShoulderTriangularRightShoulder::update(Agent & a_agent)
 void LeftShoulderTriangularRightShoulder::drawGUI()
 {
 	// create agent window
-	std::string windowName = "Membership Sets";
-	
 	std::vector<float> values = { 1.0f,lineHeight(m_leftShoulder->graph.end, m_triangular->graph.start),
 									1.0f,lineHeight(m_triangular->graph.end, m_rightShoulder->graph.start),
 									1.0f };
@@ -89,7 +87,7 @@ void LeftShoulderTriangularRightShoulder::destroy()
 
 float LeftShoulderTriangularRightShoulder::lineHeight(float rightValue, float leftValue)
 {
-	float triRoot = sqrt(3);
+	float triRoot = (float)sqrt(3);
 	float valley = ((rightValue - leftValue) * 0.5f) * triRoot;
 	return valley / 100;
 }

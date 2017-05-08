@@ -55,15 +55,6 @@ void FuzzyApp::update(float a_dt)
 	// agent off screen?
 	offScreen();
 
-	m_playerAgent->vitals.currentDistance = glm::distance(m_playerAgent->position(), m_enemyAgent->position());
-	//m_playerAgent->update(deltaTime);
-	
-	m_buddyAgent->vitals.currentDistance = glm::distance(m_buddyAgent->position(), m_enemyAgent->position());
-	//m_buddyAgent->update(deltaTime);
-
-	m_enemyAgent->vitals.currentDistance = glm::distance(m_enemyAgent->position(), m_buddyAgent->position());
-	//m_enemyAgent->update(deltaTime);
-
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
@@ -79,13 +70,10 @@ void FuzzyApp::draw()
 
 	// draw your stuff here!
 	drawAgents(m_renderer);
-	drawWander(*m_playerAgent, *m_playerAgent->wanderPtr());
-	drawSeek(*m_enemyAgent);
 	drawGUI();
 
 	// output some text
-	m_renderer->drawText(m_font, "Press ESC to quit", 0, 0);
-
+	m_renderer->drawText(m_font, "Press ESC to quit", 20, 20);
 
 	// done drawing sprites
 	m_renderer->end();
@@ -103,15 +91,29 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 		a_renderer->setRenderColour(colour.r, colour.g, colour.b, colour.a);
 		a_renderer->drawSprite(nullptr, position.x, position.y, agent->vitals.size, agent->vitals.size);
 		drawAction(*agent);
-		agent->drawGUI();
 	}
 }
 
 void FuzzyApp::drawAction(Agent & a_agent)
 {
-	
-	if (a_agent.vitals.type == PLAYER) {
-		drawWander(a_agent, *m_playerAgent->wanderPtr());
+	switch (a_agent.vitals.action)
+	{
+	case AN_WANDER:
+	{
+		switch (a_agent.vitals.type)
+		{
+		case PLAYER:
+			drawWander(a_agent, *m_playerAgent->wanderPtr());
+		default:
+			break;
+		}
+		break;
+	}
+	case AN_SEEK:
+		drawSeek(a_agent);
+		break;
+	default:
+		break;
 	}
 
 	drawRadius(a_agent);
@@ -120,7 +122,6 @@ void FuzzyApp::drawAction(Agent & a_agent)
 void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 {
 	// line from original location to centre of circle
-	//m_renderer->drawLine(a_wander.controls.prevLoc.x, a_wander.controls.prevLoc.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
 	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, 1.0f);
 	// line to edge of circle
 	m_renderer->drawLine(a_wander.controls.circleCentre.x, a_wander.controls.circleCentre.y, a_wander.controls.target.x, a_wander.controls.target.y, 2.0f);
@@ -145,33 +146,11 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 	}
 }
 
-
 void FuzzyApp::drawSeek(Agent & a_agent)
 {
-	// draw a cirle with lines
-	double slice = 2 * M_PI / 360;
-	glm::vec2 point1(0.0f, 0.0f);
-	
-	// set coulor
-	glm::vec4 colour = a_agent.colour();
-	m_renderer->setRenderColour(colour.r, colour.g, colour.b, colour.a);
+	// path agent should be heading along
+	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, a_agent.movedata.heading.x, a_agent.movedata.heading.y, 3.0f);
 
-	// simplify data
-	float radius = a_agent.movedata.sight;
-	glm::vec3 center = a_agent.movedata.position;
-
-	// draw points
-	for (int i = 0; i < 360; i++)
-	{
-		double angle = slice * i;
-		glm::vec2 point2(center.x + radius * cos(angle), center.y + radius * sin(angle));
-		if (point1.x == 0 && point1.y == 0)
-		{
-			point1 = point2;
-		}
-		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
-		point1 = point2;
-	}
 }
 
 void FuzzyApp::drawGUI()

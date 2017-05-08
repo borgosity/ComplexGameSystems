@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Behaviour.h"
-#include "FuzzyMemberTypes.h"
+#include "FuzzyMemberSets.h"
 
 
 class EnemySeek :
@@ -16,6 +16,7 @@ public:
 	virtual  ~EnemySeek();
 
 	void update(Agent & a_agent);
+
 	std::vector<float> desireSettings() { return seekable(); };
 
 	// get fuzzy settings
@@ -31,17 +32,11 @@ public:
 
 private:
 	// distance
-	FMF_LeftShoulder	* m_distanceClose = nullptr;
-	FMF_Triangular		* m_distanceMiddle = nullptr;
-	FMF_RightShoulder	* m_distanceFar = nullptr;
+	LeftShoulderTriangularRightShoulder * m_distanceMS = nullptr;
 	// health
-	FMF_LeftShoulder	* m_healthLow = nullptr;
-	FMF_Triangular		* m_healthOkay = nullptr;
-	FMF_RightShoulder	* m_healthGood = nullptr;
-	// seekable
-	FMF_LeftShoulder	* m_seekLow = nullptr;
-	FMF_Triangular		* m_seekMedium = nullptr;
-	FMF_RightShoulder	* m_seekHigh = nullptr;
+	LeftShoulderTriangularRightShoulder * m_healthMS = nullptr;
+	// evadeable
+	LeftShoulderTriangularRightShoulder * m_seekMS = nullptr;
 	// fuzzy settings
 	std::vector<float> m_distanceSettings;
 	std::vector<float> m_healthSettings;
