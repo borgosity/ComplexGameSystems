@@ -25,7 +25,7 @@ PlayerAttack::PlayerAttack(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
 															distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-															distanceFarMin, distanceFarMax);
+															distanceFarMin, distanceFarMax, "Distance");
 
 	// ------------------ health ------------------------------------------
 	// left variables
@@ -41,7 +41,7 @@ PlayerAttack::PlayerAttack(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
 														 healthOkayMin, healthOkayPeak, healthOkayMax,
-														 healthGoodMin, healthGoodMax);
+														 healthGoodMin, healthGoodMax, "Health");
 
 	// ------------------ attackable ------------------------------------------
 	// left variables
@@ -57,7 +57,7 @@ PlayerAttack::PlayerAttack(float a_distanceMin, float distanceMax, float a_healt
 	// membership function objects
 	m_attackMS = new LeftShoulderTriangularRightShoulder(attackLowMin, attackLowMax,
 		attackMidMin, attackMidPeak, attackMidMax,
-		attackHighMin, attackHighMax);
+		attackHighMin, attackHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -69,18 +69,19 @@ PlayerAttack::PlayerAttack(float a_distanceCloseMin, float distanceCloseMax, flo
 	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
 	float a_attackLowMin, float attackLowMax, float a_attackMediumMin, float a_attackMediumMid, float attackMediumMax, float a_attackHighMin, float attackHighMax)
 {
+	traits.name = "Attack";
 	// distance
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(a_distanceCloseMin, distanceCloseMax, 
 														   a_distanceMiddleMin, a_distanceMiddleMid, distanceMiddleMax, 
-														   a_distanceFarMin, distanceFarMax);
+														   a_distanceFarMin, distanceFarMax, "Distance");
 	// health
 	m_healthMS = new LeftShoulderTriangularRightShoulder(a_healthLowMin, healthLowMax,
 														 a_healthOkayMin, a_healthOkayMid, healthOkayMax,
-														 a_healthGoodMin, healthGoodMax);
+														 a_healthGoodMin, healthGoodMax, "Health");
 	// attackable
 	m_attackMS = new LeftShoulderTriangularRightShoulder(a_attackLowMin, attackLowMax,
 														 a_attackMediumMin, a_attackMediumMid, attackMediumMax,
-														 a_attackHighMin, attackHighMax);
+														 a_attackHighMin, attackHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -128,6 +129,7 @@ void PlayerAttack::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = attack;
+	saveHistory(attack);
 }
 
 std::vector<float> PlayerAttack::distance(std::vector<float> a_settings)

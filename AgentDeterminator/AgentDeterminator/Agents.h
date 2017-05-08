@@ -27,15 +27,15 @@ enum AgentType
 * Agent Statistics Struct
 *******************************************************************************************************************************/
 struct AgentStats {
-	float health;
-	float strength;
-	float speed;
-	float size;
-	float mass;
-	float currentDistance;	// distance from target
-	float minDistance;		// minimum distance to target
+	float health = 0.0f;
+	float strength = 0.0f;
+	float speed = 0.0f;
+	float size = 0.0f;
+	float mass = 0.0f;
+	float currentDistance = 0.0f;	// distance from target
+	float minDistance = 0.0f;		// minimum distance to target
 	AgentType type;
-	bool dead;
+	bool dead = false;
 	ActionType action;
 };
 /******************************************************************************************************************************
@@ -47,14 +47,14 @@ struct MovementInfo {
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	glm::vec3 heading;
-	float maxSpeed;
-	float maxAcceleration;
-	float maxForce;
-	float livelyness;		// used to determine delay between wander updates
-	float prevTime;			//used in wander delay
-	float sight;
-	float rotation;
-	float rotationDampening;
+	float maxSpeed = 0.0f;
+	float maxAcceleration = 0.0f;
+	float maxForce = 0.0f;
+	float livelyness = 0.0f;		// used to determine delay between wander updates
+	float prevTime = 0.0f;			//used in wander delay
+	float sight = 0.0f;
+	float rotation = 0.0f;
+	float rotationDampening = 0.0f;
 };
 /******************************************************************************************************************************
 * Base Agent
@@ -69,6 +69,11 @@ public:
 
 	virtual glm::vec3 position() override { return movedata.position; };
 	virtual glm::vec3 position(glm::vec3 a_position) override { movedata.position = a_position;  return movedata.position; };
+	// draw GUI's
+	void drawGUI();
+	void drawVitals();
+	void drawMoveData();
+	virtual void drawBehaviours() = 0 {};
 
 	void virtual drawGUI() = 0;
 	std::vector<Agent*> * m_agents;
@@ -76,7 +81,12 @@ public:
 	MovementInfo	movedata;
 	std::vector<Action*> actions;
 
+
 protected:
+	// gui controls
+	bool m_bShowVitals;
+	bool m_bShowMoveData;
+	bool m_bShowBehaviour;
 	void move(float a_dt);
 	void healthCheck();
 };
@@ -90,12 +100,14 @@ public:
 	virtual ~PlayerAgent();
 
 	virtual void update(float a_dt);
-	void drawGUI();
 	WanderAction * wanderPtr() { return m_wanderAction; };
 	void findEnemy();
 private:
 	// agents
 	Agent * m_pEnemyAgent = nullptr;
+	bool m_bShowWanderSets;
+	bool m_bShowEvadeSets;
+	bool m_bShowAttackSets;
 	// brain
 	PlayerBrain * m_brain = nullptr;
 	// Actions
@@ -113,7 +125,6 @@ public:
 	virtual ~EnemyAgent();
 
 	virtual void update(float a_dt);
-	void drawGUI();
 	void findTarget();
 private:
 	// agents
@@ -140,6 +151,7 @@ public:
 	virtual void update(float a_dt);
 	void drawGUI();
 	void findEnemy();
+	void drawBehaviours();
 
 	// set get
 	Agent * buddyAgent() { return m_pBuddyAgent; };

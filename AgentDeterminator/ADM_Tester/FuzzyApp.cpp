@@ -102,7 +102,19 @@ void FuzzyApp::drawAgents(aie::Renderer2D * a_renderer)
 		position = agent->position();
 		a_renderer->setRenderColour(colour.r, colour.g, colour.b, colour.a);
 		a_renderer->drawSprite(nullptr, position.x, position.y, agent->vitals.size, agent->vitals.size);
+		drawAction(*agent);
+		agent->drawGUI();
 	}
+}
+
+void FuzzyApp::drawAction(Agent & a_agent)
+{
+	
+	if (a_agent.vitals.type == PLAYER) {
+		drawWander(a_agent, *m_playerAgent->wanderPtr());
+	}
+
+	drawRadius(a_agent);
 }
 
 void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
@@ -132,6 +144,7 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 		point1 = point2;
 	}
 }
+
 
 void FuzzyApp::drawSeek(Agent & a_agent)
 {
@@ -169,6 +182,27 @@ void FuzzyApp::drawGUI()
 	}
 }
 
+void FuzzyApp::drawRadius(Agent & a_agent)
+{
+	// draw a cirle with lines
+	double slice = 2 * M_PI / 360;
+	glm::vec2 point1(0.0f, 0.0f);
+
+	float radius = a_agent.movedata.sight;
+	glm::vec3 center = a_agent.movedata.position;
+
+	for (int i = 0; i < 360; i++)
+	{
+		double angle = slice * i;
+		glm::vec2 point2(center.x + radius * cos(angle), center.y + radius * sin(angle));
+		if (point1.x == 0 && point1.y == 0)
+		{
+			point1 = point2;
+		}
+		m_renderer->drawLine(point1.x, point1.y, point2.x, point2.y);
+		point1 = point2;
+	}
+}
 void FuzzyApp::offScreen()
 {
 	for (auto agent : m_sceneController->m_agentObjects)

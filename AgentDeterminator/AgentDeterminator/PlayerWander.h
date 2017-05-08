@@ -16,6 +16,7 @@ public:
 	virtual  ~PlayerWander();
 
 	void update(Agent & a_agent);
+	void drawGUI();
 	std::vector<float> desireSettings() { return wanderable(); };
 
 	// get fuzzy settings

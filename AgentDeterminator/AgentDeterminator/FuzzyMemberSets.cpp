@@ -1,9 +1,10 @@
 #include "FuzzYMemberSets.h"
 #include "Agents.h"
+#include "imgui_glfw3.h"
 
-
-LeftShoulderTriangularRightShoulder::LeftShoulderTriangularRightShoulder(float a_leftShoulderMin, float a_leftShoulderMax, float triangularMin, float triangularPeak, float triangularMax, float a_rightShoulderMin, float a_rightShoulderMax)
+LeftShoulderTriangularRightShoulder::LeftShoulderTriangularRightShoulder(float a_leftShoulderMin, float a_leftShoulderMax, float triangularMin, float triangularPeak, float triangularMax, float a_rightShoulderMin, float a_rightShoulderMax, std::string a_name)
 {
+	m_name = a_name;
 	// initialise membership functions
 	m_leftShoulder = new FMF_LeftShoulder(a_leftShoulderMin, a_leftShoulderMax);
 	m_triangular = new FMF_Triangular(triangularMin, triangularPeak, triangularMax);
@@ -35,6 +36,29 @@ void LeftShoulderTriangularRightShoulder::update(Agent & a_agent)
 	maxDom.rightShoulder = m_rightShoulder->maxMembership();
 }
 
+void LeftShoulderTriangularRightShoulder::drawGUI()
+{
+	// create agent window
+	std::string windowName = "Membership Sets";
+	
+	std::vector<float> values = { 1.0f,lineHeight(m_leftShoulder->graph.end, m_triangular->graph.start),
+									1.0f,lineHeight(m_triangular->graph.end, m_rightShoulder->graph.start),
+									1.0f };
+	static int values_offset = 0;
+	// draw gui
+	ImGui::Text(m_name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+	ImGui::PlotLines("", values.data(), values.size(), values_offset, "", 0.0f, 1.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	ImGui::InputFloat("LS start", &m_leftShoulder->graph.start, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("LS end", &m_leftShoulder->graph.end, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("TRI start", &m_triangular->graph.start, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("TRI peak", &m_triangular->graph.peak, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("TRI end", &m_triangular->graph.end, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("RS start", &m_rightShoulder->graph.start, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("RS end", &m_rightShoulder->graph.end, 1.0f, 1.0f, 2);
+}
+
 /// Updates Values of the Membership Functions
 /// takes a vector size 7, 
 /// - 2 floats for left shoulder
@@ -61,4 +85,11 @@ void LeftShoulderTriangularRightShoulder::destroy()
 	deallocate(m_leftShoulder);
 	deallocate(m_triangular);
 	deallocate(m_rightShoulder);
+}
+
+float LeftShoulderTriangularRightShoulder::lineHeight(float rightValue, float leftValue)
+{
+	float triRoot = sqrt(3);
+	float valley = ((rightValue - leftValue) * 0.5f) * triRoot;
+	return valley / 100;
 }

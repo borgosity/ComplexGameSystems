@@ -6,6 +6,8 @@
 #include "SeekAction.h"
 #include "AttackAction.h"
 
+#include "imgui_glfw3.h"
+#include <glm/gtc/type_ptr.hpp>
 
 #define M_PI       3.14159265358979323846   // pi
 
@@ -14,10 +16,91 @@
 *******************************************************************************************************************************/
 Agent::Agent()
 {
+	m_bShowVitals = false;
+	m_bShowMoveData = false;
+	m_bShowBehaviour = false;
 }
 
 Agent::~Agent()
 {
+}
+void Agent::drawGUI()
+{
+	// Draw agent GUI window
+	std::string windowName = m_name + " Details";
+	ImGui::Begin(windowName.c_str());
+	// button 1
+	ImGui::PushID(1);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImColor::HSV(1 / 7.0f, 0.6f, 0.6f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(1 / 7.0f, 0.7f, 0.7f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(1 / 7.0f, 0.8f, 0.8f));
+	// draw button and detect click
+	if (ImGui::Button("Vitals")) m_bShowVitals = !m_bShowVitals;
+	ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	// button 2
+	ImGui::PushID(2);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImColor::HSV(2 / 7.0f, 0.6f, 0.6f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(2 / 7.0f, 0.7f, 0.7f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(2 / 7.0f, 0.8f, 0.8f));
+	ImGui::SameLine();
+	// draw button and detect click
+	if (ImGui::Button("Move Data")) m_bShowMoveData = !m_bShowMoveData;
+	ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	// button 3
+	ImGui::PushID(3);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImColor::HSV(3 / 7.0f, 0.6f, 0.6f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(3 / 7.0f, 0.7f, 0.7f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(3 / 7.0f, 0.8f, 0.8f));
+	ImGui::SameLine();
+	// draw button and detect click
+	if (ImGui::Button("Behaviours")) m_bShowBehaviour = !m_bShowBehaviour;
+	ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	ImGui::End();
+
+	// draw other GUI windows as required
+	if (m_bShowVitals) {
+		drawVitals();
+	}
+	if (m_bShowMoveData) {
+		drawMoveData();
+	}
+	if (m_bShowBehaviour) {
+		drawBehaviours();
+	}
+}
+void Agent::drawVitals()
+{
+	std::string windowName = m_name + " Stats";
+	ImGui::Begin(windowName.c_str());
+	ImGui::InputFloat("health", &vitals.health, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("strength", &vitals.strength, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("speed", &vitals.speed, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("size", &vitals.size, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("mass", &vitals.mass, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("minDist", &vitals.minDistance, 1.0f, 1.0f, 2);
+	ImGui::End();
+}
+void Agent::drawMoveData()
+{
+	std::string windowName = m_name + " Move Data";
+	ImGui::Begin(windowName.c_str());
+	ImGui::InputFloat3("position", glm::value_ptr(movedata.position), 2);
+	ImGui::InputFloat3("velocity", glm::value_ptr(movedata.velocity), 2);
+	ImGui::InputFloat3("acceleration", glm::value_ptr(movedata.acceleration), 2);
+	ImGui::InputFloat3("heading", glm::value_ptr(movedata.heading), 2);
+	ImGui::InputFloat3("sensor", glm::value_ptr(movedata.sensor), 2);
+
+	ImGui::InputFloat("maxSpeed", &movedata.maxSpeed, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("maxAccel", &movedata.maxAcceleration, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("maxForce", &movedata.maxForce, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("livelyness", &movedata.livelyness, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("sight", &movedata.sight, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("rotation", &movedata.rotation, 1.0f, 1.0f, 2);
+	ImGui::InputFloat("rotationDamp", &movedata.rotationDampening, 1.0f, 1.0f, 2);
+	ImGui::End();
 }
 
 /// Common move function for all agents, 
@@ -71,6 +154,10 @@ PlayerAgent::PlayerAgent()
 	movedata.position = m_position;
 	m_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	vitals.type = PLAYER;
+	// gui controls
+	m_bShowWanderSets = false;
+	m_bShowEvadeSets = false;
+	m_bShowAttackSets = false;
 }
 
 PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
@@ -83,7 +170,7 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 15;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = PLAYER;
@@ -109,6 +196,10 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	actions.push_back(m_wanderAction);
 	actions.push_back(m_evadeAction);
 	actions.push_back(m_attackAction);
+	// gui controls
+	m_bShowWanderSets = false;
+	m_bShowEvadeSets = false;
+	m_bShowAttackSets = false;
 }
 
 PlayerAgent::~PlayerAgent()
@@ -186,6 +277,66 @@ void PlayerAgent::findEnemy()
 	m_pEnemyAgent = closestAgent;
 }
 
+void PlayerAgent::drawBehaviours()
+{
+	// get history
+	std::vector<float> wHistory(m_wanderBehaviour->traits.history.begin(), m_wanderBehaviour->traits.history.end());
+	std::vector<float> eHistory(m_evadeBehaviour->traits.history.begin(), m_evadeBehaviour->traits.history.end());
+	std::vector<float> aHistory(m_attackBehaviour->traits.history.begin(), m_attackBehaviour->traits.history.end());
+	
+	// create agent window
+	std::string windowName = m_name + " Behaviours";
+	ImGui::Begin(windowName.c_str());
+	// set columns
+	ImGui::Columns(3, "mixed", false);
+	//ImGui::Separator();
+	// first column
+	ImGui::Text(m_wanderBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+	ImGui::ProgressBar(m_wanderBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", wHistory.data(), wHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowWanderSets = !m_bShowWanderSets;
+
+	// second column
+	ImGui::NextColumn();
+	ImGui::Text(m_evadeBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+	ImGui::ProgressBar(m_evadeBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", eHistory.data(), eHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowEvadeSets = !m_bShowEvadeSets;
+
+	// third column
+	ImGui::NextColumn();
+	ImGui::Text(m_attackBehaviour->traits.name.c_str());
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+	ImGui::ProgressBar(m_attackBehaviour->traits.currWeight / 100, ImVec2(0.0f, 0.0f));
+	ImGui::Text("History");
+	ImGui::PlotHistogram("", aHistory.data(), aHistory.size(), 0, NULL, 0.0f, 100.0f, ImVec2(0, 80));
+	ImGui::PopItemWidth();
+	if (ImGui::Button("Fuzzy Sets")) m_bShowAttackSets = !m_bShowAttackSets;
+	
+
+	ImGui::End();
+
+
+	
+	// draw other GUI windows as required
+	if (m_bShowWanderSets) {
+		m_wanderBehaviour->drawGUI();
+	}
+	if (m_bShowEvadeSets) {
+		//m_evadeBehaviour->drawGUI();
+	}
+	if (m_bShowAttackSets) {
+		//m_attackBehaviour->drawGUI();
+	}
+}
+
+
 /******************************************************************************************************************************
 * Enemy Agent
 *******************************************************************************************************************************/
@@ -208,7 +359,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 15;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = ENEMY;
@@ -228,10 +379,9 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	m_brain = new EnemyBrain(this);
 	// actions
 	m_wanderAction = new WanderAction(50.0f, 0.25f, 50.0f);
-	m_seekAction = new SeekAction();
 	m_fleeAction = new FleeAction();
 	m_attackAction = new AttackAction();
-	actions.push_back(m_wanderAction);
+	actions.push_back(m_seekAction);
 	actions.push_back(m_attackAction);
 	actions.push_back(m_fleeAction);
 	//
@@ -308,10 +458,6 @@ void EnemyAgent::update(float a_dt)
 	// ----------------------------------- movement after action processed -----------------------------------
 	move(a_dt);
 }
-void EnemyAgent::drawGUI()
-{
-	m_brain->drawGUI(*this);
-}
 void EnemyAgent::findTarget()
 {
 	float closestDistance = movedata.sight;
@@ -362,7 +508,7 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	vitals.size = 20;
 	vitals.mass = vitals.size * 0.5f;
 	vitals.speed = 100 / vitals.mass;
-	vitals.strength = vitals.mass * vitals.size * vitals.speed;
+	vitals.strength = (vitals.mass * vitals.size * vitals.speed) / 100;
 	vitals.minDistance = 10.0f;
 	vitals.currentDistance = 0.0f;
 	vitals.type = COMPANION;

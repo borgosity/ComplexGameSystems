@@ -39,3 +39,16 @@ float Behaviour::NOT(float a_value)
 {
 	return 1 - a_value;
 }
+
+void Behaviour::saveHistory(float a_currVal)
+{
+	if (a_currVal > 0) {
+		if (traits.history.size() < traits.maxHistory) {
+			traits.history.push_back(a_currVal);
+		}
+		else {
+			traits.history.pop_front();
+			traits.history.push_back(a_currVal);
+		}
+	}
+}

@@ -313,12 +313,12 @@ bool ImGui_Init(GLFWwindow* window, bool install_callbacks) {
     io.ImeWindowHandle = glfwGetWin32Window(g_Window);
 #endif
 
-  //  if (install_callbacks) {
-		//Input::getInstance()->attachKeyObserver(ImGui_KeyCallback);
-		//Input::getInstance()->attachCharObserver(ImGui_CharCallback);
-		//Input::getInstance()->attachMouseScrollObserver(ImGui_ScrollCallback);
-		//Input::getInstance()->attachMouseButtonObserver(ImGui_MouseButtonCallback);
-  //  }
+    if (install_callbacks) {
+		glfwSetMouseButtonCallback(window, ImGui_MouseButtonCallback);
+		glfwSetScrollCallback(window, ImGui_ScrollCallback);
+		glfwSetKeyCallback(window, ImGui_KeyCallback);
+		glfwSetCharCallback(window, ImGui_CharCallback);
+    }
 
 	int w = 0, h = 0;
 	glfwGetWindowSize(g_Window, &w, &h);

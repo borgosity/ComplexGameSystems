@@ -25,10 +25,11 @@ class LeftShoulderTriangularRightShoulder
 public:
 	LeftShoulderTriangularRightShoulder(float a_leftShoulderMin, float a_leftShoulderMax, 
 										float triangularMin, float triangularPeak, float triangularMax, 
-										float a_rightShoulderMin, float a_rightShoulderMax);
+										float a_rightShoulderMin, float a_rightShoulderMax, std::string a_name);
 	virtual ~LeftShoulderTriangularRightShoulder();
 
 	void update(Agent & a_agent);
+	void drawGUI();
 	DegreeOfMembership doms;
 	MaxMembership maxDom;
 
@@ -39,12 +40,15 @@ public:
 	// cleanup
 	void destroy();
 private:
+	std::string m_name;
 	// fuzzy settings
 	std::vector<float> m_fvSettings;
 	// distance
 	FMF_LeftShoulder	* m_leftShoulder = nullptr;
 	FMF_Triangular		* m_triangular = nullptr;
 	FMF_RightShoulder	* m_rightShoulder = nullptr;
+	// math
+	float lineHeight(float rightValue, float leftValue);
 	// cleanup
 	template<typename T>
 	void deallocate(T a_ptr);

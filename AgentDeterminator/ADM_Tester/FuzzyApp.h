@@ -28,9 +28,12 @@ private:
 	aie::Font		* m_font;
 	// draws
 	void drawAgents(aie::Renderer2D * a_renderer);
+	void drawAction(Agent & a_agent);
 	void drawWander(Agent & a_agent, WanderAction & a_wander);
+	void drawRadius(Agent & a_agent);
 	void drawSeek(Agent & a_agent);
 	void drawGUI();
+	
 
 	void offScreen();
 };

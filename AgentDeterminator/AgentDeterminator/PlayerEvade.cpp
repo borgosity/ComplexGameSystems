@@ -25,7 +25,7 @@ PlayerEvade::PlayerEvade(float a_distanceMin, float distanceMax, float a_healthM
 	// membership function objects
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
 		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax);
+		distanceFarMin, distanceFarMax, "Distance");
 
 	// ------------------ health ------------------------------------------
 	// left variables
@@ -41,7 +41,7 @@ PlayerEvade::PlayerEvade(float a_distanceMin, float distanceMax, float a_healthM
 	// membership function objects
 	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
 		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax);
+		healthGoodMin, healthGoodMax, "Health");
 
 	// ------------------ evadeable ------------------------------------------
 	// left variables
@@ -57,7 +57,7 @@ PlayerEvade::PlayerEvade(float a_distanceMin, float distanceMax, float a_healthM
 	// membership function objects
 	m_evadeMS = new LeftShoulderTriangularRightShoulder(evadeLowMin, evadeLowMax,
 		evadeMidMin, evadeMidPeak, evadeMidMax,
-		evadeHighMin, evadeHighMax);
+		evadeHighMin, evadeHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -69,18 +69,19 @@ PlayerEvade::PlayerEvade(float a_distanceCloseMin, float distanceCloseMax, float
 	float a_healthLowMin, float healthLowMax, float a_healthOkayMin, float a_healthOkayMid, float healthOkayMax, float a_healthGoodMin, float healthGoodMax,
 	float a_evadeLowMin, float evadeLowMax, float a_evadeMediumMin, float a_evadeMediumMid, float evadeMediumMax, float a_evadeHighMin, float evadeHighMax)
 {
+	traits.name = "Evade";
 	// distance
 	m_distanceMS = new LeftShoulderTriangularRightShoulder(a_distanceCloseMin, distanceCloseMax,
 		a_distanceMiddleMin, a_distanceMiddleMid, distanceMiddleMax,
-		a_distanceFarMin, distanceFarMax);
+		a_distanceFarMin, distanceFarMax, "Distance");
 	// health
 	m_healthMS = new LeftShoulderTriangularRightShoulder(a_healthLowMin, healthLowMax,
 		a_healthOkayMin, a_healthOkayMid, healthOkayMax,
-		a_healthGoodMin, healthGoodMax);
+		a_healthGoodMin, healthGoodMax, "Health");
 	// evadeable
 	m_evadeMS = new LeftShoulderTriangularRightShoulder(a_evadeLowMin, evadeLowMax,
 		a_evadeMediumMin, a_evadeMediumMid, evadeMediumMax,
-		a_evadeHighMin, evadeHighMax);
+		a_evadeHighMin, evadeHighMax, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -127,6 +128,7 @@ void PlayerEvade::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = evade;
+	saveHistory(evade);
 }
 
 std::vector<float> PlayerEvade::distance(std::vector<float> a_settings)
