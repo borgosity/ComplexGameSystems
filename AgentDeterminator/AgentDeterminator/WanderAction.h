@@ -33,10 +33,12 @@ public:
 private:
 	// agent member variables
 	spAgent	m_spTarget;
+	bool m_arrived;
 
 	// private member functions
 	void setAngle(glm::vec2 & a_vec2, float a_wanderAngle);
 	void randomTarget();  // uses private meber variable to produce the target
 	void wander(float a_dt, MovementInfo & a_movedata);
+	void arrive(float a_dt, Agent & a_agent);
 };
 

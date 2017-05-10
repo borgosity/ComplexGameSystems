@@ -26,6 +26,10 @@ Decisions::Decisions()
 Decisions::~Decisions()
 {
 }
+/// Draw Agents Fuzzy Behaviour Results
+/// - behaviour percentage
+/// - history graph
+/// - button to view fuzzy sets
 void Decisions::drawGUI(Agent & a_agent)
 {
 	// create agent window
@@ -33,6 +37,10 @@ void Decisions::drawGUI(Agent & a_agent)
 	ImGui::Begin(windowName.c_str());
 	// set columns
 	ImGui::Columns(behaviours.size(), "mixed", false);
+	
+	std::string currentBehaviour = m_highestPriority->traits.name + "ing";
+	ImGui::Text(currentBehaviour.c_str());
+	ImGui::Separator();
 	// loops through behavoirs and draw data
 	for (auto behaviour : behaviours)
 	{
@@ -58,10 +66,12 @@ void Decisions::drawGUI(Agent & a_agent)
 	{
 		// draw other GUI windows as required
 		if (behaviour->traits.showSets) {
+			// run behaviour drawGui which draws all member sets it has
 			behaviour->drawGUI(a_agent);
 		}
 	}
 }
+/// Set Agent Action according to priority behaviour
 ActionType Decisions::saysDoThis()
 {
 	if (m_highestPriority) {
@@ -79,11 +89,14 @@ bool Decisions::compare(Behaviour const &  a_first, Behaviour const &  a_second)
 	}
 	return result;
 }
-
+/// Sorts list of behaviours and sets highest priority
+/// - takes behaviour priority into account
+/// - behaviour priority set in agents contructor
 void Decisions::sortBehaviours()
 {
 	behaviours.sort([](Behaviour *  a_first, Behaviour *  a_second) {
-		return a_first->traits.currWeight > a_second->traits.currWeight;
+		return (a_first->traits.currWeight - a_first->traits.priority) 
+				> (a_second->traits.currWeight - a_second->traits.priority);
 	});
 	m_highestPriority = behaviours.front();
 }
@@ -100,9 +113,9 @@ PlayerBrain::PlayerBrain(PlayerAgent * a_agent)
 {
 	m_pAgent = a_agent;
 	// setup behaviour
-	m_wanderBehaviour = new PlayerWander(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_evadeBehaviour = new PlayerEvade(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_attackBehaviour = new PlayerAttack(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_wanderBehaviour = new PlayerWander(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_evadeBehaviour = new PlayerEvade(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_attackBehaviour = new PlayerAttack(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
 	// set beahvbiour priorities
 	m_evadeBehaviour->traits.priority = 1;	// self preservation
 	m_attackBehaviour->traits.priority = 2;	// attack if needed
@@ -144,13 +157,13 @@ EnemyBrain::EnemyBrain(EnemyAgent * a_agent)
 {
 	m_pAgent = a_agent;
 	// setup behaviour
-	m_seekBehaviour = new EnemySeek(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_fleeBehaviour = new EnemyFlee(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_attackBehaviour = new EnemyAttack(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_seekBehaviour = new EnemySeek(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_fleeBehaviour = new EnemyFlee(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_attackBehaviour = new EnemyAttack(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
 	// set beahvbiour priorities
 	m_fleeBehaviour->traits.priority = 1;	// self preservation
-	m_attackBehaviour->traits.priority = 2;	// attack if possible
-	m_seekBehaviour->traits.priority = 3;	// find something to attack
+	m_seekBehaviour->traits.priority = 2;	// find something to attack
+	m_attackBehaviour->traits.priority = 3;	// attack if possible
 	// fill behaviour list
 	behaviours.push_back(m_fleeBehaviour);
 	behaviours.push_back(m_attackBehaviour);
@@ -187,13 +200,13 @@ CompanionBrain::CompanionBrain(CompanionAgent * a_agent)
 {
 	m_pAgent = a_agent;
 	// setup behaviour
-	m_followBehaviour = new CompanionFollow(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_evadeBehaviour = new CompanionEvade(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
-	m_attackBehaviour = new CompanionAttack(0.0f, 100.0f, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_followBehaviour = new CompanionFollow(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_evadeBehaviour = new CompanionEvade(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
+	m_attackBehaviour = new CompanionAttack(0.0f, m_pAgent->movedata.sight, 0.0f, m_pAgent->vitals.health, 0.0f, 100.0f);
 	// set beahvbiour priorities
-	m_evadeBehaviour->traits.priority = 1;	// self preservation
+	m_attackBehaviour->traits.priority = 1; // attack when nessacary 
 	m_followBehaviour->traits.priority = 2;	// stay with friends
-	m_attackBehaviour->traits.priority = 3; // attack when nessacary 
+	m_evadeBehaviour->traits.priority = 3;	// self preservation
 	// fill behaviour list
 	behaviours.push_back(m_evadeBehaviour);
 	behaviours.push_back(m_followBehaviour);
@@ -216,5 +229,9 @@ void CompanionBrain::update(float a_dt)
 	// set highest priority
 	sortBehaviours();
 	// set action
+	if (m_pAgent->vitals.foeDistance > m_pAgent->movedata.sight && m_highestPriority->traits.action == AN_ATTACK) {
+		m_highestPriority = m_followBehaviour;
+	}
+	
 	m_pAgent->vitals.action = m_highestPriority->traits.action;
 }

@@ -109,6 +109,12 @@ void FuzzyApp::drawAction(Agent & a_agent)
 		}
 		break;
 	}
+	case AN_EVADE:
+		drawSeek(a_agent);
+		break;
+	case AN_FOLLOW:
+		drawSeek(a_agent);
+		break;
 	case AN_SEEK:
 		drawSeek(a_agent);
 		break;
@@ -149,8 +155,8 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 void FuzzyApp::drawSeek(Agent & a_agent)
 {
 	// path agent should be heading along
-	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, a_agent.movedata.heading.x, a_agent.movedata.heading.y, 3.0f);
-
+	glm::vec3 heading = a_agent.movedata.position + (a_agent.movedata.heading * a_agent.movedata.sight);
+	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, heading.x, heading.y, 3.0f);
 }
 
 void FuzzyApp::drawGUI()

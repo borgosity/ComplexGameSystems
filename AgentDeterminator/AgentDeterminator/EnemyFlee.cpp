@@ -12,52 +12,19 @@ EnemyFlee::EnemyFlee(float a_distanceMin, float distanceMax, float a_healthMin, 
 	traits.name = "Flee";
 	traits.action = AN_FLEE;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ fleeable ------------------------------------------
-	// left variables
-	float fleeLowMin = a_fleeMin;
-	float fleeLowMax = (a_fleeMax - a_fleeMin) / 3;
-	// triangular variables
-	float fleeMidMin = (fleeLowMax - fleeLowMin) / 3;
-	float fleeMidPeak = a_fleeMax  * 0.5f;
-	float fleeMidMax = fleeMidPeak + fleeMidMin;
-	// right variables
-	float fleeHighMin = (fleeMidMax - fleeMidMin) / 3;
-	float fleeHighMax = a_fleeMax;
+	std::vector<float> flee = genSteepLTRSet(a_fleeMin, a_fleeMax);
 	// membership function objects
-	m_fleeMS = new LeftShoulderTriangularRightShoulder(fleeLowMin, fleeLowMax,
-		fleeMidMin, fleeMidPeak, fleeMidMax,
-		fleeHighMin, fleeHighMax, "Desire");
+	m_fleeMS = new LeftShoulderTriangularRightShoulder(flee, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -124,6 +91,7 @@ void EnemyFlee::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = flee;
+	saveHistory(flee);
 }
 
 std::vector<float> EnemyFlee::distance(std::vector<float> a_settings)

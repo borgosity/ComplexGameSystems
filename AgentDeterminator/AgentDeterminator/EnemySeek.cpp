@@ -12,52 +12,19 @@ EnemySeek::EnemySeek(float a_distanceMin, float distanceMax, float a_healthMin, 
 	traits.name = "Seek";
 	traits.action = AN_SEEK;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ seekable ------------------------------------------
-	// left variables
-	float seekLowMin = a_seekMin;
-	float seekLowMax = (a_seekMax - a_seekMin) / 3;
-	// triangular variables
-	float seekMidMin = (seekLowMax - seekLowMin) / 3;
-	float seekMidPeak = a_seekMax  * 0.5f;
-	float seekMidMax = seekMidPeak + seekMidMin;
-	// right variables
-	float seekHighMin = (seekMidMax - seekMidMin) / 3;
-	float seekHighMax = a_seekMax;
+	std::vector<float> seek = genSteepLTRSet(a_seekMin, a_seekMax);
 	// membership function objects
-	m_seekMS = new LeftShoulderTriangularRightShoulder(seekLowMin, seekLowMax,
-		seekMidMin, seekMidPeak, seekMidMax,
-		seekHighMin, seekHighMax, "Desire");
+	m_seekMS = new LeftShoulderTriangularRightShoulder(seek, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -110,7 +77,9 @@ void EnemySeek::update(Agent & a_agent)
 	float healthGood = m_healthMS->doms.rightShoulder;
 
 	// how seekable is the target
-	float seekLow = OR(AND(healthLow, targetNear), AND(healthLow, targetFar));
+	float seekLow = OR(AND(healthOkay, targetClose),
+						OR(AND(healthLow, targetNear), 
+							AND(healthLow, targetFar)));
 	float seekMid = OR(AND(healthLow, targetClose), 
 						OR(AND(healthOkay, targetNear), 
 							AND(healthOkay, targetFar)
@@ -128,6 +97,7 @@ void EnemySeek::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = seek;
+	saveHistory(seek);
 }
 
 std::vector<float> EnemySeek::distance(std::vector<float> a_settings)

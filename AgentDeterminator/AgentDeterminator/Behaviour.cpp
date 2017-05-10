@@ -10,7 +10,8 @@ Behaviour::Behaviour()
 Behaviour::~Behaviour()
 {
 }
-
+/// Draw Behaviour Membership Sets
+/// - calls membership set to draw itself
 void Behaviour::drawGUI(Agent & a_agent)
 {
 	std::string windowName = a_agent.name() + "'s " + traits.name + " Membership Sets";
@@ -66,4 +67,58 @@ void Behaviour::saveHistory(float a_currVal)
 			traits.history.push_back(a_currVal);
 		}
 	}
+}
+/// gernate a values for a left/tri/right membership set
+/// - left shoulder steep
+/// - triangular broad
+/// - right shoulder steep
+std::vector<float> Behaviour::genBroadLTRSet(float a_min, float a_max)
+{
+	// left variables
+	float leftShoulderMin = a_min;
+	float leftShoulderMax = (a_max - a_min) / 3;
+	// triangular variables
+	float triangularMin = (leftShoulderMax - leftShoulderMin) / 3;
+	float triangularPeak = a_max * 0.5f;
+	float triangularMax = triangularPeak + triangularMin;
+	// right variables
+	float rightShoulderMin = (triangularMax - triangularMin);
+	float rightShoulderMax = a_max;
+	
+	return std::vector<float>{
+			leftShoulderMin,	
+			leftShoulderMax,	
+			triangularMin,		
+			triangularPeak,		
+			triangularMax,		
+			rightShoulderMin,	
+			rightShoulderMax	
+	};
+}
+/// gernate a values for a left/tri/right membership set
+/// - left shoulder broad
+/// - triangular steep
+/// - right shoulder broad
+std::vector<float> Behaviour::genSteepLTRSet(float a_min, float a_max)
+{
+	// left variables
+	float leftShoulderMin = a_min;
+	float leftShoulderMax = a_max * 0.5f;
+	// triangular variables
+	float triangularMin = a_max * 0.25f;
+	float triangularPeak = leftShoulderMax;
+	float triangularMax = triangularPeak + triangularMin;
+	// right variables
+	float rightShoulderMin = triangularPeak;
+	float rightShoulderMax = a_max;
+
+	return std::vector<float>{
+		leftShoulderMin,
+			leftShoulderMax,
+			triangularMin,
+			triangularPeak,
+			triangularMax,
+			rightShoulderMin,
+			rightShoulderMax
+	};
 }

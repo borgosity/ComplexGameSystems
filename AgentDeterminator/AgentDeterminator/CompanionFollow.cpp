@@ -12,52 +12,19 @@ CompanionFollow::CompanionFollow(float a_distanceMin, float distanceMax, float a
 	traits.name = "Follow";
 	traits.action = AN_FOLLOW;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ followable ------------------------------------------
-	// left variables
-	float followLowMin = a_followMin;
-	float followLowMax = (a_followMax - a_followMin) / 3;
-	// triangular variables
-	float followMidMin = (followLowMax - followLowMin) / 3;
-	float followMidPeak = a_followMax  * 0.5f;
-	float followMidMax = followMidPeak + followMidMin;
-	// right variables
-	float followHighMin = (followMidMax - followMidMin) / 3;
-	float followHighMax = a_followMax;
+	std::vector<float> follow = genSteepLTRSet(a_followMin, a_followMax);
 	// membership function objects
-	m_followMS = new LeftShoulderTriangularRightShoulder(followLowMin, followLowMax,
-		followMidMin, followMidPeak, followMidMax,
-		followHighMin, followHighMax, "Desire");
+	m_followMS = new LeftShoulderTriangularRightShoulder(follow, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -124,6 +91,7 @@ void CompanionFollow::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = follow;
+	saveHistory(follow);
 }
 
 std::vector<float> CompanionFollow::distance(std::vector<float> a_settings)

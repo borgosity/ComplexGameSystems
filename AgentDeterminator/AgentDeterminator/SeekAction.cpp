@@ -42,9 +42,21 @@ void SeekAction::update(float a_dt, Agent & a_agent)
 		}
 		// set acceleration
 		a_agent.movedata.acceleration = acceleration;
+		// adjust velocity based on agent mass
+		if (a_agent.vitals.mass > 0)
+		{
+			// Apply accleration to agent
+			a_agent.movedata.velocity += (acceleration * a_agent.vitals.mass) * a_dt;
+		}
+		else
+		{
+			// Apply accleration to agent
+			a_agent.movedata.velocity += acceleration * a_dt;
+		}
 
 		// Apply accleration to agent
-		a_agent.movedata.velocity += acceleration * a_dt;
+		//a_agent.movedata.velocity += acceleration * a_dt;
+		// adjust agent position accordingly
 		a_agent.movedata.position += a_agent.movedata.velocity * a_dt;
 	}
 	else

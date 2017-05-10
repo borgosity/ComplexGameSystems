@@ -19,6 +19,23 @@ LeftShoulderTriangularRightShoulder::LeftShoulderTriangularRightShoulder(float a
 	m_fvSettings.insert(m_fvSettings.end(), right.begin(), right.end());
 }
 
+LeftShoulderTriangularRightShoulder::LeftShoulderTriangularRightShoulder(std::vector<float> a_values, std::string a_name)
+{
+	m_name = a_name;
+	// initialise membership functions
+	m_leftShoulder = new FMF_LeftShoulder(a_values[0], a_values[1]);
+	m_triangular = new FMF_Triangular(a_values[2], a_values[3], a_values[4]);
+	m_rightShoulder = new FMF_RightShoulder(a_values[5], a_values[6]);
+	// get settings
+	std::vector<float> left = m_leftShoulder->settings();
+	std::vector<float> tri = m_triangular->settings();
+	std::vector<float> right = m_rightShoulder->settings();
+	// save settings
+	m_fvSettings.insert(m_fvSettings.end(), left.begin(), left.end());
+	m_fvSettings.insert(m_fvSettings.end(), tri.begin(), tri.end());
+	m_fvSettings.insert(m_fvSettings.end(), right.begin(), right.end());
+}
+
 LeftShoulderTriangularRightShoulder::~LeftShoulderTriangularRightShoulder()
 {
 	destroy();

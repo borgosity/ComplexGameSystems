@@ -12,52 +12,19 @@ PlayerAttack::PlayerAttack(float a_distanceMin, float distanceMax, float a_healt
 	traits.name = "Attack";
 	traits.action = AN_ATTACK;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-															distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-															distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-														 healthOkayMin, healthOkayPeak, healthOkayMax,
-														 healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ attackable ------------------------------------------
-	// left variables
-	float attackLowMin = a_attackMin;
-	float attackLowMax = (a_attackMax - a_attackMin) / 3;
-	// triangular variables
-	float attackMidMin = (attackLowMax - attackLowMin) / 3;
-	float attackMidPeak = a_attackMax  * 0.5f;
-	float attackMidMax = attackMidPeak + attackMidMin;
-	// right variables
-	float attackHighMin = (attackMidMax - attackMidMin) / 3;
-	float attackHighMax = a_attackMax;
+	std::vector<float> attack = genSteepLTRSet(a_attackMin, a_attackMax);
 	// membership function objects
-	m_attackMS = new LeftShoulderTriangularRightShoulder(attackLowMin, attackLowMax,
-		attackMidMin, attackMidPeak, attackMidMax,
-		attackHighMin, attackHighMax, "Desire");
+	m_attackMS = new LeftShoulderTriangularRightShoulder(attack, "Desire");
 
 	// fill settings vector
 	initVectors();

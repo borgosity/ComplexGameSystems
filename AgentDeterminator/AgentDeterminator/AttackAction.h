@@ -24,7 +24,9 @@ public:
 
 	Agent * targetAgent() { return m_pTarget; };
 	Agent * targetAgent(Agent * a_targetAgent) {
-		m_pTarget = a_targetAgent; return m_pTarget;
+		m_arrived = false;
+		m_pTarget = a_targetAgent; 
+		return m_pTarget;
 	};
 	bool arrivedToggle() { m_arrived = !m_arrived; return m_arrived; };
 	AttackValues controls;

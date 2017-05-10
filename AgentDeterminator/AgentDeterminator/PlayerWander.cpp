@@ -12,52 +12,19 @@ PlayerWander::PlayerWander(float a_distanceMin, float distanceMax, float a_healt
 	traits.name = "Wander";
 	traits.action = AN_WANDER;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ wanderable ------------------------------------------
-	// left variables
-	float wanderLowMin = a_wanderMin;
-	float wanderLowMax = (a_wanderMax - a_wanderMin) / 3;
-	// triangular variables
-	float wanderMidMin = (wanderLowMax - wanderLowMin) / 3;
-	float wanderMidPeak = a_wanderMax  * 0.5f;
-	float wanderMidMax = wanderMidPeak + wanderMidMin;
-	// right variables
-	float wanderHighMin = (wanderMidMax - wanderMidMin) / 3;
-	float wanderHighMax = a_wanderMax;
+	std::vector<float> wander = genSteepLTRSet(a_wanderMin, a_wanderMax);
 	// membership function objects
-	m_wanderMS = new LeftShoulderTriangularRightShoulder(wanderLowMin, wanderLowMax,
-		wanderMidMin, wanderMidPeak, wanderMidMax,
-		wanderHighMin, wanderHighMax, "Desire");
+	m_wanderMS = new LeftShoulderTriangularRightShoulder(wander, "Desire");
 
 	// fill settings vector
 	initVectors();

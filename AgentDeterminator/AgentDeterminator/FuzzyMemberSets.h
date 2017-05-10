@@ -26,6 +26,7 @@ public:
 	LeftShoulderTriangularRightShoulder(float a_leftShoulderMin, float a_leftShoulderMax, 
 										float triangularMin, float triangularPeak, float triangularMax, 
 										float a_rightShoulderMin, float a_rightShoulderMax, std::string a_name);
+	LeftShoulderTriangularRightShoulder(std::vector<float> a_values, std::string a_name);
 	virtual ~LeftShoulderTriangularRightShoulder();
 
 	void update(Agent & a_agent, float a_input);

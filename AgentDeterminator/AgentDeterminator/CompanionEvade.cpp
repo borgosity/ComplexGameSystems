@@ -12,52 +12,19 @@ CompanionEvade::CompanionEvade(float a_distanceMin, float distanceMax, float a_h
 	traits.name = "Evade";
 	traits.action = AN_EVADE;
 	// ------------------ distance ------------------------------------------
-	// left variables
-	float distanceCloseMin = a_distanceMin;
-	float distanceCloseMax = (distanceMax - a_distanceMin) / 3;
-	// triangular variables
-	float distanceMiddleMin = (distanceCloseMax - distanceCloseMin) / 3;
-	float distanceMiddlePeak = distanceMax  * 0.5f;
-	float distanceMiddleMax = distanceMiddlePeak + distanceMiddleMin;
-	// right variables
-	float distanceFarMin = (distanceMiddleMax - distanceMiddleMin) / 3;
-	float distanceFarMax = distanceMax;
+	std::vector<float> distance = genSteepLTRSet(a_distanceMin, distanceMax);
 	// membership function objects
-	m_distanceMS = new LeftShoulderTriangularRightShoulder(distanceCloseMin, distanceCloseMax,
-		distanceMiddleMin, distanceMiddlePeak, distanceMiddleMax,
-		distanceFarMin, distanceFarMax, "Distance");
+	m_distanceMS = new LeftShoulderTriangularRightShoulder(distance, "Distance");
 
 	// ------------------ health ------------------------------------------
-	// left variables
-	float healthLowMin = a_healthMin;
-	float healthLowMax = (a_healthMax - a_healthMin) / 3;
-	// triangular variables
-	float healthOkayMin = (healthLowMax - healthLowMin) / 3;
-	float healthOkayPeak = a_healthMax  * 0.5f;
-	float healthOkayMax = healthOkayPeak + healthOkayMin;
-	// right variables
-	float healthGoodMin = (healthOkayMax - healthOkayMin) / 3;
-	float healthGoodMax = a_healthMax;
+	std::vector<float> health = genSteepLTRSet(a_healthMin, a_healthMax);
 	// membership function objects
-	m_healthMS = new LeftShoulderTriangularRightShoulder(healthLowMin, healthLowMax,
-		healthOkayMin, healthOkayPeak, healthOkayMax,
-		healthGoodMin, healthGoodMax, "Health");
+	m_healthMS = new LeftShoulderTriangularRightShoulder(health, "Health");
 
 	// ------------------ evadeable ------------------------------------------
-	// left variables
-	float evadeLowMin = a_evadeMin;
-	float evadeLowMax = (a_evadeMax - a_evadeMin) / 3;
-	// triangular variables
-	float evadeMidMin = (evadeLowMax - evadeLowMin) / 3;
-	float evadeMidPeak = a_evadeMax  * 0.5f;
-	float evadeMidMax = evadeMidPeak + evadeMidMin;
-	// right variables
-	float evadeHighMin = (evadeMidMax - evadeMidMin) / 3;
-	float evadeHighMax = a_evadeMax;
+	std::vector<float> evade = genSteepLTRSet(a_evadeMin, a_evadeMax);
 	// membership function objects
-	m_evadeMS = new LeftShoulderTriangularRightShoulder(evadeLowMin, evadeLowMax,
-		evadeMidMin, evadeMidPeak, evadeMidMax,
-		evadeHighMin, evadeHighMax, "Desire");
+	m_evadeMS = new LeftShoulderTriangularRightShoulder(evade, "Desire");
 
 	// fill settings vector
 	initVectors();
@@ -109,12 +76,10 @@ void CompanionEvade::update(Agent & a_agent)
 	float healthGood = m_healthMS->doms.rightShoulder;
 
 	// how evadeable is the target
-	float evadeLow = OR(AND(healthOkay, targetFar),
-						OR(AND(healthGood, targetNear), AND(healthGood, targetFar)));
+	float evadeLow = OR(targetFar, AND(healthGood, targetNear));
 	float evadeMid = OR(AND(healthLow, targetFar), 
 						OR(AND(healthOkay, targetNear), AND(healthGood, targetClose)));
-	float evadeHigh = OR(OR(AND(healthLow, targetClose), AND(healthLow, targetNear)),
-						 AND(healthOkay, targetClose));
+	float evadeHigh = OR(AND(healthLow, targetClose), AND(healthLow, targetNear));
 	// set max values
 	float maxEvadeLow = m_evadeMS->maxDom.leftShoulder;
 	float maxEvadeMid = m_evadeMS->maxDom.triangular;
@@ -126,6 +91,7 @@ void CompanionEvade::update(Agent & a_agent)
 	// set weight
 	traits.prevWeight = traits.currWeight;
 	traits.currWeight = evade;
+	saveHistory(evade);
 }
 
 std::vector<float> CompanionEvade::distance(std::vector<float> a_settings)

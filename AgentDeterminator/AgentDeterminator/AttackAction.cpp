@@ -32,27 +32,31 @@ void AttackAction::update(float a_dt, Agent & a_agent)
 {
 	if (m_pTarget != nullptr)
 	{
-		if (!m_arrived)
-		{
-			arrive(a_dt, a_agent);
-		}
-		else
-		{
+		//if (!m_arrived)
+		//{
+		//	arrive(a_dt, a_agent);
+		//}
+		//else
+		//{
 			// do some attack stuff
 			float attackStrength = a_agent.vitals.strength + a_agent.vitals.health;
 			float oppenentStrength = m_pTarget->vitals.strength + m_pTarget->vitals.health;
+			bool inRange = (a_agent.vitals.foeDistance <= a_agent.movedata.sight);
 
-			// ## if opponent not attackingagent gets first strike
+			// ## if opponent not attacking agent gets first strike
 			// ## else - random chance at first strike?
 
-			// if as tough of tough do full damage, else half
-			if (attackStrength >= oppenentStrength){
-				m_pTarget->vitals.health -= a_agent.vitals.mass;
+
+			if (!m_pTarget->vitals.dead && inRange) {
+				// if as tough of tough do full damage, else half
+				if (attackStrength >= oppenentStrength){
+					m_pTarget->vitals.health -= a_agent.vitals.mass / 100;
+				}
+				else {
+					m_pTarget->vitals.health -= (a_agent.vitals.mass * 0.5f) / 100;
+				}
 			}
-			else {
-				m_pTarget->vitals.health -= (a_agent.vitals.mass * 0.5f);
-			}
-		}
+		//}
 	}
 	else
 	{
@@ -67,14 +71,13 @@ void AttackAction::arrive(float a_dt, Agent & a_agent)
 	if (velocity > 0.05)
 	{
 		// subtract agent postion from target position + targets velocity 
-		glm::vec3 direction = glm::normalize(controls.target - a_agent.movedata.position);
-		float distance = glm::distance(a_agent.movedata.position, controls.target);
-
-
+		a_agent.movedata.heading = glm::normalize(controls.target - a_agent.movedata.position);
 		// scale resultant vector by maxSpeed
 		// calculate the acceleration required to move agent away to targets estimated location
-		glm::vec3 acceleration = glm::normalize(direction) * a_agent.movedata.maxSpeed;
+		glm::vec3 acceleration = glm::normalize(a_agent.movedata.heading) * a_agent.movedata.maxSpeed;
 
+		// get distance to target
+		float distance = glm::distance(a_agent.movedata.position, controls.target);
 		// distance scalar
 		float scalar = std::min(distance / controls.distance, 1.0f);
 
@@ -83,15 +86,16 @@ void AttackAction::arrive(float a_dt, Agent & a_agent)
 		{
 			acceleration *= scalar;
 
-			float d = glm::dot(direction, glm::normalize(a_agent.movedata.velocity));
+			float d = glm::dot(a_agent.movedata.heading, glm::normalize(a_agent.movedata.velocity));
 
 			glm::vec3 resistance = -(glm::normalize(a_agent.movedata.velocity)) * glm::length(a_agent.movedata.velocity) * d * 2.0f;
 
 			acceleration += resistance;
 
-			a_agent.movedata.acceleration = acceleration;
 		}
 		acceleration -= a_agent.movedata.velocity;
+		// set acceleration
+		a_agent.movedata.acceleration = acceleration;
 
 		if (a_agent.vitals.mass > 0)
 		{

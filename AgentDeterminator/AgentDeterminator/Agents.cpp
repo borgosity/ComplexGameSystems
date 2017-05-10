@@ -71,11 +71,13 @@ void Agent::drawGUI()
 		drawBehaviours();
 	}
 }
+/// Draw GUI - Agent stats data
 void Agent::drawVitals()
 {
 	std::string windowName = m_name + " Stats";
 	ImGui::Begin(windowName.c_str());
 	ImGui::InputFloat("health", &vitals.health, 1.0f, 1.0f, 2);
+	ImGui::Checkbox("dead", &vitals.dead);
 	ImGui::InputFloat("strength", &vitals.strength, 1.0f, 1.0f, 2);
 	ImGui::InputFloat("speed", &vitals.speed, 1.0f, 1.0f, 2);
 	ImGui::InputFloat("size", &vitals.size, 1.0f, 1.0f, 2);
@@ -85,6 +87,7 @@ void Agent::drawVitals()
 	ImGui::InputFloat("minDist", &vitals.minDistance, 1.0f, 1.0f, 2);
 	ImGui::End();
 }
+/// Draw GUI - Agents move data
 void Agent::drawMoveData()
 {
 	std::string windowName = m_name + " Move Data";
@@ -135,6 +138,7 @@ void Agent::move(float a_dt)
 	// increase postition vector by velocity vector
 	movedata.position += movedata.velocity;
 }
+/// update agents health status, dead or not dead
 void Agent::healthCheck()
 {
 	if (vitals.dead) {
@@ -142,6 +146,7 @@ void Agent::healthCheck()
 	}
 	else {
 		if (vitals.health <= 0.0f) {
+			vitals.health = 0;
 			vitals.dead = true;
 		}
 	}
@@ -182,14 +187,14 @@ PlayerAgent::PlayerAgent(std::string a_name, glm::vec3 a_position)
 	// movement
 	movedata.position = a_position;
 	movedata.acceleration = glm::vec3(0.0f);
-	movedata.maxAcceleration = 0.5f;
+	movedata.maxAcceleration = 1.5f;
 	movedata.velocity = glm::vec3(0.0f);
 	movedata.maxSpeed = 2.0f;
 	movedata.maxForce = 0.1f;
 	movedata.rotation = 0.0f;
 	movedata.rotationDampening = 0.05f;
 	movedata.livelyness = 3.0f;
-	movedata.sight = 20.0f;
+	movedata.sight = 40.0f;
 	movedata.sensor += (movedata.position + movedata.sight);
 	// brain
 	m_brain = new PlayerBrain(this);
@@ -217,6 +222,11 @@ void PlayerAgent::update(float a_dt)
 {
 	// check health
 	healthCheck();
+	// if dead stop
+	if (vitals.dead) {
+		movedata.velocity = glm::vec3(0.0f);
+		return;
+	}
 	findEnemy();
 	vitals.foeDistance = m_pEnemyAgent ? glm::distance(movedata.position, m_pEnemyAgent->movedata.position) : 1000.0f;
 
@@ -247,9 +257,21 @@ void PlayerAgent::update(float a_dt)
 		break;
 	}
 	case AN_ATTACK:
-		m_attackAction->update(a_dt, *this);
-		std::cout << "-### Player Attacking!" << std::endl;
-		break;
+	{
+		if (m_attackAction->targetAgent() != nullptr) {
+			m_attackAction->update(a_dt, *this);
+			std::cout << "-### Player  Attacking!" << std::endl;
+		}
+		else
+		{
+			if (m_pEnemyAgent != nullptr && !m_pEnemyAgent->vitals.dead) {
+				m_attackAction->targetAgent(m_pEnemyAgent);
+			}
+			else {
+				findEnemy();
+			}
+		}
+	}
 	default:
 		std::cout << "Player Doing Nothing!" << std::endl;
 		break;
@@ -320,7 +342,7 @@ EnemyAgent::EnemyAgent(std::string a_name, glm::vec3 a_position)
 	movedata.acceleration = glm::vec3(0.0f);
 	movedata.maxSpeed = 2.0f;
 	movedata.maxForce = 0.1f;
-	movedata.maxAcceleration = 1.5f;
+	movedata.maxAcceleration = 0.5f;
 	movedata.rotation = 0.0f;
 	movedata.rotationDampening = 0.05f;
 	movedata.sight = 80.0f;
@@ -351,6 +373,11 @@ void EnemyAgent::update(float a_dt)
 {
 	// check health
 	healthCheck();
+	// if dead stop
+	if (vitals.dead) {
+		movedata.velocity = glm::vec3(0.0f);
+		return;
+	}
 	findTarget();
 	vitals.foeDistance = m_pEnemyAgent ? glm::distance(movedata.position, m_pEnemyAgent->movedata.position) : 1000.0f;
 
@@ -361,8 +388,22 @@ void EnemyAgent::update(float a_dt)
 	switch (m_brain->saysDoThis())
 	{
 	case AN_FLEE:
-		m_fleeAction->update(a_dt, *this);
-		std::cout << ">>> ENEMY Fleeing!" << std::endl;
+		if (m_fleeAction->targetAgent() != nullptr) {
+			m_fleeAction->update(a_dt, *this);
+			std::cout << ">>> ENEMY Fleeing!" << std::endl;
+		}
+		else
+		{
+			if (m_pEnemyAgent != nullptr && !m_pEnemyAgent->vitals.dead) {
+				m_fleeAction->targetAgent(m_pEnemyAgent);
+			}
+			else {
+				if (!m_allDead)
+				{
+					findTarget();
+				}
+			}
+		}
 		break;
 	case AN_SEEK:
 	{
@@ -484,7 +525,7 @@ CompanionAgent::CompanionAgent(std::string a_name, glm::vec3 a_position)
 	movedata.maxAcceleration = 0.5f;
 	movedata.rotation = 0.0f;
 	movedata.rotationDampening = 0.05f;
-	movedata.sight = 20.0f;
+	movedata.sight = 50.0f;
 	movedata.sensor += (movedata.position + movedata.sight);
 	// brain
 	m_brain = new CompanionBrain(this);
@@ -509,6 +550,11 @@ void CompanionAgent::update(float a_dt)
 {
 	// check health
 	healthCheck();
+	// if dead stop
+	if (vitals.dead){
+		movedata.velocity = glm::vec3(0.0f);
+		return;
+	}
 	findEnemy();
 	vitals.foeDistance = m_pEnemyAgent ? glm::distance(movedata.position, m_pEnemyAgent->movedata.position) : 1000.0f ;
 	vitals.friendDistance = m_pBuddyAgent ? glm::distance(movedata.position, m_pBuddyAgent->movedata.position) : 1000.0f;
@@ -554,8 +600,19 @@ void CompanionAgent::update(float a_dt)
 		break;
 	}
 	case AN_ATTACK:
-		m_attackAction->update(a_dt, *this);
-		std::cout << " --- Companion Attacking!" << std::endl;
+		if (m_attackAction->targetAgent() != nullptr) {
+			m_attackAction->update(a_dt, *this);
+			std::cout << " --- Companion Attacking!" << std::endl;
+		}
+		else
+		{
+			if (m_pEnemyAgent != nullptr && !m_pEnemyAgent->vitals.dead) {
+				m_attackAction->targetAgent(m_pEnemyAgent);
+			}
+			else {
+				findEnemy();
+			}
+		}
 		break;
 	default:
 		std::cout << "Companion Doing Nothing!" << std::endl;

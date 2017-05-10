@@ -40,7 +40,9 @@ protected:
 	float NOT(float a_value);
 
 	void saveHistory(float a_currVal);
-	
+	std::vector<float> genBroadLTRSet(float a_min, float a_max);
+	std::vector<float> genSteepLTRSet(float a_min, float a_max);
+
 	template<typename T>
 	void deallocate(T a_ptr);
 };
