@@ -155,7 +155,7 @@ void FuzzyApp::drawWander(Agent & a_agent, WanderAction & a_wander)
 void FuzzyApp::drawSeek(Agent & a_agent)
 {
 	// path agent should be heading along
-	glm::vec3 heading = a_agent.movedata.position + (a_agent.movedata.heading * a_agent.movedata.sight);
+	glm::vec3 heading = a_agent.movedata.position + (glm::normalize(a_agent.movedata.heading) * a_agent.movedata.sight);
 	m_renderer->drawLine(a_agent.movedata.position.x, a_agent.movedata.position.y, heading.x, heading.y, 3.0f);
 }
 

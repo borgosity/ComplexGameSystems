@@ -226,12 +226,22 @@ void CompanionBrain::update(float a_dt)
 	m_followBehaviour->update(*m_pAgent);
 	m_evadeBehaviour->update(*m_pAgent);
 	m_attackBehaviour->update(*m_pAgent);
+	// adjust priority weights if enmy out of range
+	if (m_pAgent->vitals.foeDistance > m_pAgent->movedata.sight) {
+		// priority order
+		m_followBehaviour->traits.priority = 1;	// stay with friends
+		m_attackBehaviour->traits.priority = 2; // attack when nessacary 
+		m_evadeBehaviour->traits.priority = 3;	// self preservation
+	}
+	else {
+		// priority order
+		m_attackBehaviour->traits.priority = 1; // attack when nessacary 
+		m_followBehaviour->traits.priority = 2;	// stay with friends
+		m_evadeBehaviour->traits.priority = 3;	// self preservation
+	}
+	// sort
 	// set highest priority
 	sortBehaviours();
 	// set action
-	if (m_pAgent->vitals.foeDistance > m_pAgent->movedata.sight && m_highestPriority->traits.action == AN_ATTACK) {
-		m_highestPriority = m_followBehaviour;
-	}
-	
 	m_pAgent->vitals.action = m_highestPriority->traits.action;
 }

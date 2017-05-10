@@ -24,6 +24,7 @@ Agent::Agent()
 Agent::~Agent()
 {
 }
+/// Draw Initital Agent GUI
 void Agent::drawGUI()
 {
 	// Draw agent GUI window
@@ -218,6 +219,7 @@ PlayerAgent::~PlayerAgent()
 	delete m_evadeAction;
 	delete m_attackAction;
 }
+/// Update Player Agent
 void PlayerAgent::update(float a_dt)
 {
 	// check health
@@ -280,7 +282,7 @@ void PlayerAgent::update(float a_dt)
 	// ----------------------------------- movement after action processed ------------------------------------
 	move(a_dt);
 }
-
+/// Find Enemy Agent near Player Agent
 void PlayerAgent::findEnemy()
 {
 	float closestDistance = movedata.sight;
@@ -301,7 +303,7 @@ void PlayerAgent::findEnemy()
 	// set closest agent
 	m_pEnemyAgent = closestAgent;
 }
-
+/// Draw GUI which displays Agents Behaviour Stats
 void PlayerAgent::drawBehaviours()
 {
 	m_brain->drawGUI(*this);
@@ -368,7 +370,7 @@ EnemyAgent::~EnemyAgent()
 	delete m_fleeAction;
 	delete m_attackAction;
 }
-
+/// Update Enemy Agent
 void EnemyAgent::update(float a_dt)
 {
 	// check health
@@ -454,10 +456,12 @@ void EnemyAgent::update(float a_dt)
 	// ----------------------------------- movement after action processed -----------------------------------
 	move(a_dt);
 }
+/// Draw GUI which displays Agents Behaviour Stats
 void EnemyAgent::drawBehaviours()
 {
 	m_brain->drawGUI(*this);
 }
+/// Find Target Agent for Enemy Agent to Persue
 void EnemyAgent::findTarget()
 {
 	float closestDistance = movedata.sight;
@@ -545,7 +549,7 @@ CompanionAgent::~CompanionAgent()
 	delete m_evadeAction;
 	delete m_attackAction;
 }
-
+/// Update Companion Agent
 void CompanionAgent::update(float a_dt)
 {
 	// check health
@@ -623,12 +627,12 @@ void CompanionAgent::update(float a_dt)
 	move(a_dt);
 
 }
-
+/// Draw GUI which displays Agents Behaviour Stats
 void CompanionAgent::drawBehaviours()
 {
 	m_brain->drawGUI(*this);
 }
-
+/// Find Closest Enemy Agent
 void CompanionAgent::findEnemy()
 {
 	float closestDistance = movedata.sight;
